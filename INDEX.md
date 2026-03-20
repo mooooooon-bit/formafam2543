@@ -1,0 +1,2042 @@
+[index.html](https://github.com/user-attachments/files/26138153/index.html)
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ELS Manager</title>
+<style>
+/* =============================================================
+   ELS Manager V26.03.5
+   대시보드형 첫 페이지 · calcMaturityAutoGross 분리 · 모바일 개선
+   ============================================================= */
+:root {
+  --bg:#f2f5f9; --surface:#fff; --s2:#f0f4f9; --s3:#e6ecf5;
+  --bd:#dde4ef; --bd2:#b8c6db;
+  --txt:#1c2636; --txt2:#475569; --txt3:#8899b0;
+  --acc:#1d4ed8; --acc-l:#eff6ff; --acc-d:#1e3a8a;
+  --g:#047857; --g-bg:#ecfdf5; --g-bd:#6ee7b7;
+  --r:#be123c; --r-bg:#fff1f2; --r-bd:#fda4af;
+  --am:#92400e; --am-bg:#fffbeb; --am-bd:#fcd34d;
+  --pu:#5b21b6; --pu-bg:#f5f3ff;
+  --sim-bg:#fefce8; --sim-bd:#fde047;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh2:0 4px 16px rgba(0,0,0,.08);
+  --r1:12px; --r2:8px; --r3:4px;
+  --f:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  --touch:44px; /* minimum touch target height */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ─ 앱바 ─ */
+.appbar{background:var(--surface);border-bottom:1px solid var(--bd);padding:0 16px;position:sticky;top:0;z-index:300;box-shadow:var(--sh)}
+.appbar-in{max-width:1400px;margin:0 auto;display:flex;align-items:center;height:56px;gap:10px}
+.logo-wrap{display:flex;align-items:baseline;gap:8px;flex-shrink:0}
+.logo{font-size:16px;font-weight:800;color:var(--acc);letter-spacing:-.5px;white-space:nowrap}
+.ver-badge{font-size:10px;font-weight:700;color:var(--txt3);background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:1px 7px;letter-spacing:.3px;white-space:nowrap}
+.tab-nav{display:flex;gap:1px;flex:1;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tab-nav::-webkit-scrollbar{display:none}
+.tbtn{min-height:var(--touch);padding:6px 13px;border:none;background:transparent;color:var(--txt2);font-size:12px;font-family:var(--f);font-weight:600;cursor:pointer;border-radius:var(--r2);white-space:nowrap;transition:background .15s;flex-shrink:0;display:flex;align-items:center;gap:3px}
+.tbtn:hover{background:var(--s2)}
+.tbtn.on{background:var(--acc-l);color:var(--acc)}
+.tcnt{font-size:10px;background:rgba(0,0,0,.08);border-radius:10px;padding:0 5px}
+.tbtn.on .tcnt{background:rgba(29,78,216,.15)}
+.bar-r{display:flex;gap:6px;flex-shrink:0;margin-left:auto}
+
+/* ─ 페이지 ─ */
+.page{display:none;max-width:1400px;margin:0 auto;padding:16px 14px 72px}
+.page.on{display:block}
+
+/* ─ 저장 경고 ─ */
+#storage-warn{background:var(--r-bg);border:1px solid var(--r-bd);border-radius:var(--r2);padding:8px 14px;font-size:12px;color:var(--r);margin:4px auto;max-width:1400px;display:none}
+
+/* ─ 배너 ─ */
+.disclaimer{background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r1);padding:9px 14px;font-size:11px;color:#78350f;margin-bottom:14px;display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+.sim-banner{background:var(--sim-bg);border:2px solid var(--sim-bd);border-radius:var(--r1);padding:10px 14px;font-size:12px;color:#78350f;display:flex;align-items:flex-start;gap:8px;margin-bottom:14px}
+
+/* ─ 카드/섹션 ─ */
+.card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:16px;box-shadow:var(--sh)}
+.mt{margin-top:14px}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+.sec-hl{display:flex;align-items:center;gap:7px}
+.sec-t{font-size:15px;font-weight:700;color:var(--txt)}
+.cbadge{font-size:11px;color:var(--txt3);background:var(--s2);padding:2px 9px;border-radius:20px}
+
+/* ─ KPI 카드 그리드 (대시보드 요약) ─ */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:4px}
+.kpi-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh)}
+.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:5px}
+.kpi-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.kpi-val.green{color:var(--g)}.kpi-val.red{color:var(--r)}.kpi-val.blue{color:var(--acc)}.kpi-val.warn{color:var(--am)}
+.kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px}
+
+/* ─ 버튼 ─ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:var(--touch);padding:0 14px;border-radius:var(--r2);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;line-height:1.3;-webkit-tap-highlight-color:transparent}
+.bp{background:var(--acc);color:#fff}.bp:hover{background:var(--acc-d)}
+.bs{background:var(--s2);color:var(--txt);border:1px solid var(--bd2)}.bs:hover{background:var(--s3)}
+.bd-btn{background:var(--r-bg);color:var(--r);border:1px solid var(--r-bd)}.bd-btn:hover{background:#ffe4e8}
+.bg-btn{background:var(--g-bg);color:var(--g);border:1px solid var(--g-bd)}.bg-btn:hover{background:#d1fae5}
+.ba{background:var(--am-bg);color:var(--am);border:1px solid var(--am-bd)}.ba:hover{background:#fde68a}
+.bgh{background:transparent;color:var(--txt2);border:1px solid var(--bd)}.bgh:hover{background:var(--s2)}
+.sm{min-height:36px;padding:0 11px;font-size:12px}
+.xs{min-height:30px;padding:0 9px;font-size:11px}
+.ic{width:36px;min-height:36px;padding:0;border-radius:var(--r2)}
+
+/* ─ 폼 ─ */
+.fg{display:flex;flex-direction:column;gap:5px}
+.fl{font-size:12px;font-weight:700;color:var(--txt2)}
+.req{color:var(--r)}
+.fi,.fsl,.fta{padding:10px 12px;border:1px solid var(--bd2);border-radius:var(--r2);font-family:var(--f);font-size:14px;color:var(--txt);background:var(--surface);transition:border-color .15s;width:100%;min-height:var(--touch);-webkit-appearance:none}
+.fi:focus,.fsl:focus,.fta:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+.fta{resize:vertical;min-height:64px}
+.fhint{font-size:11px;color:var(--txt3)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.sp2{grid-column:1/-1}
+.dynl{display:flex;flex-direction:column;gap:6px}
+.dyni{display:flex;align-items:center;gap:6px;background:var(--s2);padding:8px 10px;border-radius:var(--r2);border:1px solid var(--bd);flex-wrap:wrap}
+.dyni .fi{background:var(--surface);flex:1;min-width:80px}
+.dyni label{font-size:11px;color:var(--txt2);white-space:nowrap}
+.addbtn{font-size:12px;color:var(--acc);background:var(--acc-l);border:1px dashed var(--acc);border-radius:var(--r2);padding:9px;cursor:pointer;font-family:var(--f);width:100%;text-align:center;transition:all .15s;margin-top:5px;min-height:40px}
+.addbtn:hover{background:#dbeafe}
+
+/* ─ 배지 ─ */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.bg{background:var(--g-bg);color:var(--g)}
+.br{background:var(--r-bg);color:var(--r)}
+.bam{background:var(--am-bg);color:var(--am)}
+.bbl{background:var(--acc-l);color:var(--acc)}
+.bpu{background:var(--pu-bg);color:var(--pu)}
+.bgr{background:var(--s2);color:var(--txt2)}
+.ki-confirmed{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:var(--r-bg);color:var(--r);border:1px solid var(--r-bd)}
+
+/* ─ 조기상환 가능성 점수 (작은 보조 배지) ─ */
+.score-sm{font-size:10px;font-weight:600;padding:2px 6px;border-radius:10px;white-space:nowrap}
+.sc-lo{background:#fee2e2;color:#9b1c1c}
+.sc-md{background:#fef9c3;color:#78350f}
+.sc-hi{background:#d1fae5;color:#065f46}
+
+/* ─ 테이블 ─ */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--s2);color:var(--txt2);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding:9px 10px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--bd);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.tfoot td{background:var(--s2);font-weight:700;border-top:2px solid var(--bd2);border-bottom:none}
+.nr{text-align:right;font-variant-numeric:tabular-nums}
+.tc{text-align:center}
+.tg{color:var(--g)}.tr{color:var(--r)}.ta{color:var(--acc)}.tm{color:var(--txt3)}
+.b7{font-weight:700}
+
+/* ─ 상품 카드 그리드 ─ */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.pc{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:16px;box-shadow:var(--sh);transition:box-shadow .18s}
+.pc:hover{box-shadow:var(--sh2)}
+.pc-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px;gap:8px}
+.pc-nm{font-weight:700;font-size:15px;line-height:1.3;color:var(--txt)}
+.pc-is{font-size:12px;color:var(--txt3);margin-top:2px}
+.pc-mt{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.pc-row{display:flex;justify-content:space-between;font-size:13px;color:var(--txt2);padding:4px 0;border-bottom:1px solid var(--bd)}
+.pc-row:last-of-type{border-bottom:none}
+.pc-row .v{font-weight:600;color:var(--txt)}
+.pc-act{margin-top:11px;padding-top:10px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:7px}
+.pc-ar{display:flex;gap:6px}
+.pc-ar .btn{flex:1;font-size:12px}
+.sim-note{font-size:10px;color:var(--am);background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r3);padding:2px 8px;display:inline-flex;align-items:center;gap:2px}
+
+/* ─ 조기상환 단계 ─ */
+.eswrap{margin-top:9px}
+.eslbl{font-size:10px;color:var(--txt3);font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.estages{display:flex;gap:4px;flex-wrap:wrap}
+.es{display:flex;flex-direction:column;align-items:center;min-width:56px;padding:5px 7px;border-radius:var(--r2);border:1px solid var(--bd);font-size:10px}
+.es-r{font-weight:800;font-size:11px;margin-bottom:1px}
+.es-d{font-size:9px;opacity:.8}
+.es-b{font-size:9px;margin-top:1px;opacity:.8}
+.es-c{font-size:9px;font-weight:700;margin-top:2px;padding:1px 4px;border-radius:2px;background:rgba(0,0,0,.06)}
+.es-res{font-size:8px;font-weight:800;margin-top:2px;padding:1px 4px;border-radius:3px}
+.es-pass{background:var(--g-bg);border-color:var(--g-bd);color:var(--g)}
+.es-fail{background:var(--r-bg);border-color:var(--r-bd);color:var(--r)}
+.es-cur{background:var(--am-bg);border-color:var(--am-bd);color:var(--am);border-width:2px}
+.es-fut{background:var(--s2);border-color:var(--bd);color:var(--txt3)}
+
+/* ─ 완료 카드 ─ */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.dc{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:15px;box-shadow:var(--sh)}
+.dc.st-redeemed{border-left:4px solid var(--g)}
+.dc.st-matured{border-left:4px solid var(--acc)}
+.dc.st-closed{border-left:4px solid var(--r)}
+
+/* ─ 일정 리스트 ─ */
+.schedule-list{display:flex;flex-direction:column;gap:8px}
+.sched-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--bd);border-radius:var(--r2);font-size:13px}
+.sched-item.urgent{background:var(--r-bg);border-color:var(--r-bd)}
+.sched-item.soon{background:var(--am-bg);border-color:var(--am-bd)}
+.sched-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sched-dot.urgent{background:var(--r)}
+.sched-dot.soon{background:var(--am)}
+.sched-dot.normal{background:var(--txt3)}
+
+/* ─ 바 차트 ─ */
+.barchart{display:flex;flex-direction:column;gap:9px}
+.brow{display:flex;align-items:center;gap:9px;font-size:13px}
+.blbl{min-width:46px;max-width:46px;font-weight:700;color:var(--txt2);text-align:right;font-size:11px}
+.btrack{flex:1;height:22px;background:var(--s2);border-radius:11px;overflow:hidden}
+.bfill{height:100%;border-radius:11px;transition:width .5s;display:flex;align-items:center;padding-left:9px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap}
+.bval{min-width:75px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:13px}
+
+/* ─ SVG 그래프 ─ */
+.svgwrap{width:100%;overflow-x:auto;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.svgwrap svg{display:block;min-width:420px}
+
+/* ─ 모달 ─ */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:400;align-items:flex-start;justify-content:center;padding:24px 12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.mo.on{display:flex}
+.md{background:var(--surface);border-radius:var(--r1);width:100%;max-width:680px;box-shadow:0 20px 60px rgba(0,0,0,.18);margin:auto}
+.mdlg{max-width:820px}
+.md-hd{padding:15px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.md-t{font-size:16px;font-weight:700}
+.md-x{width:36px;height:36px;background:var(--s2);border:none;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--txt2);-webkit-tap-highlight-color:transparent}
+.md-x:hover{background:var(--bd)}
+.md-b{padding:16px 18px}
+.md-ft{padding:13px 18px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+
+/* ─ 기초자산 카드 ─ */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.acard{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:12px}
+.ac-nm{font-weight:700;font-size:13px;margin-bottom:2px}
+.ac-nt{font-size:11px;color:var(--txt3);margin-bottom:7px}
+
+/* ─ 토스트 ─ */
+.toast{position:fixed;bottom:24px;right:16px;left:16px;max-width:380px;margin:0 auto;padding:12px 18px;border-radius:var(--r1);font-size:13px;box-shadow:var(--sh2);z-index:999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;color:#fff;text-align:center}
+.toast.on{opacity:1;transform:translateY(0)}
+.tok{background:var(--g)}.terr{background:var(--r)}.twarn{background:var(--am)}
+
+/* ─ 유틸 ─ */
+.hr{border:none;border-top:1px solid var(--bd);margin:12px 0}
+.mt4{margin-top:4px}.mt8{margin-top:8px}.mt12{margin-top:12px}
+.empty{text-align:center;padding:32px 20px;color:var(--txt3)}
+.empty .ei{font-size:28px;margin-bottom:8px}
+.empty .em{font-size:14px;margin-bottom:14px}
+.hidden{display:none!important}
+.fl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* ─ 반응형 ─ */
+@media(max-width:480px){
+  /* iPhone */
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .g2,.g3{grid-template-columns:1fr}
+  .pgrid,.dgrid{grid-template-columns:1fr}
+  .appbar-in{flex-wrap:wrap;height:auto;padding:9px 0;gap:5px}
+  .bar-r{width:100%;justify-content:flex-end}
+  .tab-nav{width:100%}
+  .page{padding:14px 10px 80px}
+  .sp2{grid-column:auto}
+  .md{border-radius:var(--r1) var(--r1) 0 0;margin:auto 0 0}
+  .mo{align-items:flex-end;padding:0}
+  .bval{min-width:60px;font-size:12px}
+}
+@media(min-width:481px) and (max-width:900px){
+  /* iPad */
+  .kpi-grid{grid-template-columns:repeat(3,1fr)}
+  .pgrid{grid-template-columns:repeat(2,1fr)}
+  .dgrid{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:1fr 1fr}
+}
+@media(max-width:900px){
+  .sp2{grid-column:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ====== 앱바 ====== -->
+<header class="appbar">
+  <div class="appbar-in">
+    <div class="logo-wrap">
+      <div class="logo">ELS Manager</div>
+      <span class="ver-badge">V26.03.6</span>
+    </div>
+    <nav class="tab-nav" id="tab-nav">
+      <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
+      <button class="tbtn" data-tab="completed" onclick="sw('completed')">✅ 완료<span class="tcnt" id="cnt-c">0</span></button>
+      <button class="tbtn" data-tab="all" onclick="sw('all')">📋 전체<span class="tcnt" id="cnt-a">0</span></button>
+      <button class="tbtn" data-tab="annual" onclick="sw('annual')">📊 연간 실적</button>
+      <button class="tbtn" data-tab="sim" onclick="sw('sim')">🔬 시뮬</button>
+      <button class="tbtn" data-tab="accounts" onclick="sw('accounts')">🏦 계좌</button>
+      <button class="tbtn" data-tab="backup" onclick="sw('backup')">💾 백업</button>
+    </nav>
+    <div class="bar-r">
+      <button class="btn bp sm" onclick="openProdModal()">＋ 상품</button>
+    </div>
+  </div>
+</header>
+
+<div id="storage-warn"></div>
+
+<!-- ====== 탭: 대시보드 (첫 페이지) ====== -->
+<div class="page on" id="tab-dash">
+  <div class="disclaimer">⚠️ 이 도구는 개인 기록·계산 전용입니다. 금융상품 추천·투자 판단 도구가 아닙니다. 모든 수치는 참고용이며 실제 결과와 다를 수 있습니다.</div>
+
+  <!-- A. 요약 KPI 카드 -->
+  <div id="kpi-grid" class="kpi-grid"></div>
+
+  <!-- B. 기초자산 현재가 입력 (시뮬 참고용) -->
+  <div class="card mt">
+    <div class="sec-hd">
+      <div class="sec-hl">
+        <span class="sec-t">📌 기초자산 현재가</span>
+        <span class="cbadge" id="acnt">0개</span>
+      </div>
+      <span class="sim-note">🔬 시뮬레이션 참고용</span>
+    </div>
+    <div id="asset-grid" class="agrid"></div>
+  </div>
+
+  <!-- C. 현재 보유 상품 -->
+  <div class="card mt">
+    <div class="sec-hd">
+      <div class="sec-hl">
+        <span class="sec-t">📂 현재 보유 상품</span>
+        <span class="cbadge" id="h-cnt">0개</span>
+      </div>
+      <div class="fl-row">
+        <input class="fi sm" id="h-q" placeholder="검색" style="width:140px;min-height:36px" oninput="renderHolding()">
+        <select class="fsl sm" style="width:100px;min-height:36px" id="h-sort" onchange="renderHolding()">
+          <option value="maturity">만기일순</option>
+          <option value="eval">평가일순</option>
+          <option value="recent">최근 등록순</option>
+        </select>
+      </div>
+    </div>
+    <div id="holding-grid" class="pgrid"></div>
+  </div>
+
+  <!-- D. 가까운 일정 (30일 이내) -->
+  <div class="card mt">
+    <div class="sec-hd">
+      <div class="sec-hl">
+        <span class="sec-t">📅 가까운 일정</span>
+        <span class="cbadge" id="sched-cnt">0건</span>
+      </div>
+      <span style="font-size:11px;color:var(--txt3)">30일 이내</span>
+    </div>
+    <div id="schedule-list" class="schedule-list"></div>
+  </div>
+
+  <!-- E. 연간 실제 수익 미리보기 -->
+  <div class="card mt">
+    <div class="sec-hd">
+      <div class="sec-hl"><span class="sec-t">📊 연간 실제 수익 (최근 3년)</span></div>
+      <button class="btn bgh sm" onclick="sw('annual')">전체 보기</button>
+    </div>
+    <div id="annual-preview-bar" class="barchart" style="margin-bottom:10px"></div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>연도</th><th class="nr">완료건수</th><th class="nr">투자원금합계</th>
+          <th class="nr">실제 세후 수익금</th><th class="nr">실제 세후 수익률</th>
+        </tr></thead>
+        <tbody id="annual-preview-tb"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- F. 최근 완료 상품 미리보기 -->
+  <div class="card mt">
+    <div class="sec-hd">
+      <div class="sec-hl"><span class="sec-t">✅ 최근 완료 상품</span></div>
+      <button class="btn bgh sm" onclick="sw('completed')">전체 보기</button>
+    </div>
+    <div id="recent-completed"></div>
+  </div>
+
+</div>
+
+<!-- ====== 탭: 완료 상품 ====== -->
+<div class="page" id="tab-completed">
+  <div class="sec-hd">
+    <div class="sec-hl"><span class="sec-t">✅ 완료 상품</span><span class="cbadge" id="c-cnt">0개</span></div>
+    <input class="fi sm" id="c-q" placeholder="상품명·계좌명" style="width:160px;min-height:36px" oninput="renderCompleted()">
+  </div>
+  <div id="completed-grid" class="dgrid"></div>
+</div>
+
+<!-- ====== 탭: 전체 상품 ====== -->
+<div class="page" id="tab-all">
+  <div class="sec-hd" style="flex-wrap:wrap;gap:9px">
+    <div class="sec-hl"><span class="sec-t">📋 전체 상품</span><span class="cbadge" id="a-cnt">0개</span></div>
+    <div class="fl-row">
+      <input class="fi sm" id="a-q" placeholder="검색" style="width:130px;min-height:36px" oninput="renderAll2()">
+      <select class="fsl sm" style="width:88px;min-height:36px" id="a-st" onchange="renderAll2()">
+        <option value="">전체</option>
+        <option value="active">보유중</option>
+        <option value="redeemed">조기상환</option>
+        <option value="matured">만기상환</option>
+        <option value="closed">종료/손실</option>
+      </select>
+      <select class="fsl sm" style="width:110px;min-height:36px" id="a-acc" onchange="renderAll2()">
+        <option value="">계좌 전체</option>
+      </select>
+    </div>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>상품명</th><th>계좌</th><th>상태</th><th>차수</th>
+        <th class="nr">원금</th><th>만기일</th><th>상환일</th>
+        <th class="nr">세후수익금</th><th class="nr">세후수익률</th><th></th>
+      </tr></thead>
+      <tbody id="all-tb"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ====== 탭: 연간 실적 ====== -->
+<div class="page" id="tab-annual">
+  <div class="disclaimer">완료 처리된 상품(조기상환·만기상환·손실확정)만 반영됩니다. 보유중 상품은 포함되지 않습니다.</div>
+  <div class="card">
+    <div class="sec-hd">
+      <div class="sec-hl"><span class="sec-t">📊 연도별 실제 수익 현황</span></div>
+      <div class="fl-row">
+        <span style="font-size:11px;color:var(--txt3)">settlementDate 기준 · 전체 연도</span>
+        <select class="fsl sm" id="annual-sort" style="width:90px;min-height:32px" onchange="renderAnnual()">
+          <option value="desc">최근연도순</option>
+          <option value="asc">오래된순</option>
+        </select>
+      </div>
+    </div>
+    <div id="annual-bar" class="barchart" style="margin-bottom:14px"></div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>연도</th><th class="nr">완료건수</th><th class="nr">투자원금합계</th>
+          <th class="nr">실제세전수익금</th><th class="nr">실제세금</th>
+          <th class="nr">실제세후수익금</th><th class="nr">실제세후수익률</th>
+        </tr></thead>
+        <tbody id="annual-tb"></tbody>
+        <tfoot><tr class="tfoot" id="annual-tf"></tr></tfoot>
+      </table>
+    </div>
+  </div>
+  <div class="card mt">
+    <div class="sec-hd">
+      <div class="sec-hl"><span class="sec-t">완료 상품 상세 내역</span></div>
+      <input class="fi sm" id="annual-q" placeholder="검색" style="width:140px;min-height:32px" oninput="renderAnnual()">
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>상품명</th><th>계좌</th><th>유형</th><th>상환일</th>
+          <th class="nr">원금</th><th class="nr">세전수익금</th><th class="nr">세금</th>
+          <th class="nr">세후수익금</th><th class="nr">세후수익률</th><th class="nr">상환금액</th>
+        </tr></thead>
+        <tbody id="annual-det"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 탭: 시뮬레이션 ====== -->
+<div class="page" id="tab-sim">
+  <div class="sim-banner">🔬 <span><b>참고용 시뮬레이션</b> — 이 탭의 수치는 현재가 수동 입력 기반의 추정치입니다. 실제 상환 결과와 무관합니다.</span></div>
+  <div class="card">
+    <div class="sec-hd">
+      <div class="sec-hl"><span class="sec-t">📈 복리 재투자 예상 (10년)</span></div>
+      <span style="font-size:11px;color:var(--txt3)" id="sim-rl"></span>
+    </div>
+    <div class="svgwrap"><svg id="sim-svg" viewBox="0 0 780 200" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="tw">
+      <table><thead><tr>
+        <th>연차</th><th class="nr">초기원금</th><th class="nr">세후 누적 자산</th>
+        <th class="nr">누적수익금</th><th class="nr">누적수익률</th><th class="nr">전년 대비</th>
+      </tr></thead><tbody id="sim-tb"></tbody></table>
+    </div>
+  </div>
+  <div class="card mt">
+    <div class="sec-t" style="margin-bottom:12px">계좌별 자산 비중 (보유중 예상)</div>
+    <div id="sim-bar" class="barchart"></div>
+  </div>
+  <div class="card mt">
+    <div class="sec-t" style="margin-bottom:12px">상품별 예상 수익 (보유중)</div>
+    <div class="tw">
+      <table><thead><tr>
+        <th>상품명</th><th>계좌</th><th class="nr">원금</th>
+        <th class="nr">예상수익률</th><th class="nr">세전수익금</th>
+        <th class="nr">세금</th><th class="nr">세후수익금</th>
+        <th class="nr">세후수익률</th><th>만기일</th>
+      </tr></thead><tbody id="sim-ytb"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 탭: 계좌 관리 ====== -->
+<div class="page" id="tab-accounts">
+  <div class="sec-hd">
+    <div class="sec-hl"><span class="sec-t">🏦 계좌 관리</span></div>
+    <button class="btn bp sm" onclick="openAccModal()">＋ 계좌 추가</button>
+  </div>
+  <div class="card" id="acc-card">
+    <div class="empty"><div class="ei">🏦</div><div class="em">등록된 계좌가 없습니다.</div></div>
+  </div>
+</div>
+
+<!-- ====== 탭: 백업·복원 ====== -->
+<div class="page" id="tab-backup">
+  <div class="card">
+    <div class="sec-t" style="margin-bottom:10px">💾 데이터 백업 · 복원</div>
+    <p style="font-size:13px;color:var(--txt2);margin-bottom:14px">계좌, 상품, 현재가, 평가 결과 등 모든 데이터를 JSON으로 내보내고 불러올 수 있습니다.</p>
+    <div class="fl-row">
+      <button class="btn bs" onclick="exportAll()">⬇ 전체 내보내기</button>
+      <button class="btn bs" onclick="document.getElementById('imp-f').click()">⬆ 불러오기</button>
+      <input type="file" id="imp-f" accept=".json" style="display:none" onchange="importAll(event)">
+      <button class="btn bd-btn sm" onclick="clearAll()">🗑 전체 초기화</button>
+    </div>
+    <div class="hr"></div>
+    <div id="bk-stats"></div>
+    <div class="mt8" style="font-size:12px;color:var(--txt3);line-height:1.9">
+      <div>• 내보내기: 모든 데이터가 JSON 파일 하나로 저장됩니다.</div>
+      <div>• 불러오기: 기존 데이터를 완전히 덮어씁니다. 먼저 내보내기로 백업하세요.</div>
+      <div>• 초기화: 브라우저의 모든 ELS 데이터가 삭제됩니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 모달들 ====== -->
+
+<!-- 상품 등록/수정 -->
+<div class="mo" id="mo-prod">
+  <div class="md mdlg">
+    <div class="md-hd"><div class="md-t" id="pm-title">상품 등록</div><button class="md-x" onclick="cm('mo-prod')">✕</button></div>
+    <div class="md-b">
+      <div class="g2">
+        <div class="fg"><label class="fl">상품명 <span class="req">*</span></label><input type="text" class="fi" id="pf-name" placeholder="KB 스텝다운 ELS 1234호"></div>
+        <div class="fg"><label class="fl">증권사 <span class="req">*</span></label><input type="text" class="fi" id="pf-iss" placeholder="KB증권"></div>
+        <div class="fg"><label class="fl">소속 계좌 <span class="req">*</span></label><select class="fsl" id="pf-acc"></select></div>
+        <div class="fg"><label class="fl">투자원금 (원) <span class="req">*</span></label><input type="number" class="fi" id="pf-pr" placeholder="10000000" min="0"></div>
+        <div class="fg"><label class="fl">가입일 <span class="req">*</span></label><input type="date" class="fi" id="pf-sd"></div>
+        <div class="fg"><label class="fl">만기일 <span class="req">*</span></label><input type="date" class="fi" id="pf-md"></div>
+        <div class="fg"><label class="fl">KI 배리어 (%)</label><input type="number" class="fi" id="pf-ki" placeholder="50" min="0" max="100"></div>
+        <div class="fg"><label class="fl">예상 수익률 (%, 세전 — 시뮬용)</label><input type="number" class="fi" id="pf-yr" placeholder="7.5" step="0.01"></div>
+      </div>
+      <div class="hr"></div>
+      <div class="g2">
+        <div class="fg">
+          <label class="fl">상품 구조 (payoffType)</label>
+          <select class="fsl" id="pf-pt">
+            <option value="standard-stepdown">스텝다운 (KI 있음)</option>
+            <option value="no-ki-stepdown">스텝다운 (KI 없음)</option>
+            <option value="monthly-coupon">월지급식 쿠폰</option>
+            <option value="custom">기타/수동</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">KI없음 시 만기 처리 방식</label>
+          <select class="fsl" id="pf-nkm">
+            <option value="coupon">쿠폰 지급</option>
+            <option value="principal">원금 반환</option>
+            <option value="custom">수동 입력</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">만기 최종 배리어 (%)</label><input type="number" class="fi" id="pf-fb" placeholder="65" step="0.1"></div>
+        <div class="fg"><label class="fl">만기 누적 수익률 (% — 만기 시 지급)</label><input type="number" class="fi" id="pf-mc" placeholder="18.0" step="0.01"></div>
+      </div>
+      <div class="hr"></div>
+      <div class="fg">
+        <label class="fl">기초자산 (자산명 + 기준가)</label>
+        <div id="ul-list" class="dynl"></div>
+        <button class="addbtn" onclick="addU()">＋ 기초자산 추가</button>
+      </div>
+      <div class="hr"></div>
+      <div class="fg">
+        <label class="fl">조기상환 평가일 <span style="font-size:11px;color:var(--txt3);font-weight:400">(날짜 · 배리어% · 해당 차수까지 누적 수익률%)</span></label>
+        <div id="el-list" class="dynl"></div>
+        <button class="addbtn" onclick="addE()">＋ 조기상환 평가일 추가</button>
+      </div>
+      <div class="hr"></div>
+      <div class="g2">
+        <div class="fg"><label class="fl">쿠폰/조건 메모</label><input type="text" class="fi" id="pf-cm" placeholder="연 7.5%, 6개월 조기상환 평가"></div>
+        <div class="fg"><label class="fl">설명서 확인사항</label><input type="text" class="fi" id="pf-cl" placeholder="원금보장 없음, KI 50%"></div>
+        <div class="fg"><label class="fl">주의사항</label><input type="text" class="fi" id="pf-ca"></div>
+        <div class="fg"><label class="fl">기타</label><input type="text" class="fi" id="pf-ex"></div>
+        <div class="fg sp2"><label class="fl">개인 메모</label><textarea class="fta" id="pf-mo"></textarea></div>
+      </div>
+    </div>
+    <div class="md-ft">
+      <button class="btn bgh" onclick="cm('mo-prod')">취소</button>
+      <button class="btn bp" onclick="saveProd()">💾 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 계좌 추가/수정 -->
+<div class="mo" id="mo-acc">
+  <div class="md">
+    <div class="md-hd"><div class="md-t" id="am-title">계좌 추가</div><button class="md-x" onclick="cm('mo-acc')">✕</button></div>
+    <div class="md-b">
+      <div class="g2">
+        <div class="fg"><label class="fl">계좌명 <span class="req">*</span></label><input type="text" class="fi" id="af-nm" placeholder="삼성증권 위탁계좌"></div>
+        <div class="fg"><label class="fl">계좌 종류</label><input type="text" class="fi" id="af-kd" placeholder="위탁, ISA, 연금저축, IRP 등"></div>
+        <div class="fg">
+          <label class="fl">과세 유형 <span class="req">*</span></label>
+          <select class="fsl" id="af-ty">
+            <option value="normal">일반 과세 (15.4%)</option>
+            <option value="isa">ISA (9.9%)</option>
+            <option value="tax-free">비과세 (0%)</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">메모</label><input type="text" class="fi" id="af-mo"></div>
+      </div>
+    </div>
+    <div class="md-ft">
+      <button class="btn bgh" onclick="cm('mo-acc')">취소</button>
+      <button class="btn bp" onclick="saveAcc()">💾 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 조기상환 완료 -->
+<div class="mo" id="mo-redeem">
+  <div class="md">
+    <div class="md-hd"><div class="md-t">✅ 조기상환 완료</div><button class="md-x" onclick="cm('mo-redeem')">✕</button></div>
+    <div class="md-b" id="redeem-body"></div>
+    <div class="md-ft"><button class="btn bgh" onclick="cm('mo-redeem')">취소</button><button class="btn bg-btn" onclick="doRedeem()">✅ 조기상환 확정</button></div>
+  </div>
+</div>
+
+<!-- 조기상환 불가 -->
+<div class="mo" id="mo-fail">
+  <div class="md">
+    <div class="md-hd"><div class="md-t">❌ 조기상환 불가</div><button class="md-x" onclick="cm('mo-fail')">✕</button></div>
+    <div class="md-b" id="fail-body"></div>
+    <div class="md-ft"><button class="btn bgh" onclick="cm('mo-fail')">취소</button><button class="btn bd-btn" onclick="doFail()">❌ 불가 확정</button></div>
+  </div>
+</div>
+
+<!-- 만기상환 완료 -->
+<div class="mo" id="mo-mature">
+  <div class="md">
+    <div class="md-hd"><div class="md-t">🏁 만기상환 완료</div><button class="md-x" onclick="cm('mo-mature')">✕</button></div>
+    <div class="md-b" id="mature-body"></div>
+    <div class="md-ft"><button class="btn bgh" onclick="cm('mo-mature')">취소</button><button class="btn bp" onclick="doMature()">🏁 만기상환 확정</button></div>
+  </div>
+</div>
+
+<!-- 종료/손실 -->
+<div class="mo" id="mo-close">
+  <div class="md">
+    <div class="md-hd"><div class="md-t">🔴 종료 / 손실 확정</div><button class="md-x" onclick="cm('mo-close')">✕</button></div>
+    <div class="md-b" id="close-body"></div>
+    <div class="md-ft"><button class="btn bgh" onclick="cm('mo-close')">취소</button><button class="btn bd-btn" onclick="doClose()">🔴 종료 확정</button></div>
+  </div>
+</div>
+
+<!-- KI 기록 -->
+<div class="mo" id="mo-ki">
+  <div class="md">
+    <div class="md-hd"><div class="md-t">🔴 KI 발생 실제 확정 기록</div><button class="md-x" onclick="cm('mo-ki')">✕</button></div>
+    <div class="md-b" id="ki-body"></div>
+    <div class="md-ft"><button class="btn bgh" onclick="cm('mo-ki')">취소</button><button class="btn bd-btn" onclick="doKi()">🔴 KI 기록 저장</button></div>
+  </div>
+</div>
+
+<!-- 상품 상세 -->
+<div class="mo" id="mo-detail">
+  <div class="md mdlg">
+    <div class="md-hd"><div class="md-t" id="det-title">상품 상세</div><button class="md-x" onclick="cm('mo-detail')">✕</button></div>
+    <div class="md-b" id="det-body"></div>
+    <div class="md-ft" id="det-ft"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =============================================================
+   ELS Manager V26.03.5
+   §1  상수
+   §2  localStorage 헬퍼
+   §3  세금 계산
+   §4  만기 자동 계산 (calcMaturityAutoGross — 분리된 단일 함수)
+   §5  날짜·포맷 유틸
+   §6  탭 전환
+   §7  조기상환 가능성 점수 (heuristic)
+   §8  기초자산 현재가
+   §9  대시보드 렌더
+   §10 현재 보유 렌더
+   §11 조기상환 단계 UI
+   §12 완료 상품 렌더
+   §13 전체 상품 렌더
+   §14 시뮬레이션 렌더
+   §15 계좌 관리 렌더
+   §16 백업 렌더
+   §17 조기상환 완료 처리
+   §18 조기상환 불가 처리
+   §19 만기상환 처리
+   §20 종료/손실 처리
+   §21 KI 기록 처리
+   §22 계좌 모달
+   §23 상품 등록/수정 모달
+   §24 상품 상세 모달
+   §25 내보내기·불러오기
+   §26 모달 헬퍼
+   §27 토스트
+   §28 샘플 데이터
+   §29 초기화
+   ============================================================= */
+
+/* ─ §1 상수 ─ */
+const TAX  = { normal:0.154, isa:0.099, 'tax-free':0 };
+const TAXL = { normal:'일반(15.4%)', isa:'ISA(9.9%)', 'tax-free':'비과세(0%)' };
+const TAXB = { normal:'br', isa:'bbl', 'tax-free':'bg' };
+const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상환', closed:'종료/손실' };
+const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
+const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
+const DEF_SRC = '앱 확인';
+const VER = 'V26.03.6';
+
+let curTab = 'dash';
+let editAccId = null, editProdId = null, pendPid = null;
+
+/* ─ §2 localStorage 헬퍼 ─ */
+function lsGet(k,def=null){ try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):def;}catch{return def;} }
+function lsSet(k,v){
+  try{localStorage.setItem(k,JSON.stringify(v));return true;}
+  catch(e){
+    showStorageWarn(e.name==='QuotaExceededError'
+      ?'localStorage 용량이 초과되었습니다. 백업 후 불필요한 데이터를 정리해주세요.'
+      :'데이터 저장에 실패했습니다: '+e.message);
+    return false;
+  }
+}
+function lsDel(k){try{localStorage.removeItem(k);}catch{}}
+function showStorageWarn(msg){const el=document.getElementById('storage-warn');el.textContent='⚠️ '+msg;el.style.display='block';setTimeout(()=>el.style.display='none',8000);}
+function load(){return{accounts:lsGet('els_acc',[]),products:lsGet('els_prod',[])};}
+function saveAcc2(a){lsSet('els_acc',a);}
+function saveProd2(p){lsSet('els_prod',p);}
+function loadAP(nm){return localStorage.getItem('els_ap_'+encodeURIComponent(nm))||'';}
+function saveAP(nm,v){if(v===''||v===null)lsDel('els_ap_'+encodeURIComponent(nm));else lsSet('els_ap_'+encodeURIComponent(nm),v);}
+function loadPP(pid){return lsGet('els_pp_'+pid,{});}
+function savePP(pid,o){lsSet('els_pp_'+pid,o);}
+function loadOrd(){return lsGet('els_ord',[]);}
+function saveOrd(o){lsSet('els_ord',o);}
+function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+
+/* ─ §3 세금 계산 ─ */
+function calcTax(gross,accType,principal){
+  const rate=TAX[accType]??TAX.normal;
+  const tax=gross>0?gross*rate:0;
+  const net=gross-tax;
+  const total=(principal||0)+net;
+  const yld=principal>0?net/principal*100:0;
+  return{gross,tax,net,total,yld};
+}
+function calcSim(p,acc){
+  const pr=Number(p.principal)||0;
+  const yr=Number(p.expectedYield)||0;
+  const g=pr*yr/100;
+  return{principal:pr,yieldPct:yr,...calcTax(g,acc?.type,pr)};
+}
+function calcWorst(underlyings,prices){
+  let worst=null;
+  (underlyings||[]).forEach(u=>{
+    const cur=Number(prices[u.name]),base=Number(u.basePrice);
+    if(!cur||!base)return;
+    const pct=(cur-base)/base*100;
+    if(worst===null||pct<worst.pct)worst={name:u.name,pct,cur,base};
+  });
+  return worst;
+}
+
+/* ─ §4 만기 자동 계산 — 단일 함수 (UI 표시와 저장에 동일하게 사용) ─
+ * calcMaturityAutoGross(p, prices)
+ * 반환: { gross, note, isCustom }
+ * - UI에서 autoGross 표시 시 이 함수 사용
+ * - doMature() auto 모드 저장 시에도 이 함수 사용 (expectedYield 덮어쓰기 없음)
+ */
+function calcMaturityAutoGross(p, prices){
+  const pr  = Number(p.principal)||0;
+  const pt  = p.payoffType||'standard-stepdown';
+  const fb  = Number(p.finalBarrier)||0;
+  const mc  = Number(p.maturityCouponCumulative)||0;
+  const kiHit = p.kiHit===true;
+  const worst = calcWorst(p.underlyings, prices);
+
+  let gross=0, note='', isCustom=false;
+
+  if(pt==='standard-stepdown'||pt==='no-ki-stepdown'){
+    if(worst&&fb){
+      const wPct=100+worst.pct; // worst performer 현재 비율 (%)
+      if(wPct>=fb){
+        gross=pr*mc/100;
+        note=`Worst(${worst.name}) ${wPct.toFixed(1)}% ≥ 배리어 ${fb}% → 쿠폰 지급 (누적 ${mc}%)`;
+      } else if(!kiHit){
+        const nkm=p.noKiMode||'coupon';
+        if(nkm==='coupon'){gross=pr*mc/100;note=`KI 미발생·배리어 미달 → 쿠폰 지급 (noKiMode:coupon, ${mc}%)`;}
+        else if(nkm==='principal'){gross=0;note='KI 미발생·배리어 미달 → 원금 반환 (noKiMode:principal)';}
+        else{gross=0;note='noKiMode:custom → 수동 입력 필요';isCustom=true;}
+      } else {
+        // KI 발생 + 배리어 미달
+        gross=pr*((wPct/100)-1);
+        note=`KI 발생·배리어 미달 → 손실 (Worst ${wPct.toFixed(1)}%)`;
+      }
+    } else if(mc>0){
+      // 현재가 미입력 → maturityCouponCumulative 기준 fallback
+      gross=pr*mc/100;
+      note=`현재가 미입력 → 만기 누적 수익률 기준 (${mc}%), 참고값`;
+    } else {
+      note='현재가 또는 만기 누적 수익률을 입력하세요.';isCustom=true;
+    }
+  } else if(pt==='monthly-coupon'){
+    if(mc>0){gross=pr*mc/100;note=`월지급식 쿠폰 — 만기 누적 수익률 기준 (${mc}%), 참고값 (실제 확인 권장)`;}
+    else{note=`payoffType=monthly-coupon → 수동 입력 권장`;isCustom=true;}
+  } else {
+    note=`payoffType=${pt} → 수동 입력 필요`;isCustom=true;
+  }
+  return{gross,note,isCustom};
+}
+
+/* ─ §5 날짜·포맷 유틸 ─ */
+function dl(d){if(!d)return null;const t=new Date(d);t.setHours(0,0,0,0);const n=new Date();n.setHours(0,0,0,0);return Math.ceil((t-n)/86400000);}
+function dbadge(d){
+  if(d===null)return '';
+  if(d<0)return`<span class="badge br">완료</span>`;
+  if(d<=7)return`<span class="badge br">${d}일</span>`;
+  if(d<=30)return`<span class="badge bam">${d}일</span>`;
+  return`<span class="badge bgr">${d}일</span>`;
+}
+function fm(n){if(n===null||n===undefined||isNaN(n))return'-';return Math.round(n).toLocaleString('ko-KR')+'원';}
+function fp(n,d=2){if(n===null||n===undefined||isNaN(n))return'-';return n.toFixed(d)+'%';}
+function esc(s){if(!s&&s!==0)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function dy(d){return d?d.slice(0,4):null;}
+function today(){return new Date().toISOString().slice(0,10);}
+function nextEvalDate(p){if(!p.evalDates?.length)return null;const i=p.currentRoundIndex||0;return p.evalDates[i]?.date||null;}
+
+/* ─ §6 탭 전환 ─ */
+function sw(tab){
+  curTab=tab;
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  document.querySelectorAll('.page').forEach(pg=>pg.classList.toggle('on',pg.id==='tab-'+tab));
+  renderTab(tab);
+}
+function renderTab(tab){
+  if(tab==='dash')      renderDash();
+  if(tab==='completed') renderCompleted();
+  if(tab==='all')       renderAll2();
+  if(tab==='annual')    renderAnnual();
+  if(tab==='sim')       renderSim();
+  if(tab==='accounts')  renderAccounts();
+  if(tab==='backup')    renderBackup();
+}
+function reAll(){updateCnts();renderTab(curTab);}
+function updateCnts(){
+  const{products}=load();
+  const don=products.filter(p=>p.status!=='active').length;
+  document.getElementById('cnt-c').textContent=don;
+  document.getElementById('cnt-a').textContent=products.length;
+}
+
+/* ─ §7 조기상환 가능성 점수 (heuristic) ─ */
+function calcScore(p){
+  const prices=loadPP(p.id);
+  const curIdx=p.currentRoundIndex||0;
+  const stage=p.evalDates?.[curIdx];
+  if(!stage||!p.underlyings?.length)return null;
+  const nextBarrier=Number(stage.barrier)||0;
+  if(!nextBarrier)return null;
+  const ratios=p.underlyings.map(u=>{const c=Number(prices[u.name]),b=Number(u.basePrice);return(c&&b)?c/b*100:null;}).filter(v=>v!==null);
+  if(!ratios.length)return null;
+  const worstPct=Math.min(...ratios);
+  const avgPct=ratios.reduce((a,b)=>a+b,0)/ratios.length;
+  const dispersion=Math.max(0,avgPct-worstPct);
+  const days=Math.max(1,dl(stage.date)||1);
+  const failCount=(p.evalResults||[]).filter(r=>r.result==='fail').length;
+  const assetCount=p.underlyings.length;
+  const timeAdj=worstPct<nextBarrier?0.45*Math.log(1+days/30):-0.25*Math.log(1+days/30);
+  const z=((worstPct-nextBarrier)/6)+timeAdj-0.18*(assetCount-1)-0.03*dispersion-0.20*failCount;
+  return Math.min(97,Math.max(3,Math.round(100/(1+Math.exp(-z)))));
+}
+function scoreSm(s){
+  if(s===null)return'';
+  const cls=s<40?'sc-lo':s<70?'sc-md':'sc-hi';
+  const lbl=s<40?'낮음':s<70?'보통':'높음';
+  return`<span class="score-sm ${cls}" title="조기상환 참고 점수 (heuristic — 비공식 추정치)">참고 ${s}% ${lbl}</span>`;
+}
+
+/* ─ §8 기초자산 현재가 ─ */
+function renderAssets(){
+  const{products}=load();
+  const map={};
+  products.filter(p=>p.status==='active').forEach(p=>{
+    (p.underlyings||[]).forEach(u=>{
+      if(!u.name)return;
+      if(!map[u.name])map[u.name]={bases:[],pids:[]};
+      map[u.name].bases.push(Number(u.basePrice)||0);
+      map[u.name].pids.push(p.id);
+    });
+  });
+  const nms=Object.keys(map);
+  document.getElementById('acnt').textContent=nms.length+'개';
+  const el=document.getElementById('asset-grid');
+  if(!nms.length){el.innerHTML=`<div style="color:var(--txt3);font-size:13px">보유 중인 상품의 기초자산이 없습니다.</div>`;return;}
+  el.innerHTML=nms.map(nm=>{
+    const info=map[nm];
+    const mult=new Set(info.bases).size>1;
+    const cur=loadAP(nm);
+    return`<div class="acard">
+      <div class="ac-nm">${esc(nm)}</div>
+      <div class="ac-nt">${mult?'⚠️ 상품별 기준가 상이 가능':'기준가 '+(info.bases[0]?info.bases[0].toLocaleString():'-')}</div>
+      <input type="number" class="fi" placeholder="현재가 입력" value="${esc(cur)}"
+        onchange="onAP(${JSON.stringify(esc(nm))},this.value)">
+    </div>`;
+  }).join('');
+}
+function onAP(nm,val){
+  saveAP(nm,val);
+  const{products}=load();
+  products.forEach(p=>{if((p.underlyings||[]).some(u=>u.name===nm)){const pp=loadPP(p.id);pp[nm]=val;savePP(p.id,pp);}});
+  renderAssets();
+  if(curTab==='dash'){renderHolding();renderSchedule();}
+  if(curTab==='sim')renderSim();
+}
+
+/* ─ §9 대시보드 렌더 ─ */
+function renderDash(){
+  const{accounts,products}=load();
+  renderKPI(accounts,products);
+  renderAssets();
+  renderHolding();
+  renderSchedule();
+  renderAnnualPreview(products);
+  renderRecentCompleted(accounts,products);
+}
+
+/** KPI 요약 카드 */
+function renderKPI(accounts,products){
+  const active=products.filter(p=>p.status==='active');
+  const done=products.filter(p=>p.status!=='active');
+  const totalPr=active.reduce((s,p)=>s+Number(p.principal||0),0);
+  const totalNet=done.reduce((s,p)=>s+Number(p.actualNetProfit||0),0);
+  const thisYr=today().slice(0,4);
+  const thisYrNet=done.filter(p=>dy(p.settlementDate)===thisYr).reduce((s,p)=>s+Number(p.actualNetProfit||0),0);
+  const near30eval=active.filter(p=>{const d=dl(nextEvalDate(p));return d!==null&&d>=0&&d<=30;}).length;
+  const near30mat=active.filter(p=>{const d=dl(p.maturityDate);return d!==null&&d>=0&&d<=30;}).length;
+
+  const items=[
+    {lbl:'전체 상품',val:products.length+'개',sub:'전체 등록 상품',cls:''},
+    {lbl:'현재 보유',val:active.length+'개',sub:'보유중',cls:'blue'},
+    {lbl:'완료 상품',val:done.length+'개',sub:'종료·상환 완료',cls:''},
+    {lbl:'전체 투자원금',val:fm(totalPr),sub:'보유중 합계',cls:''},
+    {lbl:'실제 세후 수익금',val:fm(totalNet),sub:'전체 완료 합계',cls:totalNet>=0?'green':'red'},
+    {lbl:thisYr+'년 세후 수익금',val:fm(thisYrNet),sub:thisYr+'년 완료 기준',cls:thisYrNet>=0?'green':'red'},
+    {lbl:'30일내 평가일',val:near30eval+'건',sub:'조기상환 평가 임박',cls:near30eval>0?'warn':''},
+    {lbl:'30일내 만기',val:near30mat+'건',sub:'만기 임박',cls:near30mat>0?'warn':''},
+  ];
+  document.getElementById('kpi-grid').innerHTML=items.map(i=>`
+    <div class="kpi-card">
+      <div class="kpi-lbl">${i.lbl}</div>
+      <div class="kpi-val ${i.cls}">${i.val}</div>
+      <div class="kpi-sub">${i.sub}</div>
+    </div>`).join('');
+}
+
+/** 가까운 일정 (30일 이내 평가일/만기) */
+function renderSchedule(){
+  const{accounts,products}=load();
+  const items=[];
+  products.filter(p=>p.status==='active').forEach(p=>{
+    const acc=accounts.find(a=>a.id===p.accountId);
+    const nd=nextEvalDate(p);
+    if(nd){const d=dl(nd);if(d!==null&&d>=0&&d<=30)items.push({type:'평가일',name:p.name,acc:acc?.name||'-',date:nd,days:d});}
+    const md=dl(p.maturityDate);
+    if(md!==null&&md>=0&&md<=30)items.push({type:'만기일',name:p.name,acc:acc?.name||'-',date:p.maturityDate,days:md});
+  });
+  items.sort((a,b)=>a.days-b.days);
+  document.getElementById('sched-cnt').textContent=items.length+'건';
+  const el=document.getElementById('schedule-list');
+  if(!items.length){el.innerHTML=`<div style="color:var(--txt3);font-size:13px;padding:8px 0">30일 이내 예정된 평가일 또는 만기가 없습니다.</div>`;return;}
+  el.innerHTML=items.map(it=>{
+    const cls=it.days<=7?'urgent':it.days<=14?'soon':'';
+    const dotCls=it.days<=7?'urgent':it.days<=14?'soon':'normal';
+    return`<div class="sched-item ${cls}">
+      <div class="sched-dot ${dotCls}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.name)}</div>
+        <div style="font-size:11px;color:var(--txt3)">${esc(it.acc)} · ${it.type}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:13px;font-weight:600">${it.date}</div>
+        ${dbadge(it.days)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/** 연간 실적 미리보기 (최근 3년) */
+function renderAnnualPreview(products){
+  const done=products.filter(p=>p.status!=='active'&&p.settlementDate);
+  const byY={};
+  done.forEach(p=>{
+    const y=dy(p.settlementDate);if(!y)return;
+    if(!byY[y])byY[y]={cnt:0,pr:0,net:0};
+    byY[y].cnt++;byY[y].pr+=Number(p.principal||0);byY[y].net+=Number(p.actualNetProfit||0);
+  });
+  const years=Object.keys(byY).sort().slice(-3);
+  const barEl=document.getElementById('annual-preview-bar');
+  if(!years.length){barEl.innerHTML=`<div style="color:var(--txt3);font-size:13px">완료된 상품이 없습니다.</div>`;}
+  else{
+    const maxN=Math.max(...years.map(y=>Math.abs(byY[y].net)),1);
+    barEl.innerHTML=years.map(y=>{
+      const d=byY[y],pct=Math.abs(d.net)/maxN*100,pos=d.net>=0;
+      return`<div class="brow">
+        <div class="blbl">${y}년</div>
+        <div class="btrack"><div class="bfill" style="width:${pct.toFixed(1)}%;background:${pos?'var(--g)':'var(--r)'}">${fm(d.net)}</div></div>
+        <div class="bval ${pos?'tg':'tr'}">${fp(d.pr>0?d.net/d.pr*100:0)}</div>
+      </div>`;
+    }).join('');
+  }
+  const tb=document.getElementById('annual-preview-tb');
+  if(!years.length){tb.innerHTML=`<tr><td colspan="5" style="text-align:center;color:var(--txt3);padding:18px">없음</td></tr>`;return;}
+  tb.innerHTML=years.map(y=>{
+    const d=byY[y],yld=d.pr>0?d.net/d.pr*100:0;
+    return`<tr>
+      <td>${y}년</td><td class="nr">${d.cnt}</td><td class="nr">${fm(d.pr)}</td>
+      <td class="nr ${d.net>=0?'tg':'tr'}">${fm(d.net)}</td>
+      <td class="nr ${yld>=0?'tg':'tr'}">${fp(yld)}</td>
+    </tr>`;
+  }).join('');
+}
+
+/** 최근 완료 상품 미리보기 (최대 4건) */
+function renderRecentCompleted(accounts,products){
+  const done=products.filter(p=>p.status!=='active'&&p.settlementDate)
+    .sort((a,b)=>new Date(b.settlementDate)-new Date(a.settlementDate)).slice(0,4);
+  const el=document.getElementById('recent-completed');
+  if(!done.length){el.innerHTML=`<div style="color:var(--txt3);font-size:13px;padding:8px 0">완료된 상품이 없습니다.</div>`;return;}
+  el.innerHTML=`<div class="tw"><table>
+    <thead><tr><th>상품명</th><th>계좌</th><th>유형</th><th>상환일</th><th class="nr">세후수익금</th><th class="nr">세후수익률</th></tr></thead>
+    <tbody>${done.map(p=>{
+      const acc=accounts.find(a=>a.id===p.accountId);
+      const tl=p.settlementType==='early-redemption'?'조기상환':p.settlementType==='maturity-redemption'?'만기상환':'손실확정';
+      return`<tr>
+        <td><b>${esc(p.name)}</b></td>
+        <td><span class="badge bgr">${esc(acc?.name||'-')}</span></td>
+        <td><span class="badge ${STB[p.status]}">${tl}</span></td>
+        <td>${p.settlementDate||'-'}</td>
+        <td class="nr ${(p.actualNetProfit||0)>=0?'tg':'tr'}">${fm(p.actualNetProfit)}</td>
+        <td class="nr ${(p.actualYieldNet||0)>=0?'tg':'tr'}">${fp(p.actualYieldNet)}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+/* ─ §10 현재 보유 렌더 ─ */
+function renderHolding(){
+  const{accounts,products}=load();
+  const q=(document.getElementById('h-q')?.value||'').toLowerCase();
+  const sort=document.getElementById('h-sort')?.value||'maturity';
+  let list=products.filter(p=>p.status==='active').filter(p=>{
+    if(!q)return true;
+    const acc=accounts.find(a=>a.id===p.accountId);
+    return[p.name,p.issuer,acc?.name||'',...(p.underlyings||[]).map(u=>u.name)].join(' ').toLowerCase().includes(q);
+  });
+  list.sort((a,b)=>{
+    if(sort==='maturity')return new Date(a.maturityDate||'9999')-new Date(b.maturityDate||'9999');
+    if(sort==='eval')return new Date(nextEvalDate(a)||'9999')-new Date(nextEvalDate(b)||'9999');
+    return new Date(b.createdAt||0)-new Date(a.createdAt||0);
+  });
+  document.getElementById('h-cnt').textContent=list.length+'개';
+  const el=document.getElementById('holding-grid');
+  if(!list.length){
+    el.innerHTML=`<div class="empty" style="grid-column:1/-1">
+      <div class="ei">📂</div><div class="em">보유 중인 상품이 없습니다.</div>
+      <button class="btn bp sm" onclick="openProdModal()">＋ 상품 등록</button>
+    </div>`;return;
+  }
+  el.innerHTML=list.map(p=>prodCard(p,accounts)).join('');
+}
+
+function prodCard(p,accounts){
+  const acc=accounts.find(a=>a.id===p.accountId);
+  const cur=p.currentRoundIndex||0,tot=p.evalDates?.length||0;
+  const curSt=p.evalDates?.[cur];
+  const nxd=curSt?.date||p.maturityDate;
+  const matD=dl(p.maturityDate),evD=nxd?dl(nxd):null;
+  const prices=loadPP(p.id);
+  const worst=calcWorst(p.underlyings,prices);
+  const score=calcScore(p);
+  const ki=Number(p.knockin)||0;
+  let kiSimNote='';
+  if(worst&&ki>0){const ratio=100+worst.pct;kiSimNote=`<span class="sim-note">🔬 KI ${ratio<=ki?'주의':'이상'}</span>`;}
+  const stages=buildStages(p);
+
+  return`<div class="pc">
+    <div class="pc-hd">
+      <div style="flex:1;min-width:0">
+        <div class="pc-nm">${esc(p.name)}</div>
+        <div class="pc-is">${esc(p.issuer)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        ${dbadge(matD)}
+        <span class="badge ${TAXB[acc?.type||'normal']}">${TAXL[acc?.type||'normal']}</span>
+      </div>
+    </div>
+    <div class="pc-mt">
+      <span class="badge bgr">${esc(acc?.name||'계좌없음')}</span>
+      <span class="badge bbl">${cur+1}/${tot||'?'}차</span>
+      ${ki?`<span class="badge bam">KI ${ki}%</span>`:''}
+      ${p.kiHit?`<span class="ki-confirmed">🔴 KI확정</span>`:''}
+      ${score!==null?scoreSm(score):''}
+      ${kiSimNote}
+    </div>
+    <div class="pc-row"><span>투자원금</span><span class="v">${fm(p.principal)}</span></div>
+    <div class="pc-row"><span>다음 평가일</span><span class="v">${nxd||'-'} ${evD!==null?dbadge(evD):''}</span></div>
+    <div class="pc-row"><span>만기일</span><span class="v">${p.maturityDate||'-'}</span></div>
+    ${worst?`<div class="pc-row"><span>참고 Worst <span class="sim-note" style="font-size:9px">🔬</span></span>
+      <span class="v ${worst.pct>=0?'tg':'tr'}">${esc(worst.name)} ${worst.pct>=0?'+':''}${worst.pct.toFixed(2)}%</span></div>`:''}
+    ${stages}
+    <div class="pc-act">
+      <div class="pc-ar">
+        <button class="btn bg-btn sm" onclick="openRedeem('${p.id}')">✅ 조기상환 완료</button>
+        <button class="btn bd-btn sm" onclick="openFail('${p.id}')">❌ 조기상환 불가</button>
+      </div>
+      <div class="pc-ar">
+        <button class="btn bp sm" onclick="openMature('${p.id}')">🏁 만기상환 완료</button>
+        <button class="btn bd-btn sm" onclick="openClose('${p.id}')">🔴 종료/손실확정</button>
+      </div>
+      <div class="pc-ar">
+        <button class="btn bgh sm" style="flex:1" onclick="openDet('${p.id}')">상세</button>
+        <button class="btn bgh sm" style="flex:1" onclick="openProdModal('${p.id}')">✏️ 수정</button>
+        <button class="btn ${p.kiHit?'bd-btn':'ba'} sm" onclick="openKi('${p.id}')">KI</button>
+        <button class="btn bd-btn ic" onclick="delProd('${p.id}')">🗑</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ─ §11 조기상환 단계 UI ─ */
+function buildStages(p){
+  if(!p.evalDates?.length)return'';
+  const stages=p.evalDates,results=p.evalResults||[],curIdx=p.currentRoundIndex||0;
+  const prices=loadPP(p.id);
+  const worst=calcWorst(p.underlyings,prices);
+  const html=stages.map((e,i)=>{
+    const round=i+1,barrier=Number(e.barrier)||0;
+    const saved=results.find(r=>r.round===round);
+    let cls='es-fut',resBadge='',coupon='';
+    if(saved&&saved.result==='pass'){cls='es-pass';resBadge=`<div class="es-res" style="background:var(--g-bg);color:var(--g)">통과</div>`;}
+    else if(saved&&saved.result==='fail'){cls='es-fail';resBadge=`<div class="es-res" style="background:var(--r-bg);color:var(--r)">미달</div>`;}
+    else if(i===curIdx){
+      cls='es-cur';
+      if(worst&&barrier){const ratio=100+worst.pct;resBadge=`<div class="es-res" style="background:var(--am-bg);color:var(--am)">${ratio>=barrier?'참고:충족?':'참고:미달?'}</div>`;}
+    }
+    const cr=Number(e.couponRateCumulative)||0;
+    if(cr>0)coupon=`<div class="es-c">누적 ${cr}%</div>`;
+    return`<div class="es ${cls}" title="${e.date} | 배리어 ${barrier}% | 누적 ${cr}%">
+      <div class="es-r">${round}차</div>
+      <div class="es-d">${e.date?e.date.slice(5):'-'}</div>
+      <div class="es-b">${barrier?barrier+'%':'-'}</div>
+      ${coupon}${resBadge}
+    </div>`;
+  }).join('');
+  return`<div class="eswrap">
+    <div class="eslbl">조기상환 평가단계 <span style="font-weight:400;color:var(--am);font-size:9px">🟡현재(참고) 🟢통과확정 🔴미달확정</span></div>
+    <div class="estages">${html}</div>
+  </div>`;
+}
+
+/* ─ §12 완료 상품 렌더 ─ */
+function renderCompleted(){
+  const{accounts,products}=load();
+  const q=(document.getElementById('c-q')?.value||'').toLowerCase();
+  let list=products.filter(p=>p.status!=='active').filter(p=>{
+    if(!q)return true;
+    const acc=accounts.find(a=>a.id===p.accountId);
+    return[p.name,acc?.name||''].join(' ').toLowerCase().includes(q);
+  }).sort((a,b)=>new Date(b.settlementDate||'0')-new Date(a.settlementDate||'0'));
+  document.getElementById('c-cnt').textContent=list.length+'개';
+  const el=document.getElementById('completed-grid');
+  if(!list.length){el.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">✅</div><div class="em">완료된 상품이 없습니다.</div></div>`;return;}
+  el.innerHTML=list.map(p=>{
+    const acc=accounts.find(a=>a.id===p.accountId);
+    const tl=p.settlementType==='early-redemption'?'조기상환':p.settlementType==='maturity-redemption'?'만기상환':'손실확정';
+    return`<div class="dc st-${p.status}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</div><div style="font-size:12px;color:var(--txt3)">${esc(p.issuer)}</div></div>
+        <span class="badge ${STB[p.status]}" style="flex-shrink:0;margin-left:8px">${STL[p.status]}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+        <span class="badge bgr">${esc(acc?.name||'-')}</span>
+        <span class="badge bgr">${tl}</span>
+        ${p.redeemedRound?`<span class="badge bg">${p.redeemedRound}차 조기상환</span>`:''}
+        ${p.kiHit?`<span class="ki-confirmed">🔴 KI확정</span>`:''}
+      </div>
+      <div class="pc-row"><span>상환일</span><span class="v">${p.settlementDate||'-'}</span></div>
+      <div class="pc-row"><span>투자원금</span><span class="v">${fm(p.principal)}</span></div>
+      <div class="pc-row"><span>실제 세전 수익금</span><span class="v ${(p.actualGrossProfit||0)>=0?'tg':'tr'}">${fm(p.actualGrossProfit)}</span></div>
+      <div class="pc-row"><span>실제 세금</span><span class="v">${fm(p.actualTax)}</span></div>
+      <div class="pc-row"><span>실제 세후 수익금</span><span class="v ${(p.actualNetProfit||0)>=0?'tg':'tr'}">${fm(p.actualNetProfit)}</span></div>
+      <div class="pc-row"><span>실제 세후 수익률</span><span class="v ${(p.actualYieldNet||0)>=0?'tg':'tr'}">${fp(p.actualYieldNet)}</span></div>
+      <div class="pc-row"><span>실제 상환금액</span><span class="v ta b7">${fm(p.actualRedemptionAmount)}</span></div>
+      ${p.settlementMemo?`<div style="font-size:11px;color:var(--txt3);margin-top:6px;padding:5px 7px;background:var(--s2);border-radius:var(--r3)">📝 ${esc(p.settlementMemo)}</div>`:''}
+      <div style="display:flex;gap:6px;margin-top:10px;padding-top:9px;border-top:1px solid var(--bd)">
+        <button class="btn bgh sm" style="flex:1" onclick="openDet('${p.id}')">상세</button>
+        <button class="btn bgh sm" style="flex:1" onclick="openProdModal('${p.id}')">수정</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ─ §13 전체 상품 렌더 ─ */
+function renderAll2(){
+  const{accounts,products}=load();
+  const asel=document.getElementById('a-acc');
+  if(asel){
+    const prev=asel.value;
+    asel.innerHTML='<option value="">계좌 전체</option>'+accounts.map(a=>`<option value="${a.id}"${a.id===prev?' selected':''}>${esc(a.name)}</option>`).join('');
+  }
+  const q=(document.getElementById('a-q')?.value||'').toLowerCase();
+  const fst=document.getElementById('a-st')?.value||'';
+  const facc=document.getElementById('a-acc')?.value||'';
+  let list=products.filter(p=>{
+    if(fst&&p.status!==fst)return false;
+    if(facc&&p.accountId!==facc)return false;
+    if(!q)return true;
+    const acc=accounts.find(a=>a.id===p.accountId);
+    return[p.name,p.issuer,acc?.name||''].join(' ').toLowerCase().includes(q);
+  }).sort((a,b)=>new Date(a.maturityDate||'9999')-new Date(b.maturityDate||'9999'));
+  document.getElementById('a-cnt').textContent=list.length+'개';
+  const tb=document.getElementById('all-tb');
+  tb.innerHTML=!list.length?`<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:22px">해당 상품이 없습니다.</td></tr>`:
+    list.map(p=>{
+      const acc=accounts.find(a=>a.id===p.accountId);
+      const cur=p.currentRoundIndex||0,tot=p.evalDates?.length||0,isAct=p.status==='active';
+      const nv=isAct?null:(p.actualNetProfit??null),ny=isAct?null:(p.actualYieldNet??null);
+      return`<tr>
+        <td><b>${esc(p.name)}</b><div style="font-size:11px;color:var(--txt3)">${esc(p.issuer)}</div></td>
+        <td><span class="badge bgr">${esc(acc?.name||'-')}</span></td>
+        <td><span class="badge ${STB[p.status]}">${STL[p.status]}</span></td>
+        <td class="tc">${isAct?`${cur+1}/${tot}`:(p.redeemedRound?p.redeemedRound+'차':'-')}</td>
+        <td class="nr">${fm(p.principal)}</td>
+        <td>${p.maturityDate||'-'}</td>
+        <td>${p.settlementDate||'-'}</td>
+        <td class="nr ${nv!==null&&nv>=0?'tg':'tr'}">${nv!==null?fm(nv):'—'}</td>
+        <td class="nr ${ny!==null&&ny>=0?'tg':'tr'}">${ny!==null?fp(ny):'—'}</td>
+        <td><div style="display:flex;gap:3px">
+          <button class="btn bgh xs" onclick="openDet('${p.id}')">상세</button>
+          <button class="btn bgh xs" onclick="openProdModal('${p.id}')">수정</button>
+          <button class="btn bd-btn xs" onclick="delProd('${p.id}')">삭제</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+}
+
+/* ─ §14 시뮬레이션 렌더 ─ */
+function renderSim(){
+  const{accounts,products}=load();
+  const active=products.filter(p=>p.status==='active');
+  let tP=0,tN=0;
+  active.forEach(p=>{const acc=accounts.find(a=>a.id===p.accountId);const c=calcSim(p,acc);tP+=c.principal;tN+=c.net;});
+  const avgR=tP>0?tN/tP*100:0;
+  document.getElementById('sim-rl').textContent=`보유 평균 세후 예상 수익률 ${fp(avgR)} 기준`;
+  const svgEl=document.getElementById('sim-svg');
+  if(!tP||avgR<=0){svgEl.innerHTML=`<text x="390" y="100" text-anchor="middle" font-size="13" fill="#8899b0">보유 상품 또는 예상 수익률 데이터가 없습니다.</text>`;document.getElementById('sim-tb').innerHTML='';
+  }else{
+    drawSvg(svgEl,tP,avgR/100);
+    let cur=tP,prev=tP;
+    document.getElementById('sim-tb').innerHTML=Array.from({length:10},(_,i)=>{
+      cur*=(1+avgR/100);const gain=cur-tP,gp=gain/tP*100,delta=cur-prev;prev=cur;
+      return`<tr><td>${i+1}년</td><td class="nr">${fm(tP)}</td><td class="nr ta b7">${fm(cur)}</td><td class="nr tg">${fm(gain)}</td><td class="nr tg">${fp(gp,2)}</td><td class="nr tm">+${fm(delta)}</td></tr>`;
+    }).join('');
+  }
+  let tNA=0;
+  const accData=accounts.map(acc=>{
+    const ps=active.filter(p=>p.accountId===acc.id);
+    let aP=0,aN=0;ps.forEach(p=>{const c=calcSim(p,acc);aP+=c.principal;aN+=c.net;});
+    const na=aP+aN;tNA+=na;return{name:acc.name,na};
+  });
+  const sbar=document.getElementById('sim-bar');
+  sbar.innerHTML=!tNA?`<div class="tm" style="font-size:13px">데이터 없음</div>`:
+    accData.filter(a=>a.na>0).map((a,i)=>{const pct=a.na/tNA*100;return`<div class="brow">
+      <div class="blbl">${esc(a.name)}</div>
+      <div class="btrack"><div class="bfill" style="width:${pct.toFixed(1)}%;background:${BARS[i%BARS.length]}">${fm(a.na)}</div></div>
+      <div class="bval">${pct.toFixed(1)}%</div></div>`;}).join('');
+  const ytb=document.getElementById('sim-ytb');
+  ytb.innerHTML=!active.length?`<tr><td colspan="9" style="text-align:center;color:var(--txt3);padding:18px">보유 상품 없음</td></tr>`:
+    active.sort((a,b)=>(Number(b.expectedYield)||0)-(Number(a.expectedYield)||0)).map(p=>{
+      const acc=accounts.find(a=>a.id===p.accountId);const c=calcSim(p,acc);
+      return`<tr><td>${esc(p.name)}</td><td><span class="badge bgr">${esc(acc?.name||'-')}</span></td>
+        <td class="nr">${fm(c.principal)}</td><td class="nr">${fp(c.yieldPct)}</td>
+        <td class="nr ${c.gross>=0?'tg':'tr'}">${fm(c.gross)}</td><td class="nr">${fm(c.tax)}</td>
+        <td class="nr ${c.net>=0?'tg':'tr'}">${fm(c.net)}</td><td class="nr ${c.yld>=0?'tg':'tr'}">${fp(c.yld)}</td>
+        <td>${p.maturityDate||'-'}</td></tr>`;
+    }).join('');
+}
+function drawSvg(svg,pr,rate){
+  const W=780,H=200,P={t:18,r:18,b:30,l:72};
+  const cW=W-P.l-P.r,cH=H-P.t-P.b;
+  const pts=[];let cur=pr;
+  for(let y=1;y<=10;y++){cur*=(1+rate);pts.push({y,v:cur});}
+  const mx=pts[pts.length-1].v,mn=pr;
+  const px=y=>P.l+(y-1)/9*cW,py=v=>P.t+cH-(v-mn)/(mx-mn)*cH;
+  const ap=[`${px(1)},${py(pts[0].v)}`,...pts.slice(1).map(d=>`${px(d.y)},${py(d.v)}`),`${px(10)},${P.t+cH}`,`${px(1)},${P.t+cH}`].join(' ');
+  const lp='M '+pts.map(d=>`${px(d.y)},${py(d.v)}`).join(' L ');
+  const yg=Array.from({length:5},(_,i)=>{const v=mn+(mx-mn)*i/4,yy=py(v);return`<line x1="${P.l}" y1="${yy}" x2="${W-P.r}" y2="${yy}" stroke="#dde4ef" stroke-width="1"/><text x="${P.l-4}" y="${yy+4}" text-anchor="end" font-size="9" fill="#8899b0">${(v/1e8).toFixed(1)}억</text>`;}).join('');
+  const xt=pts.map(d=>`<text x="${px(d.y)}" y="${P.t+cH+13}" text-anchor="middle" font-size="9" fill="#8899b0">${d.y}년</text>`).join('');
+  const ds=pts.map((d,i)=>{const sh=(i===0||i===4||i===9);return`<circle cx="${px(d.y)}" cy="${py(d.v)}" r="3" fill="#1d4ed8" stroke="white" stroke-width="1.5"/>${sh?`<text x="${px(d.y)}" y="${py(d.v)-7}" text-anchor="middle" font-size="9" fill="#1d4ed8" font-weight="700">${(d.v/1e8).toFixed(2)}억</text>`:''}`}).join('');
+  svg.innerHTML=`<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1d4ed8" stop-opacity=".13"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity=".01"/></linearGradient></defs>${yg}${xt}<polygon points="${ap}" fill="url(#cg)"/><path d="${lp}" fill="none" stroke="#1d4ed8" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><line x1="${P.l}" y1="${py(pr)}" x2="${W-P.r}" y2="${py(pr)}" stroke="#dde4ef" stroke-dasharray="4,3" stroke-width="1"/>${ds}`;
+}
+
+/* ─ §15 계좌 관리 렌더 ─ */
+function renderAccounts(){
+  const{accounts,products}=load();
+  const el=document.getElementById('acc-card');
+  if(!accounts.length){el.innerHTML=`<div class="empty"><div class="ei">🏦</div><div class="em">등록된 계좌가 없습니다.</div><button class="btn bp sm" onclick="openAccModal()">＋ 계좌 추가</button></div>`;return;}
+  el.innerHTML=`<div class="tw"><table>
+    <thead><tr><th>계좌명</th><th>계좌 종류</th><th>과세유형</th><th class="nr">보유</th><th class="nr">완료</th><th></th></tr></thead>
+    <tbody>${accounts.map(acc=>{
+      const act=products.filter(p=>p.accountId===acc.id&&p.status==='active').length;
+      const don=products.filter(p=>p.accountId===acc.id&&p.status!=='active').length;
+      return`<tr>
+        <td><b>${esc(acc.name)}</b><div style="font-size:11px;color:var(--txt3)">${esc(acc.memo||'')}</div></td>
+        <td><span class="badge bgr">${esc(acc.kind||'—')}</span></td>
+        <td><span class="badge ${TAXB[acc.type]}">${TAXL[acc.type]}</span></td>
+        <td class="nr">${act}</td><td class="nr">${don}</td>
+        <td><div style="display:flex;gap:4px">
+          <button class="btn bgh xs" onclick="openAccModal('${acc.id}')">수정</button>
+          <button class="btn bd-btn xs" onclick="delAcc('${acc.id}')">삭제</button>
+        </div></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+/* ─ §15b 연간 실적 탭 전체 렌더 ─ */
+function renderAnnual(){
+  const{accounts,products}=load();
+  const sortDir=document.getElementById('annual-sort')?.value||'desc';
+  const q=(document.getElementById('annual-q')?.value||'').toLowerCase();
+  const done=products.filter(p=>p.status!=='active'&&p.settlementDate);
+  // 연도별 집계
+  const byY={};
+  done.forEach(p=>{
+    const y=dy(p.settlementDate);if(!y)return;
+    if(!byY[y])byY[y]={cnt:0,pr:0,g:0,tax:0,net:0};
+    byY[y].cnt++;byY[y].pr+=Number(p.principal||0);
+    byY[y].g+=Number(p.actualGrossProfit||0);
+    byY[y].tax+=Number(p.actualTax||0);
+    byY[y].net+=Number(p.actualNetProfit||0);
+  });
+  let years=Object.keys(byY).sort();
+  if(sortDir==='desc')years=years.slice().reverse();
+  // 바 차트
+  const barEl=document.getElementById('annual-bar');
+  if(!years.length){barEl.innerHTML=`<div style="color:var(--txt3);font-size:13px">완료된 상품이 없습니다.</div>`;}
+  else{
+    const maxN=Math.max(...years.map(y=>Math.abs(byY[y].net)),1);
+    barEl.innerHTML=years.map(y=>{
+      const d=byY[y],pct=Math.abs(d.net)/maxN*100,pos=d.net>=0;
+      return`<div class="brow">
+        <div class="blbl">${y}년</div>
+        <div class="btrack"><div class="bfill" style="width:${pct.toFixed(1)}%;background:${pos?'var(--g)':'var(--r)'}">${fm(d.net)}</div></div>
+        <div class="bval ${pos?'tg':'tr'}">${fp(d.pr>0?d.net/d.pr*100:0)}</div>
+      </div>`;
+    }).join('');
+  }
+  // 요약 표
+  const tb=document.getElementById('annual-tb'),tf=document.getElementById('annual-tf');
+  if(!years.length){tb.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--txt3);padding:22px">완료된 상품이 없습니다.</td></tr>`;tf.innerHTML='';}
+  else{
+    let tC=0,tP=0,tG=0,tT=0,tN=0;
+    tb.innerHTML=years.map(y=>{
+      const d=byY[y],yld=d.pr>0?d.net/d.pr*100:0;
+      tC+=d.cnt;tP+=d.pr;tG+=d.g;tT+=d.tax;tN+=d.net;
+      return`<tr><td><b>${y}년</b></td><td class="nr">${d.cnt}</td><td class="nr">${fm(d.pr)}</td>
+        <td class="nr ${d.g>=0?'tg':'tr'}">${fm(d.g)}</td><td class="nr">${fm(d.tax)}</td>
+        <td class="nr ${d.net>=0?'tg':'tr'}">${fm(d.net)}</td>
+        <td class="nr ${yld>=0?'tg':'tr'}">${fp(yld)}</td></tr>`;
+    }).join('');
+    const tY=tP>0?tN/tP*100:0;
+    tf.innerHTML=`<td>합계</td><td class="nr">${tC}</td><td class="nr">${fm(tP)}</td>
+      <td class="nr ${tG>=0?'tg':'tr'}">${fm(tG)}</td><td class="nr">${fm(tT)}</td>
+      <td class="nr ${tN>=0?'tg':'tr'} b7">${fm(tN)}</td>
+      <td class="nr ${tY>=0?'tg':'tr'} b7">${fp(tY)}</td>`;
+  }
+  // 상세 내역
+  const det=document.getElementById('annual-det');
+  const detList=done.filter(p=>{
+    if(!q)return true;
+    const acc=accounts.find(a=>a.id===p.accountId);
+    return[p.name,acc?.name||''].join(' ').toLowerCase().includes(q);
+  }).sort((a,b)=>sortDir==='desc'
+    ?new Date(b.settlementDate)-new Date(a.settlementDate)
+    :new Date(a.settlementDate)-new Date(b.settlementDate));
+  det.innerHTML=!detList.length
+    ?`<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:18px">없음</td></tr>`
+    :detList.map(p=>{
+      const acc=accounts.find(a=>a.id===p.accountId);
+      const tl=p.settlementType==='early-redemption'?'조기상환':p.settlementType==='maturity-redemption'?'만기상환':'손실확정';
+      return`<tr>
+        <td><b>${esc(p.name)}</b></td>
+        <td><span class="badge bgr">${esc(acc?.name||'-')}</span></td>
+        <td><span class="badge ${STB[p.status]}">${tl}</span></td>
+        <td>${p.settlementDate||'-'}</td>
+        <td class="nr">${fm(p.principal)}</td>
+        <td class="nr ${(p.actualGrossProfit||0)>=0?'tg':'tr'}">${fm(p.actualGrossProfit)}</td>
+        <td class="nr">${fm(p.actualTax)}</td>
+        <td class="nr ${(p.actualNetProfit||0)>=0?'tg':'tr'}">${fm(p.actualNetProfit)}</td>
+        <td class="nr ${(p.actualYieldNet||0)>=0?'tg':'tr'}">${fp(p.actualYieldNet)}</td>
+        <td class="nr ta b7">${fm(p.actualRedemptionAmount)}</td>
+      </tr>`;
+    }).join('');
+}
+
+/* ─ §16 백업 렌더 ─ */
+function renderBackup(){
+  const{accounts,products}=load();
+  const act=products.filter(p=>p.status==='active').length;
+  const don=products.filter(p=>p.status!=='active').length;
+  const sz=(JSON.stringify({accounts,products}).length/1024).toFixed(1);
+  // 공용 자산 가격 캐시 수
+  const apCnt=Object.keys(localStorage).filter(k=>k.startsWith('els_ap_')).length;
+  // 상품별 가격 캐시 수
+  const ppCnt=Object.keys(localStorage).filter(k=>k.startsWith('els_pp_')).length;
+  document.getElementById('bk-stats').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px">
+      ${[
+        ['계좌 수',accounts.length+'개'],
+        ['전체 상품',products.length+'개'],
+        ['보유 상품',act+'개'],
+        ['완료 상품',don+'개'],
+        ['공용 자산가격',apCnt+'개'],
+        ['상품별 가격캐시',ppCnt+'개'],
+        ['저장 용량',sz+' KB'],
+      ].map(([k,v])=>`<div style="background:var(--s2);padding:10px 12px;border-radius:var(--r2);border:1px solid var(--bd)">
+          <div style="font-size:10px;color:var(--txt3);margin-bottom:2px">${k}</div>
+          <div style="font-size:16px;font-weight:700">${v}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ─ §17 조기상환 완료 처리 ─ */
+function openRedeem(pid){
+  pendPid=pid;
+  const{accounts,products}=load();
+  const p=products.find(x=>x.id===pid);if(!p)return;
+  const acc=accounts.find(a=>a.id===p.accountId);
+  const curIdx=p.currentRoundIndex||0;
+  const st=p.evalDates?.[curIdx];
+  const cr=Number(st?.couponRateCumulative)||0;
+  const sug=cr>0?Math.round((Number(p.principal)||0)*cr/100):0;
+  const tp=calcTax(sug,acc?.type,p.principal);
+  document.getElementById('redeem-body').innerHTML=`
+    <div style="background:var(--s2);border-radius:var(--r2);padding:12px;margin-bottom:12px;border:1px solid var(--bd)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:9px">${esc(p.name)}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div style="text-align:center;background:var(--acc-l);border-radius:6px;padding:8px"><div style="font-size:10px;color:var(--txt3);margin-bottom:2px">현재 차수</div><div style="font-weight:800;font-size:16px;color:var(--acc)">${curIdx+1}차</div><div style="font-size:10px;color:var(--txt3)">${st?.date||'-'}</div></div>
+        <div style="text-align:center;background:var(--am-bg);border-radius:6px;padding:8px"><div style="font-size:10px;color:var(--txt3);margin-bottom:2px">배리어</div><div style="font-weight:800;font-size:16px;color:var(--am)">${st?.barrier||'-'}%</div></div>
+        <div style="text-align:center;background:var(--g-bg);border-radius:6px;padding:8px"><div style="font-size:10px;color:var(--txt3);margin-bottom:2px">누적 수익률</div><div style="font-weight:800;font-size:16px;color:var(--g)">${cr>0?cr+'%':'미입력'}</div></div>
+      </div>
+    </div>
+    ${sug>0?`<div style="background:var(--g-bg);border:1px solid var(--g-bd);border-radius:var(--r2);padding:11px;margin-bottom:12px">
+      <div style="font-weight:700;color:var(--g);margin-bottom:6px">✅ 자동 계산 제안값 (수정 가능)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px">
+        <div><span style="color:var(--txt3)">세전 제안: </span><b>${fm(sug)}</b></div>
+        <div><span style="color:var(--txt3)">예상 세금: </span><b>${fm(tp.tax)}</b></div>
+        <div><span style="color:var(--txt3)">세후 수익금: </span><b class="tg">${fm(tp.net)}</b></div>
+        <div><span style="color:var(--txt3)">상환금액: </span><b class="ta">${fm(tp.total)}</b></div>
+      </div>
+      <div style="font-size:11px;color:var(--txt3);margin-top:5px">${Number(p.principal).toLocaleString()}원 × ${cr}% = ${fm(sug)}</div>
+    </div>`:
+    `<div style="background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r2);padding:9px 12px;margin-bottom:12px;font-size:12px;color:var(--am)">⚠️ 누적 수익률 미입력. 세전 수익금을 직접 입력해주세요.</div>`}
+    <div class="g2" style="gap:9px">
+      <div class="fg"><label class="fl">상환일 <span class="req">*</span></label><input type="date" class="fi" id="rd-dt" value="${st?.date||today()}"></div>
+      <div class="fg"><label class="fl">실제 세전 수익금 (원) <span class="req">*</span></label>
+        <input type="number" class="fi" id="rd-gr" value="${sug||''}" placeholder="${sug>0?sug:'직접 입력'}"
+          oninput="updRdPreview(this.value,'${acc?.type||'normal'}',${Number(p.principal)||0})">
+        <div class="fhint">${sug>0?'제안값이 자동 입력됩니다. 실제와 다르면 수정하세요.':''}</div>
+      </div>
+      <div class="fg"><label class="fl">Worst Performer % (기록용)</label><input type="number" class="fi" id="rd-wp" placeholder="-12.5" step="0.01"></div>
+      <div class="fg"><label class="fl">확인 출처</label><input type="text" class="fi" id="rd-src" value="${DEF_SRC}"></div>
+      <div class="fg sp2"><label class="fl">메모</label><input type="text" class="fi" id="rd-mo" placeholder="선택"></div>
+    </div>
+    <div style="margin-top:10px;padding:10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);font-size:13px" id="rd-prev">
+      <b style="color:var(--txt2)">확정값 미리보기</b><br>
+      <span id="rd-prev-c">${buildRdPrev(sug,acc?.type||'normal',Number(p.principal)||0)}</span>
+    </div>`;
+  om('mo-redeem');
+}
+function buildRdPrev(g,at,pr){
+  const v=Number(g)||0;
+  if(!v)return'<span style="color:var(--txt3)">세전 수익금을 입력하면 자동 계산됩니다.</span>';
+  const t=calcTax(v,at,pr);
+  return`세전: <b>${fm(v)}</b> | 세금: <b>${fm(t.tax)}</b> | 세후: <b class="tg">${fm(t.net)}</b> | 상환금: <b class="ta">${fm(t.total)}</b>`;
+}
+function updRdPreview(v,at,pr){const el=document.getElementById('rd-prev-c');if(el)el.innerHTML=buildRdPrev(v,at,pr);}
+function doRedeem(){
+  const pid=pendPid;
+  const dt=document.getElementById('rd-dt').value;
+  const gs=document.getElementById('rd-gr').value;
+  if(!dt){toast('상환일을 입력하세요.','err');return;}
+  if(!gs){toast('실제 세전 수익금을 입력하세요.','err');return;}
+  const gross=Number(gs);
+  const wp=document.getElementById('rd-wp').value?Number(document.getElementById('rd-wp').value):null;
+  const src=document.getElementById('rd-src').value.trim()||DEF_SRC;
+  const mo=document.getElementById('rd-mo').value.trim();
+  const{accounts,products}=load();
+  const idx=products.findIndex(x=>x.id===pid);if(idx<0)return;
+  const p=products[idx];
+  const acc=accounts.find(a=>a.id===p.accountId);
+  const curIdx=p.currentRoundIndex||0;
+  const t=calcTax(gross,acc?.type,p.principal);
+  const results=[...(p.evalResults||[])];
+  const ri=results.findIndex(r=>r.round===curIdx+1);
+  const entry={round:curIdx+1,date:p.evalDates?.[curIdx]?.date||dt,result:'pass',decidedAt:new Date().toISOString(),worstPctAtDecision:wp,note:mo};
+  if(ri>=0)results[ri]=entry;else results.push(entry);
+  products[idx]={...p,status:'redeemed',redeemedRound:curIdx+1,settlementDate:dt,settlementType:'early-redemption',
+    settlementMemo:mo,resultCheckSource:src,
+    actualGrossProfit:gross,actualTax:t.tax,actualNetProfit:t.net,actualRedemptionAmount:t.total,actualYieldNet:t.yld,evalResults:results};
+  saveProd2(products);cm('mo-redeem');toast(`${p.name} — 조기상환 완료 처리되었습니다.`,'ok');reAll();
+}
+
+/* ─ §18 조기상환 불가 처리 ─ */
+function openFail(pid){
+  pendPid=pid;
+  const{products}=load();
+  const p=products.find(x=>x.id===pid);if(!p)return;
+  const curIdx=p.currentRoundIndex||0,tot=p.evalDates?.length||0;
+  const st=p.evalDates?.[curIdx],nxt=p.evalDates?.[curIdx+1];
+  const isLast=curIdx+1>=tot;
+  document.getElementById('fail-body').innerHTML=`
+    <div style="background:var(--r-bg);border:1px solid var(--r-bd);border-radius:var(--r2);padding:12px;margin-bottom:12px">
+      <div style="font-weight:700;font-size:15px;margin-bottom:4px">${esc(p.name)}</div>
+      <div style="font-size:13px">현재 차수: <b>${curIdx+1}차</b> (${st?.date||'-'}) — 조기상환 조건 미달</div>
+      ${isLast?`<div style="color:var(--r);font-weight:700;margin-top:6px;padding:7px;background:rgba(190,18,60,.07);border-radius:4px;font-size:13px">
+        ⚠️ 마지막 차수(${curIdx+1}/${tot}차)입니다.<br>미달 확정 후 만기상환 또는 종료/손실확정이 필요합니다.
+      </div>`:`<div style="color:var(--txt2);margin-top:4px;font-size:13px">다음 차수: <b>${curIdx+2}차</b> (${nxt?.date||'-'}) 로 이동됩니다.</div>`}
+    </div>
+    <div class="g2" style="gap:9px">
+      <div class="fg"><label class="fl">결과 확정일</label><input type="date" class="fi" id="fl-dt" value="${today()}"></div>
+      <div class="fg"><label class="fl">Worst Performer %</label><input type="number" class="fi" id="fl-wp" placeholder="-8.3" step="0.01"></div>
+      <div class="fg sp2"><label class="fl">메모</label><input type="text" class="fi" id="fl-no" placeholder="미달 이유 등"></div>
+    </div>
+    ${isLast?`<div style="margin-top:11px;padding:10px;background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r2)">
+      <div style="font-weight:700;margin-bottom:7px;color:var(--am);font-size:13px">미달 확정 후 다음 처리:</div>
+      <div class="fl-row">
+        <button class="btn bp sm" onclick="cm('mo-fail');setTimeout(()=>openMature('${pid}'),80)">🏁 만기상환 처리로</button>
+        <button class="btn bd-btn sm" onclick="cm('mo-fail');setTimeout(()=>openClose('${pid}'),80)">🔴 종료/손실확정 처리로</button>
+      </div>
+    </div>`:''}`;
+  om('mo-fail');
+}
+function doFail(){
+  const pid=pendPid;
+  const dt=document.getElementById('fl-dt').value||today();
+  const wp=document.getElementById('fl-wp').value?Number(document.getElementById('fl-wp').value):null;
+  const no=document.getElementById('fl-no').value.trim();
+  const{products}=load();
+  const idx=products.findIndex(x=>x.id===pid);if(idx<0)return;
+  const p=products[idx];
+  const curIdx=p.currentRoundIndex||0,tot=p.evalDates?.length||0,isLast=curIdx+1>=tot;
+  const results=[...(p.evalResults||[])];
+  const ri=results.findIndex(r=>r.round===curIdx+1);
+  const entry={round:curIdx+1,date:p.evalDates?.[curIdx]?.date||dt,result:'fail',decidedAt:new Date().toISOString(),worstPctAtDecision:wp,note:no};
+  if(ri>=0)results[ri]=entry;else results.push(entry);
+  products[idx]={...p,currentRoundIndex:isLast?curIdx:curIdx+1,evalResults:results};
+  saveProd2(products);cm('mo-fail');
+  toast(isLast?`${p.name} — 마지막 차수 미달. 만기상환 또는 종료 처리 필요합니다.`:`${p.name} — ${curIdx+1}차 미달. ${curIdx+2}차로 이동합니다.`,'warn');
+  reAll();
+}
+
+/* ─ §19 만기상환 처리 (calcMaturityAutoGross 사용 — UI와 저장 일치) ─ */
+function openMature(pid){
+  pendPid=pid;
+  const{accounts,products}=load();
+  const p=products.find(x=>x.id===pid);if(!p)return;
+  const acc=accounts.find(a=>a.id===p.accountId);
+  const prices=loadPP(pid);
+  // ★ 단일 함수로 자동 계산 (UI 표시와 저장에 동일하게 사용)
+  const{gross:autoGross,note:autoNote,isCustom}=calcMaturityAutoGross(p,prices);
+  const tp=calcTax(autoGross,acc?.type,p.principal);
+  document.getElementById('mature-body').innerHTML=`
+    <div style="background:var(--s2);border-radius:var(--r2);padding:12px;margin-bottom:12px;border:1px solid var(--bd)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:4px">${esc(p.name)}</div>
+      <div style="font-size:13px">만기일: ${p.maturityDate||'-'} | 구조: ${p.payoffType||'-'} | KI 확정: ${p.kiHit?'🔴 발생':'없음'}</div>
+      ${autoNote?`<div style="color:var(--am);margin-top:4px;font-size:12px">📌 자동계산 근거: ${esc(autoNote)}</div>`:''}
+    </div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">
+      <b>입력 방식:</b>&nbsp;
+      <label style="margin-right:12px"><input type="radio" name="mt-mode" value="auto" checked onchange="togMt(this.value)"> 자동 계산</label>
+      <label><input type="radio" name="mt-mode" value="manual" onchange="togMt(this.value)"> 수동 입력</label>
+    </div>
+    <div id="mt-auto" style="gap:9px" class="${isCustom?'hidden':''} g2">
+      <div class="fg">
+        <label class="fl">세금 미리보기 (자동 계산 기준)</label>
+        <div style="padding:9px 11px;background:var(--g-bg);border-radius:var(--r2);font-size:13px;border:1px solid var(--g-bd)">
+          세전: ${fm(autoGross)}<br>세금(${TAXL[acc?.type||'normal']}): ${fm(tp.tax)}<br>세후: ${fm(tp.net)}<br>상환금: ${fm(tp.total)}
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">적용 세전 수익금 (자동 계산값, 확인용)</label>
+        <input type="number" class="fi" id="mt-auto-gr" value="${Math.round(autoGross)||0}" readonly
+          style="background:var(--s2);color:var(--txt2)">
+        <div class="fhint">자동 계산된 값입니다. 수정하려면 수동 입력 모드를 선택하세요.</div>
+      </div>
+    </div>
+    ${isCustom?`<div style="background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r2);padding:9px 12px;margin-bottom:9px;font-size:12px;color:var(--am)">⚠️ 이 상품은 자동 계산이 불가합니다 (${esc(autoNote)}). 수동 입력으로 진행해주세요.</div>`:''}
+    <div id="mt-manual" class="${isCustom?'':'hidden'} g2" style="gap:9px">
+      <div class="fg sp2"><label class="fl">실제 세전 수익금 (원) <span class="req">*</span></label><input type="number" class="fi" id="mt-gr" placeholder="실제 세전 수익금"></div>
+      <div class="fg sp2"><label class="fl">또는 실제 상환금액으로 역산</label>
+        <input type="number" class="fi" id="mt-tot" placeholder="상환금액 입력 → 세전 수익금 자동 계산"
+          oninput="calcMtFromTotal(this.value,${Number(p.principal)||0},'${acc?.type||'normal'}')">
+        <div class="fhint">상환금액 입력 시 세전 수익금을 역산합니다.</div>
+      </div>
+    </div>
+    <div class="g2 mt8" style="gap:9px">
+      <div class="fg"><label class="fl">상환일 <span class="req">*</span></label><input type="date" class="fi" id="mt-dt" value="${p.maturityDate||today()}"></div>
+      <div class="fg"><label class="fl">확인 출처</label><input type="text" class="fi" id="mt-src" value="${DEF_SRC}"></div>
+      <div class="fg sp2"><label class="fl">메모 (settlementMemo)</label><input type="text" class="fi" id="mt-mo" placeholder="선택"></div>
+    </div>`;
+  if(isCustom){document.querySelector('input[name="mt-mode"][value="manual"]').checked=true;}
+  om('mo-mature');
+}
+function togMt(m){
+  document.getElementById('mt-auto').classList.toggle('hidden',m==='manual');
+  document.getElementById('mt-manual').classList.toggle('hidden',m==='auto');
+}
+function calcMtFromTotal(totVal,pr,accType){
+  if(!totVal)return;
+  const tot=Number(totVal),rate=TAX[accType]??TAX.normal;
+  const grossBack=rate<1?(tot-pr)/(1-rate):(tot-pr);
+  const el=document.getElementById('mt-gr');if(el)el.value=Math.round(grossBack);
+}
+function doMature(){
+  const pid=pendPid;
+  const dt=document.getElementById('mt-dt').value;
+  if(!dt){toast('상환일을 입력하세요.','err');return;}
+  const src=document.getElementById('mt-src').value.trim()||DEF_SRC;
+  const mo=document.getElementById('mt-mo').value.trim();
+  const mode=document.querySelector('input[name="mt-mode"]:checked')?.value||'auto';
+  const{accounts,products}=load();
+  const idx=products.findIndex(x=>x.id===pid);if(idx<0)return;
+  const p=products[idx];
+  const acc=accounts.find(a=>a.id===p.accountId);
+
+  let gross;
+  if(mode==='auto'){
+    // ★ 저장 시에도 calcMaturityAutoGross 사용 — UI 표시와 완전히 일치
+    const prices=loadPP(pid);
+    const{gross:autoGross}=calcMaturityAutoGross(p,prices);
+    gross=autoGross;
+  } else {
+    const v=document.getElementById('mt-gr').value;
+    if(!v){toast('세전 수익금을 입력하세요.','err');return;}
+    gross=Number(v);
+  }
+  const t=calcTax(gross,acc?.type,p.principal);
+  products[idx]={...p,status:'matured',settlementDate:dt,settlementType:'maturity-redemption',
+    settlementMemo:mo,resultCheckSource:src,
+    actualGrossProfit:gross,actualTax:t.tax,actualNetProfit:t.net,actualRedemptionAmount:t.total,actualYieldNet:t.yld};
+  saveProd2(products);cm('mo-mature');toast(`${p.name} — 만기상환 완료 처리되었습니다.`,'ok');reAll();
+}
+
+/* ─ §20 종료/손실 처리 ─ */
+function openClose(pid){
+  pendPid=pid;
+  const{products}=load();const p=products.find(x=>x.id===pid);if(!p)return;
+  document.getElementById('close-body').innerHTML=`
+    <div style="background:var(--r-bg);border:1px solid var(--r-bd);border-radius:var(--r2);padding:12px;margin-bottom:12px">
+      <div style="font-weight:700;font-size:15px;margin-bottom:3px;color:var(--r)">${esc(p.name)}</div>
+      <div style="font-size:13px">종료 또는 손실 확정 처리합니다. 상품 수정으로 상태를 변경할 수 있습니다.</div>
+    </div>
+    <div class="g2" style="gap:9px">
+      <div class="fg"><label class="fl">종료일 <span class="req">*</span></label><input type="date" class="fi" id="cl-dt" value="${today()}"></div>
+      <div class="fg"><label class="fl">실제 손익 (원, 손실이면 음수)</label><input type="number" class="fi" id="cl-gr" placeholder="예: -5000000"><div class="fhint">손실이면 세금은 0으로 계산됩니다.</div></div>
+      <div class="fg"><label class="fl">확인 출처</label><input type="text" class="fi" id="cl-src" value="${DEF_SRC}"></div>
+      <div class="fg"><label class="fl">메모</label><input type="text" class="fi" id="cl-mo" placeholder="종료 사유 등"></div>
+    </div>`;
+  om('mo-close');
+}
+function doClose(){
+  const pid=pendPid;
+  const dt=document.getElementById('cl-dt').value;
+  if(!dt){toast('종료일을 입력하세요.','err');return;}
+  const gs=document.getElementById('cl-gr').value,gross=gs?Number(gs):0;
+  const src=document.getElementById('cl-src').value.trim()||DEF_SRC;
+  const mo=document.getElementById('cl-mo').value.trim();
+  const{accounts,products}=load();
+  const idx=products.findIndex(x=>x.id===pid);if(idx<0)return;
+  const p=products[idx];const acc=accounts.find(a=>a.id===p.accountId);
+  const t=calcTax(gross,acc?.type,p.principal);
+  products[idx]={...p,status:'closed',settlementDate:dt,settlementType:'loss-finalized',
+    settlementMemo:mo,resultCheckSource:src,
+    actualGrossProfit:gross,actualTax:t.tax,actualNetProfit:t.net,actualRedemptionAmount:t.total,actualYieldNet:t.yld};
+  saveProd2(products);cm('mo-close');toast(`${p.name} — 종료 처리되었습니다.`,'ok');reAll();
+}
+
+/* ─ §21 KI 기록 처리 ─ */
+function openKi(pid){
+  pendPid=pid;
+  const{products}=load();const p=products.find(x=>x.id===pid);if(!p)return;
+  document.getElementById('ki-body').innerHTML=`
+    <div style="background:var(--s2);border-radius:var(--r2);padding:11px;margin-bottom:11px;border:1px solid var(--bd)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:3px">${esc(p.name)}</div>
+      <div style="font-size:13px">KI 배리어: <b>${p.knockin?p.knockin+'%':'미설정'}</b></div>
+    </div>
+    <div style="background:var(--r-bg);border:1px solid var(--r-bd);border-radius:var(--r2);padding:9px 12px;margin-bottom:11px;font-size:12px;color:var(--r)">
+      ⚠️ 이 기록은 <b>실제 확정된 KI 이력</b>입니다. 현재가 기반 시뮬레이션(🔬)과 별개로 저장됩니다.
+    </div>
+    <div class="g2" style="gap:9px">
+      <div class="fg sp2"><label class="fl">KI 발생 여부</label>
+        <div style="display:flex;gap:16px;margin-top:4px">
+          <label style="font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px"><input type="radio" name="ki-h" value="true" ${p.kiHit===true?'checked':''}><span style="color:var(--r);font-weight:700">🔴 KI 발생 확정</span></label>
+          <label style="font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px"><input type="radio" name="ki-h" value="false" ${!p.kiHit?'checked':''}><span>KI 미발생 / 해제</span></label>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">KI 발생 확인일</label><input type="date" class="fi" id="ki-dt" value="${p.kiHitDate||today()}"></div>
+      <div class="fg"><label class="fl">관찰 방식</label>
+        <select class="fsl" id="ki-obs">
+          <option value="intraday" ${p.kiObservationType==='intraday'?'selected':''}>Intraday (장중)</option>
+          <option value="close" ${p.kiObservationType==='close'?'selected':''}>Close (종가)</option>
+          <option value="unknown" ${(!p.kiObservationType||p.kiObservationType==='unknown')?'selected':''}>Unknown</option>
+        </select>
+      </div>
+      <div class="fg sp2"><label class="fl">메모</label><input type="text" class="fi" id="ki-mo" value="${esc(p.kiHitMemo||'')}" placeholder="KOSPI200 장중 KI 배리어 하향 돌파 확인"></div>
+    </div>
+    ${p.kiHit?`<div style="margin-top:9px;padding:8px 10px;background:var(--r-bg);border:1px solid var(--r-bd);border-radius:var(--r2);font-size:13px">현재 기록: <b style="color:var(--r)">KI 발생 확정</b> — ${p.kiHitDate||'-'} (${p.kiObservationType||'-'})${p.kiHitMemo?' · '+esc(p.kiHitMemo):''}</div>`:''}`;
+  om('mo-ki');
+}
+function doKi(){
+  const pid=pendPid;
+  const hit=document.querySelector('input[name="ki-h"]:checked')?.value==='true';
+  const dt=document.getElementById('ki-dt').value;
+  const obs=document.getElementById('ki-obs').value;
+  const mo=document.getElementById('ki-mo').value.trim();
+  const{products}=load();const idx=products.findIndex(x=>x.id===pid);if(idx<0)return;
+  products[idx]={...products[idx],kiHit:hit,kiHitDate:hit?(dt||today()):'',kiObservationType:hit?obs:'unknown',kiHitMemo:hit?mo:''};
+  saveProd2(products);cm('mo-ki');toast(hit?'KI 발생 확정 기록이 저장되었습니다.':'KI 기록이 해제되었습니다.',hit?'warn':'ok');reAll();
+}
+
+/* ─ §22 계좌 모달 ─ */
+function openAccModal(id){
+  editAccId=id||null;
+  document.getElementById('am-title').textContent=id?'계좌 수정':'계좌 추가';
+  if(id){
+    const acc=load().accounts.find(a=>a.id===id);
+    if(acc){document.getElementById('af-nm').value=acc.name;document.getElementById('af-kd').value=acc.kind||'';document.getElementById('af-ty').value=acc.type;document.getElementById('af-mo').value=acc.memo||'';}
+  }else{['af-nm','af-kd','af-mo'].forEach(i=>document.getElementById(i).value='');document.getElementById('af-ty').value='normal';}
+  om('mo-acc');
+}
+function saveAcc(){
+  const nm=document.getElementById('af-nm').value.trim();
+  if(!nm){toast('계좌명을 입력하세요.','err');return;}
+  const kd=document.getElementById('af-kd').value.trim();
+  const ty=document.getElementById('af-ty').value;
+  const mo=document.getElementById('af-mo').value.trim();
+  const{accounts}=load();
+  if(editAccId){const i=accounts.findIndex(a=>a.id===editAccId);if(i>=0)accounts[i]={...accounts[i],name:nm,kind:kd,type:ty,memo:mo};}
+  else accounts.push({id:genId(),name:nm,kind:kd,type:ty,memo:mo,createdAt:new Date().toISOString()});
+  saveAcc2(accounts);cm('mo-acc');reAll();toast('계좌가 저장되었습니다.','ok');
+}
+function delAcc(id){
+  const{accounts,products}=load();
+  const linked=products.filter(p=>p.accountId===id);
+  if(linked.length>0){toast(`연결된 상품 ${linked.length}개가 있어 삭제할 수 없습니다. 상품을 먼저 삭제하거나 다른 계좌로 이동해주세요.`,'err');return;}
+  if(!confirm('이 계좌를 삭제하시겠습니까?'))return;
+  saveAcc2(accounts.filter(a=>a.id!==id));reAll();toast('계좌가 삭제되었습니다.');
+}
+
+/* ─ §23 상품 등록/수정 모달 ─ */
+function fillAccSel(selId,selVal){
+  const{accounts}=load();const sel=document.getElementById(selId);
+  if(!accounts.length){sel.innerHTML='<option value="">먼저 계좌를 등록하세요</option>';return;}
+  sel.innerHTML=accounts.map(a=>`<option value="${a.id}"${a.id===selVal?' selected':''}>${esc(a.name)} (${TAXL[a.type]})</option>`).join('');
+}
+function addU(nm='',base=''){
+  const div=document.createElement('div');div.className='dyni';
+  div.innerHTML=`<label>자산명</label><input type="text" class="fi u-nm" value="${esc(nm)}" placeholder="KOSPI200">
+    <label>기준가</label><input type="number" class="fi u-bp" value="${esc(String(base))}" placeholder="380.5" style="width:90px">
+    <button class="btn bd-btn ic xs" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('ul-list').appendChild(div);
+}
+function addE(rnd=0,dt='',bar='',cr=''){
+  const rn=rnd||(document.getElementById('el-list').children.length+1);
+  const div=document.createElement('div');div.className='dyni';
+  div.innerHTML=`<label>${rn}차</label>
+    <input type="date" class="fi e-dt" value="${esc(dt)}" style="flex:1.4" title="평가일">
+    <label>배리어%</label><input type="number" class="fi e-br" value="${esc(String(bar))}" placeholder="85" style="width:64px" min="0" max="100">
+    <label>누적%</label><input type="number" class="fi e-cr" value="${esc(String(cr))}" placeholder="7.5" style="width:70px" step="0.01" title="이 차수 조기상환 시 세전 누적 수익률">
+    <button class="btn bd-btn ic xs" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('el-list').appendChild(div);
+}
+function openProdModal(pid){
+  editProdId=pid||null;
+  document.getElementById('ul-list').innerHTML='';
+  document.getElementById('el-list').innerHTML='';
+  const{products}=load();
+  if(pid){
+    const p=products.find(x=>x.id===pid);if(!p)return;
+    document.getElementById('pm-title').textContent='상품 수정';
+    document.getElementById('pf-name').value=p.name;
+    document.getElementById('pf-iss').value=p.issuer;
+    document.getElementById('pf-pr').value=p.principal;
+    document.getElementById('pf-sd').value=p.startDate;
+    document.getElementById('pf-md').value=p.maturityDate;
+    document.getElementById('pf-ki').value=p.knockin||'';
+    document.getElementById('pf-yr').value=p.expectedYield||'';
+    document.getElementById('pf-pt').value=p.payoffType||'standard-stepdown';
+    document.getElementById('pf-fb').value=p.finalBarrier||'';
+    document.getElementById('pf-mc').value=p.maturityCouponCumulative||'';
+    document.getElementById('pf-nkm').value=p.noKiMode||'coupon';
+    document.getElementById('pf-cm').value=p.couponMemo||'';
+    document.getElementById('pf-cl').value=p.checklist||'';
+    document.getElementById('pf-ca').value=p.caution||'';
+    document.getElementById('pf-ex').value=p.extra||'';
+    document.getElementById('pf-mo').value=p.memo||'';
+    fillAccSel('pf-acc',p.accountId);
+    (p.underlyings||[]).forEach(u=>addU(u.name,u.basePrice));
+    (p.evalDates||[]).forEach((e,i)=>addE(i+1,e.date,e.barrier,e.couponRateCumulative||''));
+  }else{
+    document.getElementById('pm-title').textContent='상품 등록';
+    ['pf-name','pf-iss','pf-pr','pf-sd','pf-md','pf-ki','pf-yr','pf-fb','pf-mc','pf-cm','pf-cl','pf-ca','pf-ex','pf-mo'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('pf-pt').value='standard-stepdown';
+    document.getElementById('pf-nkm').value='coupon';
+    fillAccSel('pf-acc',null);addU();addE(1);
+  }
+  om('mo-prod');
+}
+function saveProd(){
+  const nm=document.getElementById('pf-name').value.trim();
+  const iss=document.getElementById('pf-iss').value.trim();
+  const acc=document.getElementById('pf-acc').value;
+  const pr=document.getElementById('pf-pr').value;
+  const sd=document.getElementById('pf-sd').value;
+  const md=document.getElementById('pf-md').value;
+  if(!nm){toast('상품명을 입력하세요.','err');return;}
+  if(!iss){toast('증권사명을 입력하세요.','err');return;}
+  if(!acc){toast('계좌를 선택하세요.','err');return;}
+  if(!pr||Number(pr)<=0){toast('투자원금을 입력하세요.','err');return;}
+  if(!sd){toast('가입일을 입력하세요.','err');return;}
+  if(!md){toast('만기일을 입력하세요.','err');return;}
+  const underlyings=[];
+  document.querySelectorAll('#ul-list .dyni').forEach(r=>{const n=r.querySelector('.u-nm')?.value.trim(),b=r.querySelector('.u-bp')?.value;if(n)underlyings.push({name:n,basePrice:Number(b)||0});});
+  const evalDates=[];
+  document.querySelectorAll('#el-list .dyni').forEach((r,i)=>{const dt=r.querySelector('.e-dt')?.value,ba=r.querySelector('.e-br')?.value,cr=r.querySelector('.e-cr')?.value;if(dt)evalDates.push({round:i+1,date:dt,barrier:Number(ba)||0,couponRateCumulative:Number(cr)||0});});
+  const data={name:nm,issuer:iss,accountId:acc,principal:Number(pr),startDate:sd,maturityDate:md,
+    knockin:Number(document.getElementById('pf-ki').value)||0,
+    expectedYield:Number(document.getElementById('pf-yr').value)||0,
+    payoffType:document.getElementById('pf-pt').value,
+    finalBarrier:Number(document.getElementById('pf-fb').value)||0,
+    maturityCouponCumulative:Number(document.getElementById('pf-mc').value)||0,
+    noKiMode:document.getElementById('pf-nkm').value,
+    couponMemo:document.getElementById('pf-cm').value.trim(),
+    checklist:document.getElementById('pf-cl').value.trim(),
+    caution:document.getElementById('pf-ca').value.trim(),
+    extra:document.getElementById('pf-ex').value.trim(),
+    memo:document.getElementById('pf-mo').value.trim(),
+    underlyings,evalDates};
+  const{products}=load();
+  if(editProdId){const i=products.findIndex(x=>x.id===editProdId);if(i>=0)products[i]={...products[i],...data};}
+  else products.push({id:genId(),createdAt:new Date().toISOString(),
+    status:'active',currentRoundIndex:0,evalResults:[],
+    settlementDate:'',settlementType:'',settlementMemo:'',resultCheckSource:DEF_SRC,
+    actualGrossProfit:0,actualTax:0,actualNetProfit:0,actualRedemptionAmount:0,actualYieldNet:0,redeemedRound:null,
+    kiHit:false,kiHitDate:'',kiHitMemo:'',kiObservationType:'unknown',...data});
+  saveProd2(products);cm('mo-prod');reAll();toast('상품이 저장되었습니다.','ok');
+}
+function delProd(pid){
+  if(!confirm('이 상품을 삭제하시겠습니까? 모든 기록이 함께 삭제됩니다.'))return;
+  const{products}=load();saveProd2(products.filter(p=>p.id!==pid));reAll();toast('상품이 삭제되었습니다.');
+}
+
+/* ─ §24 상품 상세 모달 ─ */
+function openDet(pid){
+  const{accounts,products}=load();
+  const p=products.find(x=>x.id===pid);if(!p)return;
+  const acc=accounts.find(a=>a.id===p.accountId);
+  const isAct=p.status==='active';
+  const sim=isAct?calcSim(p,acc):null;
+  const prices=loadPP(pid);
+  const worst=calcWorst(p.underlyings,prices);
+  const score=isAct?calcScore(p):null;
+  document.getElementById('det-title').textContent=p.name;
+  const stagesHtml=buildStages(p);
+  const resultsHtml=p.evalResults?.length?`<div style="margin-top:10px">
+    <div style="font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px">확정된 차수 결과</div>
+    ${p.evalResults.map(r=>`<div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);font-size:13px;flex-wrap:wrap">
+      <span class="badge ${r.result==='pass'?'bg':r.result==='fail'?'br':'bgr'}">${r.round}차 ${r.result==='pass'?'통과':r.result==='fail'?'미달':'대기'}</span>
+      <span style="color:var(--txt3)">${r.date||'-'}</span>
+      ${r.worstPctAtDecision!=null?`<span style="color:var(--txt2)">Worst: ${r.worstPctAtDecision>0?'+':''}${r.worstPctAtDecision}%</span>`:''}
+      ${r.note?`<span style="color:var(--txt3)">${esc(r.note)}</span>`:''}
+      <span style="color:var(--txt3);font-size:11px;margin-left:auto">${r.decidedAt?r.decidedAt.slice(0,10):''}</span>
+    </div>`).join('')}
+  </div>`:'';
+  document.getElementById('det-body').innerHTML=`
+    <div class="disclaimer" style="font-size:12px">모든 수치는 개인 참고용입니다.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px;font-size:13px">
+      <div><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">증권사</div><b>${esc(p.issuer)}</b></div>
+      <div><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">소속 계좌</div>${esc(acc?.name||'-')} <span class="badge ${TAXB[acc?.type||'normal']}">${TAXL[acc?.type||'normal']}</span></div>
+      <div><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">상태</div><span class="badge ${STB[p.status]}">${STL[p.status]}</span></div>
+      <div><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">투자원금</div><b style="color:var(--acc)">${fm(p.principal)}</b></div>
+      <div><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">가입일</div>${p.startDate||'-'}</div>
+      <div><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">만기일</div>${p.maturityDate||'-'} ${dbadge(dl(p.maturityDate))}</div>
+      ${p.knockin?`<div><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">KI 배리어</div>${p.knockin}%</div>`:''}
+      ${p.kiHit?`<div style="grid-column:1/-1"><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">KI 발생(실제 확정)</div><div style="color:var(--r);font-weight:700">🔴 ${p.kiHitDate||'-'} (${p.kiObservationType||'-'})${p.kiHitMemo?' · '+esc(p.kiHitMemo):''}</div></div>`:(p.knockin?`<div><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">KI 발생(실제 확정)</div><div style="color:var(--txt3)">미기록</div></div>`:'')}
+      ${isAct?`<div><div style="font-size:10px;color:var(--txt3);font-weight:700;text-transform:uppercase;margin-bottom:2px">현재 차수</div>${(p.currentRoundIndex||0)+1}/${p.evalDates?.length||'?'}차 ${score!==null?scoreSm(score):''}</div>`:''}
+    </div>
+    ${stagesHtml}${resultsHtml}
+    ${!isAct?`<div class="hr"></div>
+    <div style="font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px">실제 상환 결과</div>
+    <div style="background:var(--g-bg);border:1px solid var(--g-bd);border-radius:var(--r2);padding:12px;font-size:14px">
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--g-bd)"><span style="color:var(--txt2)">상환일</span><b>${p.settlementDate||'-'}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--g-bd)"><span style="color:var(--txt2)">유형</span><b>${p.settlementType==='early-redemption'?'조기상환':p.settlementType==='maturity-redemption'?'만기상환':'손실확정'}</b></div>
+      ${p.redeemedRound?`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--g-bd)"><span style="color:var(--txt2)">조기상환 차수</span><b>${p.redeemedRound}차</b></div>`:''}
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--g-bd)"><span style="color:var(--txt2)">실제 세전 수익금</span><b class="${(p.actualGrossProfit||0)>=0?'tg':'tr'}">${fm(p.actualGrossProfit)}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--g-bd)"><span style="color:var(--txt2)">실제 세금</span><b>${fm(p.actualTax)}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:15px;border-bottom:1px solid var(--g-bd)"><b>실제 세후 수익금</b><b class="${(p.actualNetProfit||0)>=0?'tg':'tr'}">${fm(p.actualNetProfit)}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:16px"><b>실제 상환금액</b><b class="ta">${fm(p.actualRedemptionAmount)}</b></div>
+    </div>
+    ${p.settlementMemo?`<div style="font-size:12px;color:var(--txt2);margin-top:7px;padding:6px 9px;background:var(--s2);border-radius:var(--r3)">📝 ${esc(p.settlementMemo)}</div>`:''}
+    ${p.resultCheckSource?`<div style="font-size:11px;color:var(--txt3);margin-top:3px">확인출처: ${esc(p.resultCheckSource)}</div>`:''}
+    `:''}
+    ${isAct?`<div class="hr"></div>
+    <div class="sim-banner" style="margin-bottom:9px;font-size:12px;padding:8px 12px">🔬 <span>아래는 <b>참고용 시뮬레이션</b>입니다. 실제 결과와 다릅니다.</span></div>
+    ${worst?`<div style="font-size:13px;margin-bottom:8px;padding:8px;background:var(--s2);border-radius:var(--r2)">참고 Worst Performer: <b>${esc(worst.name)}</b> ${worst.pct>=0?'+':''}${worst.pct.toFixed(2)}%${p.knockin&&(100+worst.pct)<=Number(p.knockin)?'<span class="badge br" style="margin-left:6px">⚠️ KI 주의</span>':''}</div>`:''}
+    <div style="background:var(--sim-bg);border:1px solid var(--sim-bd);border-radius:var(--r2);padding:12px;font-size:14px">
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--sim-bd)"><span style="color:var(--txt2)">예상 수익률(등록값)</span><b>${fp(sim.yieldPct)}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--sim-bd)"><span style="color:var(--txt2)">세전 예상 수익금</span><b>${fm(sim.gross)}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--sim-bd)"><span style="color:var(--txt2)">예상 세금(${TAXL[acc?.type||'normal']})</span><b>${fm(sim.tax)}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:15px"><b>세후 예상 수익금</b><b class="tg">${fm(sim.net)}</b></div>
+    </div>`:''}
+    ${(p.checklist||p.caution||p.memo)?`<div class="hr"></div>
+    ${p.checklist?`<div style="font-size:13px;color:var(--txt2);margin-bottom:4px">📋 ${esc(p.checklist)}</div>`:''}
+    ${p.caution?`<div style="font-size:13px;color:var(--r);margin-bottom:4px">⚠️ ${esc(p.caution)}</div>`:''}
+    ${p.memo?`<div style="font-size:13px;color:var(--txt2);background:var(--s2);padding:9px;border-radius:var(--r2);white-space:pre-wrap;margin-top:5px">${esc(p.memo)}</div>`:''}
+    `:''}`;
+  document.getElementById('det-ft').innerHTML=`
+    <button class="btn bgh" onclick="cm('mo-detail')">닫기</button>
+    <button class="btn bs sm" onclick="openProdModal('${p.id}');cm('mo-detail')">✏️ 수정</button>
+    ${p.knockin?`<button class="btn ${p.kiHit?'bd-btn':'ba'} sm" onclick="openKi('${p.id}');cm('mo-detail')">🔴 KI기록</button>`:''}
+    ${isAct?`<button class="btn bg-btn sm" onclick="openRedeem('${p.id}');cm('mo-detail')">✅ 조기상환 완료</button>`:''}`;
+  om('mo-detail');
+}
+
+/* ─ §25 내보내기·불러오기 ─ */
+function exportAll(){
+  const{accounts,products}=load();
+  const ap={},pp={};
+  Object.keys(localStorage).forEach(k=>{if(k.startsWith('els_ap_'))ap[k.slice(7)]=localStorage.getItem(k);});
+  products.forEach(p=>{const v=loadPP(p.id);if(Object.keys(v).length)pp[p.id]=v;});
+  const data={version:VER,exportedAt:new Date().toISOString(),accounts,products,accountOrder:loadOrd(),assetPrices:ap,prodPrices:pp};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`els-backup-${today()}.json`;a.click();
+  URL.revokeObjectURL(url);toast('내보내기 완료','ok');
+}
+function importAll(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      // 1) 파싱 및 구조 검증 (아직 기존 데이터 건드리지 않음)
+      const data=JSON.parse(e.target.result);
+      if(!Array.isArray(data.accounts)||!Array.isArray(data.products)){toast('올바른 ELS 백업 파일이 아닙니다.','err');return;}
+      const hasStatus=data.products.every(p=>p.status);
+      if(!hasStatus){toast('이 파일은 이전 버전입니다. 불러올 수 없습니다.','err');return;}
+      // 2) 확인창 (취소 시 기존 데이터 유지)
+      if(!confirm(`계좌 ${data.accounts.length}개, 상품 ${data.products.length}개를 불러옵니다.\n기존 데이터(현재가 캐시 포함)를 완전히 덮어씁니다.\n계속하시겠습니까?`))return;
+      // 3) 기존 캐시 키 삭제 (els_acc/els_prod 제외 — 아래서 덮어씀)
+      Object.keys(localStorage).forEach(k=>{
+        if(k.startsWith('els_ap_')||k.startsWith('els_pp_')||k==='els_ord')
+          localStorage.removeItem(k);
+      });
+      // 4) 새 데이터 저장
+      saveAcc2(data.accounts);
+      saveProd2(data.products);
+      if(data.accountOrder)saveOrd(data.accountOrder);
+      if(data.assetPrices)Object.entries(data.assetPrices).forEach(([k,v])=>saveAP(k,v));
+      if(data.prodPrices)Object.entries(data.prodPrices).forEach(([pid,v])=>savePP(pid,v));
+      toast('불러오기 완료','ok');location.reload();
+    }catch(err){toast('JSON 파싱 오류: '+err.message,'err');}
+    ev.target.value='';
+  };
+  reader.readAsText(file);
+}
+function clearAll(){
+  if(!confirm('모든 데이터를 초기화합니다. 되돌릴 수 없습니다. 계속하시겠습니까?'))return;
+  Object.keys(localStorage).filter(k=>k.startsWith('els_')).forEach(k=>localStorage.removeItem(k));
+  toast('초기화 완료');location.reload();
+}
+
+/* ─ §26 모달 헬퍼 ─ */
+function om(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function cm(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+document.querySelectorAll('.mo').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)cm(el.id);});});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.mo.on').forEach(el=>cm(el.id));});
+
+/* ─ §27 토스트 ─ */
+let _tt;
+function toast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast on '+(type==='ok'?'tok':type==='err'?'terr':type==='warn'?'twarn':'');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),3500);
+}
+
+/* ─ §28 샘플 데이터 ─ */
+function initSample(){
+  const{accounts,products}=load();if(accounts.length||products.length)return;
+  const a1=genId(),a2=genId(),a3=genId();
+  const accs=[
+    {id:a1,name:'삼성증권 위탁',kind:'위탁계좌',type:'normal',memo:'주거래',createdAt:'2024-01-10T00:00:00Z'},
+    {id:a2,name:'KB증권 ISA',kind:'ISA 중개형',type:'isa',memo:'',createdAt:'2024-02-01T00:00:00Z'},
+    {id:a3,name:'한투 연금저축',kind:'연금저축펀드',type:'tax-free',memo:'',createdAt:'2024-03-01T00:00:00Z'},
+  ];
+  function doff(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);}
+  const prods=[
+    {id:genId(),createdAt:'2024-06-15T00:00:00Z',name:'KB 스텝다운 ELS 5678호',issuer:'KB증권',accountId:a1,
+     principal:30000000,startDate:'2024-06-15',maturityDate:doff(480),knockin:50,expectedYield:8.2,
+     payoffType:'standard-stepdown',finalBarrier:70,maturityCouponCumulative:16.4,noKiMode:'coupon',
+     couponMemo:'연 8.2%, 6개월 조기상환',checklist:'원금보장 없음, KI 50%',caution:'KI 접근 시 손실 가능',extra:'',memo:'',
+     underlyings:[{name:'KOSPI200',basePrice:380.5},{name:'S&P500',basePrice:5250}],
+     evalDates:[{round:1,date:doff(-30),barrier:90,couponRateCumulative:4.1},{round:2,date:doff(150),barrier:85,couponRateCumulative:8.2},{round:3,date:doff(330),barrier:80,couponRateCumulative:12.3},{round:4,date:doff(480),barrier:75,couponRateCumulative:16.4}],
+     status:'active',currentRoundIndex:1,evalResults:[{round:1,date:doff(-30),result:'fail',decidedAt:new Date().toISOString(),worstPctAtDecision:-11.2,note:'KOSPI200 배리어 미달'}],
+     settlementDate:'',settlementType:'',settlementMemo:'',resultCheckSource:DEF_SRC,
+     actualGrossProfit:0,actualTax:0,actualNetProfit:0,actualRedemptionAmount:0,actualYieldNet:0,redeemedRound:null,
+     kiHit:false,kiHitDate:'',kiHitMemo:'',kiObservationType:'unknown'},
+    {id:genId(),createdAt:'2025-01-10T00:00:00Z',name:'한투 글로벌 ELS 9901호',issuer:'한국투자증권',accountId:a3,
+     principal:50000000,startDate:'2025-01-10',maturityDate:doff(800),knockin:55,expectedYield:10.3,
+     payoffType:'standard-stepdown',finalBarrier:65,maturityCouponCumulative:30.9,noKiMode:'coupon',
+     couponMemo:'연 10.3%',checklist:'3개 기초자산 worst 기준',caution:'변동성 주의',extra:'',memo:'',
+     underlyings:[{name:'KOSPI200',basePrice:370},{name:'Nikkei225',basePrice:38500},{name:'S&P500',basePrice:5100}],
+     evalDates:[{round:1,date:doff(7),barrier:90,couponRateCumulative:5.15},{round:2,date:doff(187),barrier:85,couponRateCumulative:10.3},{round:3,date:doff(367),barrier:80,couponRateCumulative:15.45},{round:4,date:doff(547),barrier:75,couponRateCumulative:20.6},{round:5,date:doff(727),barrier:70,couponRateCumulative:25.75},{round:6,date:doff(800),barrier:65,couponRateCumulative:30.9}],
+     status:'active',currentRoundIndex:0,evalResults:[],
+     settlementDate:'',settlementType:'',settlementMemo:'',resultCheckSource:DEF_SRC,
+     actualGrossProfit:0,actualTax:0,actualNetProfit:0,actualRedemptionAmount:0,actualYieldNet:0,redeemedRound:null,
+     kiHit:false,kiHitDate:'',kiHitMemo:'',kiObservationType:'unknown'},
+    {id:genId(),createdAt:'2023-09-01T00:00:00Z',name:'삼성 스텝다운 ELS 2234호',issuer:'삼성증권',accountId:a2,
+     principal:20000000,startDate:'2023-09-01',maturityDate:'2026-09-01',knockin:0,expectedYield:5.5,
+     payoffType:'no-ki-stepdown',finalBarrier:80,maturityCouponCumulative:8.25,noKiMode:'coupon',
+     couponMemo:'연 5.5%, KI 없음',checklist:'',caution:'',extra:'',memo:'',
+     underlyings:[{name:'EuroStoxx50',basePrice:4800},{name:'HSCEI',basePrice:6800}],
+     evalDates:[{round:1,date:'2024-03-01',barrier:90,couponRateCumulative:2.75},{round:2,date:'2024-09-01',barrier:85,couponRateCumulative:5.5},{round:3,date:'2025-03-01',barrier:80,couponRateCumulative:8.25}],
+     status:'redeemed',currentRoundIndex:1,
+     evalResults:[{round:1,date:'2024-03-01',result:'fail',decidedAt:'2024-03-01T09:00:00Z',worstPctAtDecision:-7.3,note:'HSCEI 미달'},{round:2,date:'2024-09-01',result:'pass',decidedAt:'2024-09-01T09:00:00Z',worstPctAtDecision:2.1,note:'조기상환 완료'}],
+     redeemedRound:2,settlementDate:'2024-09-05',settlementType:'early-redemption',
+     settlementMemo:'2차 조기상환 완료 확인',resultCheckSource:'증권사 앱',
+     actualGrossProfit:1100000,actualTax:108900,actualNetProfit:991100,actualRedemptionAmount:20991100,actualYieldNet:4.956,
+     kiHit:false,kiHitDate:'',kiHitMemo:'',kiObservationType:'unknown'},
+  ];
+  saveAcc2(accs);saveProd2(prods);
+}
+
+/* ─ §29 초기화 ─ */
+(function init(){
+  initSample();
+  updateCnts();
+  renderTab('dash');
+})();
+</script>
+</body>
+</html>
