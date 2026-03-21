@@ -2063,14 +2063,11 @@ function addU(nm='',base=''){
 function addE(rnd=0,dt='',bar='',cr=''){
   const rn=rnd||(document.getElementById('el-list').children.length+1);
   const div=document.createElement('div');div.className='dyni';
-  div.style.cssText='flex-wrap:nowrap;gap:4px;align-items:center';
-  div.innerHTML=`<label style="white-space:nowrap;flex-shrink:0;font-size:11px">${rn}차</label>
-    <div class="e-dt-wrap" style="flex:1;min-width:150px;max-width:200px">${makeDateSplitHtml(dt)}</div>
-    <label style="white-space:nowrap;flex-shrink:0;font-size:11px">B%</label>
-    <input type="number" class="fi e-br" value="${esc(String(bar))}" placeholder="85" style="width:52px;flex-shrink:0;min-height:36px;padding:6px 6px;font-size:13px" min="0" max="100" inputmode="numeric">
-    <label style="white-space:nowrap;flex-shrink:0;font-size:11px">수익률%</label>
-    <input type="number" class="fi e-cr" value="${esc(String(cr))}" placeholder="자동" style="width:60px;flex-shrink:0;min-height:36px;padding:6px 6px;font-size:13px" step="0.01" title="이 차수 조기상환 시 세전 누적 수익률" inputmode="decimal">
-    <button class="btn bd-btn ic xs" onclick="this.parentElement.remove()" style="flex-shrink:0">✕</button>`;
+  div.innerHTML=`<label>${rn}차</label>
+    <div class="e-dt-wrap" style="flex:1.4;min-width:180px">${makeDateSplitHtml(dt)}</div>
+    <label>배리어%</label><input type="number" class="fi e-br" value="${esc(String(bar))}" placeholder="85" style="width:64px" min="0" max="100">
+    <label>누적%</label><input type="number" class="fi e-cr" value="${esc(String(cr))}" placeholder="자동" style="width:70px" step="0.01" title="이 차수 조기상환 시 세전 누적 수익률">
+    <button class="btn bd-btn ic xs" onclick="this.parentElement.remove()">✕</button>`;
   document.getElementById('el-list').appendChild(div);
   // 날짜 변경 시 누적 수익률 자동 계산
   bindDateSplit(div.querySelector('.e-dt-wrap'),()=>{
