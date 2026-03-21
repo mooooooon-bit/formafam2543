@@ -6,13 +6,10 @@
 <title>ELS Manager</title>
 <style>
 /* =============================================================
-   ELS Manager V26.03.11
-   - 투자원금 보유 카드 복구
-   - 도달값 계산식 명시적으로 현재 차수 barrier 기준 확인
-   - 상품 등록 currency(KRW/USD) 필드 추가
-   - import 시 currency 기본값 KRW 자동 보완
-   - formatMoneyByCurrency(fmc) 헬퍼 추가
-   - "조기상환 시" 탭 추가 (마지막 탭)
+   ELS Manager V26.03.12
+   - 날짜 입력 분리 컴포넌트 (YYYY/MM/DD 자동이동)
+   - 만기 누적 수익률 자동 계산 (예상 연수익률+기간)
+   - KI없음 처리 방식 UI 제거 (내부 필드 유지)
    ============================================================= */
 :root {
   --bg:#f2f5f9; --surface:#fff; --s2:#f0f4f9; --s3:#e6ecf5;
@@ -105,6 +102,13 @@ body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px;l
 .dyni label{font-size:11px;color:var(--txt2);white-space:nowrap}
 .addbtn{font-size:12px;color:var(--acc);background:var(--acc-l);border:1px dashed var(--acc);border-radius:var(--r2);padding:9px;cursor:pointer;font-family:var(--f);width:100%;text-align:center;transition:all .15s;margin-top:5px;min-height:40px}
 .addbtn:hover{background:#dbeafe}
+
+/* ─ 분리 날짜 입력 컴포넌트 ─ */
+.date-split{display:flex;align-items:center;gap:3px;flex-wrap:nowrap}
+.date-split .fi{text-align:center;padding:10px 4px}
+.date-split .date-y{width:72px;flex-shrink:0}
+.date-split .date-m,.date-split .date-d{width:46px;flex-shrink:0}
+.date-sep{color:var(--txt3);font-size:15px;font-weight:600;flex-shrink:0;user-select:none}
 
 /* ─ 배지 ─ */
 .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
@@ -269,7 +273,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">ELS Manager</div>
-      <span class="ver-badge">V26.03.11</span>
+      <span class="ver-badge">V26.03.12</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
@@ -561,10 +565,10 @@ tr:hover td{background:#f8fafc}
             </select>
           </div>
         </div>
-        <div class="fg"><label class="fl">가입일 <span class="req">*</span></label><input type="date" class="fi" id="pf-sd"></div>
-        <div class="fg"><label class="fl">만기일 <span class="req">*</span></label><input type="date" class="fi" id="pf-md"></div>
+        <div class="fg"><label class="fl">가입일 <span class="req">*</span></label><div id="pf-sd-wrap"></div></div>
+        <div class="fg"><label class="fl">만기일 <span class="req">*</span></label><div id="pf-md-wrap"></div></div>
         <div class="fg"><label class="fl">KI 배리어 (%)</label><input type="number" class="fi" id="pf-ki" placeholder="50" min="0" max="100"></div>
-        <div class="fg"><label class="fl">예상 수익률 (%, 세전 — 시뮬용)</label><input type="number" class="fi" id="pf-yr" placeholder="7.5" step="0.01"></div>
+        <div class="fg"><label class="fl">예상 수익률 (%, 세전 — 시뮬용)</label><input type="number" class="fi" id="pf-yr" placeholder="7.5" step="0.01" oninput="autoCalcMaturity()"></div>
       </div>
       <div class="hr"></div>
       <div class="g2">
@@ -577,16 +581,15 @@ tr:hover td{background:#f8fafc}
             <option value="custom">기타/수동</option>
           </select>
         </div>
-        <div class="fg">
-          <label class="fl">KI없음 시 만기 처리 방식</label>
-          <select class="fsl" id="pf-nkm">
-            <option value="coupon">쿠폰 지급</option>
-            <option value="principal">원금 반환</option>
-            <option value="custom">수동 입력</option>
-          </select>
-        </div>
         <div class="fg"><label class="fl">만기 최종 배리어 (%)</label><input type="number" class="fi" id="pf-fb" placeholder="65" step="0.1"></div>
-        <div class="fg"><label class="fl">만기 누적 수익률 (% — 만기 시 지급)</label><input type="number" class="fi" id="pf-mc" placeholder="18.0" step="0.01"></div>
+        <div class="fg sp2">
+          <label class="fl">만기 누적 수익률 (%) <span style="font-size:11px;color:var(--txt3);font-weight:400">— 예상 연수익률·기간 기반 자동계산</span></label>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="number" class="fi" id="pf-mc" placeholder="자동 계산됩니다" step="0.01" style="flex:1">
+            <button type="button" class="btn bs sm" onclick="autoCalcMaturity(true)" style="white-space:nowrap;flex-shrink:0">🔄 재계산</button>
+          </div>
+          <div class="fhint">가입일·만기일·예상 연수익률 입력 시 자동으로 채워집니다. 직접 수정도 가능합니다.</div>
+        </div>
       </div>
       <div class="hr"></div>
       <div class="fg">
@@ -741,7 +744,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.03.11';
+const VER = 'V26.03.12';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -866,6 +869,70 @@ function fmc(n, currency){
   const v=Math.round(n);
   if((currency||'KRW')==='USD') return '$'+v.toLocaleString('en-US');
   return v.toLocaleString('ko-KR')+'원';
+}
+
+/* ─ 날짜 분리 입력 컴포넌트 헬퍼 ─ */
+/** 분리 날짜 입력 HTML 생성 */
+function makeDateSplitHtml(dtStr=''){
+  const p=(dtStr||'').split('-');
+  const y=p[0]||'',m=p[1]||'',d=p[2]||'';
+  return`<div class="date-split">
+    <input type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" class="fi date-y" value="${esc(y)}">
+    <span class="date-sep">-</span>
+    <input type="text" inputmode="numeric" maxlength="2" placeholder="MM" class="fi date-m" value="${esc(m)}">
+    <span class="date-sep">-</span>
+    <input type="text" inputmode="numeric" maxlength="2" placeholder="DD" class="fi date-d" value="${esc(d)}">
+  </div>`;
+}
+/** 분리 날짜 컨테이너 → YYYY-MM-DD 문자열 */
+function getDateFromSplit(container){
+  if(!container)return'';
+  const y=(container.querySelector('.date-y')?.value||'').trim();
+  const m=(container.querySelector('.date-m')?.value||'').trim().padStart(2,'0');
+  const d=(container.querySelector('.date-d')?.value||'').trim().padStart(2,'0');
+  if(!y||y.length<4||!m||m==='00'||!d||d==='00')return'';
+  return`${y}-${m}-${d}`;
+}
+/** YYYY-MM-DD 문자열 → 분리 날짜 컨테이너에 세팅 */
+function setDateToSplit(container,dtStr){
+  if(!container||!dtStr)return;
+  const p=dtStr.split('-');if(p.length<3)return;
+  const y=container.querySelector('.date-y');
+  const m=container.querySelector('.date-m');
+  const d=container.querySelector('.date-d');
+  if(y)y.value=p[0];if(m)m.value=p[1];if(d)d.value=p[2];
+}
+/** 분리 날짜 컨테이너에 자동이동·백스페이스 이벤트 바인딩 */
+function bindDateSplit(container,onChangeCb){
+  const y=container.querySelector('.date-y');
+  const m=container.querySelector('.date-m');
+  const d=container.querySelector('.date-d');
+  const fire=()=>{if(onChangeCb)onChangeCb();};
+  y.addEventListener('input',()=>{y.value=y.value.replace(/\D/g,'');if(y.value.length===4)m.focus();fire();});
+  m.addEventListener('input',()=>{m.value=m.value.replace(/\D/g,'');if(m.value.length===2)d.focus();fire();});
+  d.addEventListener('input',()=>{d.value=d.value.replace(/\D/g,'');fire();});
+  m.addEventListener('keydown',e=>{if(e.key==='Backspace'&&m.value==='')y.focus();});
+  d.addEventListener('keydown',e=>{if(e.key==='Backspace'&&d.value==='')m.focus();});
+}
+/**
+ * 만기 누적 수익률 자동 계산
+ * maturityCouponCumulative = expectedYield × (days / 365)
+ * force=true 이면 기존 값 덮어쓰기, false면 빈 값일 때만 채움
+ */
+function autoCalcMaturity(force=false){
+  const sdC=document.getElementById('pf-sd-wrap');
+  const mdC=document.getElementById('pf-md-wrap');
+  if(!sdC||!mdC)return;
+  const sd=getDateFromSplit(sdC),md=getDateFromSplit(mdC);
+  const yr=parseFloat(document.getElementById('pf-yr')?.value)||0;
+  if(!sd||!md||!yr)return;
+  const days=(new Date(md)-new Date(sd))/86400000;
+  if(days<=0)return;
+  const mcEl=document.getElementById('pf-mc');
+  if(!mcEl)return;
+  if(force||!mcEl.value){
+    mcEl.value=(yr*days/365).toFixed(2);
+  }
 }
 function fp(n,d=2){if(n===null||n===undefined||isNaN(n))return'-';return n.toFixed(d)+'%';}
 function esc(s){if(!s&&s!==0)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
@@ -1978,32 +2045,36 @@ function addE(rnd=0,dt='',bar='',cr=''){
   const rn=rnd||(document.getElementById('el-list').children.length+1);
   const div=document.createElement('div');div.className='dyni';
   div.innerHTML=`<label>${rn}차</label>
-    <input type="date" class="fi e-dt" value="${esc(dt)}" style="flex:1.4" title="평가일">
+    <div class="e-dt-wrap" style="flex:1.4;min-width:180px">${makeDateSplitHtml(dt)}</div>
     <label>배리어%</label><input type="number" class="fi e-br" value="${esc(String(bar))}" placeholder="85" style="width:64px" min="0" max="100">
     <label>누적%</label><input type="number" class="fi e-cr" value="${esc(String(cr))}" placeholder="7.5" style="width:70px" step="0.01" title="이 차수 조기상환 시 세전 누적 수익률">
     <button class="btn bd-btn ic xs" onclick="this.parentElement.remove()">✕</button>`;
   document.getElementById('el-list').appendChild(div);
+  bindDateSplit(div.querySelector('.e-dt-wrap'));
 }
 function openProdModal(pid){
   editProdId=pid||null;
   document.getElementById('ul-list').innerHTML='';
   document.getElementById('el-list').innerHTML='';
   const{products}=load();
-  const FIELDS=['pf-name','pf-iss','pf-pr','pf-sd','pf-md','pf-ki','pf-yr','pf-fb','pf-mc','pf-cm','pf-cl','pf-ca','pf-ex','pf-mo'];
+  const FIELDS=['pf-name','pf-iss','pf-pr','pf-ki','pf-yr','pf-fb','pf-mc','pf-cm','pf-cl','pf-ca','pf-ex','pf-mo'];
   if(pid){
     const p=products.find(x=>x.id===pid);if(!p)return;
     document.getElementById('pm-title').textContent='상품 수정';
     const vals={
-      'pf-name':p.name,'pf-iss':p.issuer,'pf-pr':p.principal,'pf-sd':p.startDate,
-      'pf-md':p.maturityDate,'pf-ki':p.knockin||'','pf-yr':p.expectedYield||'',
+      'pf-name':p.name,'pf-iss':p.issuer,'pf-pr':p.principal,
+      'pf-ki':p.knockin||'','pf-yr':p.expectedYield||'',
       'pf-fb':p.finalBarrier||'','pf-mc':p.maturityCouponCumulative||'',
       'pf-cm':p.couponMemo||'','pf-cl':p.checklist||'','pf-ca':p.caution||'',
       'pf-ex':p.extra||'','pf-mo':p.memo||''
     };
     Object.entries(vals).forEach(([id,v])=>document.getElementById(id).value=v);
     document.getElementById('pf-pt').value=p.payoffType||'standard-stepdown';
-    document.getElementById('pf-nkm').value=p.noKiMode||'coupon';
     document.getElementById('pf-cur').value=p.currency||'KRW';
+    document.getElementById('pf-sd-wrap').innerHTML=makeDateSplitHtml(p.startDate);
+    document.getElementById('pf-md-wrap').innerHTML=makeDateSplitHtml(p.maturityDate);
+    bindDateSplit(document.getElementById('pf-sd-wrap'),autoCalcMaturity);
+    bindDateSplit(document.getElementById('pf-md-wrap'),autoCalcMaturity);
     fillAccSel('pf-acc',p.accountId);
     (p.underlyings||[]).forEach(u=>addU(u.name,u.basePrice));
     (p.evalDates||[]).forEach((e,i)=>addE(i+1,e.date,e.barrier,e.couponRateCumulative||''));
@@ -2011,8 +2082,11 @@ function openProdModal(pid){
     document.getElementById('pm-title').textContent='상품 등록';
     FIELDS.forEach(i=>document.getElementById(i).value='');
     document.getElementById('pf-pt').value='standard-stepdown';
-    document.getElementById('pf-nkm').value='coupon';
     document.getElementById('pf-cur').value='KRW';
+    document.getElementById('pf-sd-wrap').innerHTML=makeDateSplitHtml();
+    document.getElementById('pf-md-wrap').innerHTML=makeDateSplitHtml();
+    bindDateSplit(document.getElementById('pf-sd-wrap'),autoCalcMaturity);
+    bindDateSplit(document.getElementById('pf-md-wrap'),autoCalcMaturity);
     fillAccSel('pf-acc',null);addU();addE(1);
   }
   om('mo-prod');
@@ -2022,18 +2096,24 @@ function saveProd(){
   const iss=document.getElementById('pf-iss').value.trim();
   const acc=document.getElementById('pf-acc').value;
   const pr=document.getElementById('pf-pr').value;
-  const sd=document.getElementById('pf-sd').value;
-  const md=document.getElementById('pf-md').value;
+  const sd=getDateFromSplit(document.getElementById('pf-sd-wrap'));
+  const md=getDateFromSplit(document.getElementById('pf-md-wrap'));
   if(!nm){toast('상품명을 입력하세요.','err');return;}
   if(!iss){toast('증권사명을 입력하세요.','err');return;}
   if(!acc){toast('계좌를 선택하세요.','err');return;}
   if(!pr||Number(pr)<=0){toast('투자원금을 입력하세요.','err');return;}
-  if(!sd){toast('가입일을 입력하세요.','err');return;}
-  if(!md){toast('만기일을 입력하세요.','err');return;}
+  if(!sd){toast('가입일을 올바르게 입력하세요. (YYYY-MM-DD)','err');return;}
+  if(!md){toast('만기일을 올바르게 입력하세요. (YYYY-MM-DD)','err');return;}
   const underlyings=[];
   document.querySelectorAll('#ul-list .dyni').forEach(r=>{const n=r.querySelector('.u-nm')?.value.trim(),b=r.querySelector('.u-bp')?.value;if(n)underlyings.push({name:n,basePrice:Number(b)||0});});
   const evalDates=[];
-  document.querySelectorAll('#el-list .dyni').forEach((r,i)=>{const dt=r.querySelector('.e-dt')?.value,ba=r.querySelector('.e-br')?.value,cr=r.querySelector('.e-cr')?.value;if(dt)evalDates.push({round:i+1,date:dt,barrier:Number(ba)||0,couponRateCumulative:Number(cr)||0});});
+  document.querySelectorAll('#el-list .dyni').forEach((r,i)=>{
+    const dtWrap=r.querySelector('.e-dt-wrap');
+    const dt=getDateFromSplit(dtWrap);
+    const ba=r.querySelector('.e-br')?.value;
+    const cr=r.querySelector('.e-cr')?.value;
+    if(dt)evalDates.push({round:i+1,date:dt,barrier:Number(ba)||0,couponRateCumulative:Number(cr)||0});
+  });
   const data={
     name:nm, issuer:iss, accountId:acc, principal:Number(pr), startDate:sd, maturityDate:md,
     currency:document.getElementById('pf-cur').value||'KRW',
@@ -2042,7 +2122,7 @@ function saveProd(){
     payoffType:document.getElementById('pf-pt').value,
     finalBarrier:Number(document.getElementById('pf-fb').value)||0,
     maturityCouponCumulative:Number(document.getElementById('pf-mc').value)||0,
-    noKiMode:document.getElementById('pf-nkm').value,
+    noKiMode:'coupon',
     couponMemo:document.getElementById('pf-cm').value.trim(),
     checklist:document.getElementById('pf-cl').value.trim(),
     caution:document.getElementById('pf-ca').value.trim(),
