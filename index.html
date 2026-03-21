@@ -6,12 +6,13 @@
 <title>ELS Manager</title>
 <style>
 /* =============================================================
-   ELS Manager V26.03.9
-   - 현재 보유 카드 compact 재배치
-   - 도달값(현재가-기준가) 표시 추가
-   - KI % → 만기일 줄 이동
-   - stlLabel / scoreInline / calcDiffs 헬퍼 추가
-   - renderDash load() 중복 제거
+   ELS Manager V26.03.11
+   - 투자원금 보유 카드 복구
+   - 도달값 계산식 명시적으로 현재 차수 barrier 기준 확인
+   - 상품 등록 currency(KRW/USD) 필드 추가
+   - import 시 currency 기본값 KRW 자동 보완
+   - formatMoneyByCurrency(fmc) 헬퍼 추가
+   - "조기상환 시" 탭 추가 (마지막 탭)
    ============================================================= */
 :root {
   --bg:#f2f5f9; --surface:#fff; --s2:#f0f4f9; --s3:#e6ecf5;
@@ -268,10 +269,11 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">ELS Manager</div>
-      <span class="ver-badge">V26.03.9</span>
+      <span class="ver-badge">V26.03.11</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
+      <button class="tbtn" data-tab="earlysim" onclick="sw('earlysim')">💰 조기상환 시</button>
       <button class="tbtn" data-tab="all" onclick="sw('all')">📋 전체<span class="tcnt" id="cnt-a">0</span></button>
       <button class="tbtn" data-tab="annual" onclick="sw('annual')">📊 연간 실적</button>
       <button class="tbtn" data-tab="sim" onclick="sw('sim')">🔬 시뮬</button>
@@ -514,6 +516,30 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
+<!-- ====== 탭: 조기상환 시 (이번 차수 가정 시뮬) ====== -->
+<div class="page" id="tab-earlysim">
+  <div class="sim-banner">💰 <span><b>조기상환 시 시뮬레이션</b> — 이번 차수에서 조기상환된다고 가정했을 때의 예상 수익입니다. 실제 확정값이 아닙니다.</span></div>
+  <div class="sec-hd">
+    <div class="sec-hl"><span class="sec-t">💰 이번 차수 조기상환 시 예상 수익</span><span class="cbadge" id="es-cnt">0개</span></div>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>상품명 / 증권사 / 계좌</th>
+        <th class="tc">차수</th>
+        <th class="nr">투자원금</th>
+        <th>평가일 / 배리어 / 수익률</th>
+        <th>도달값</th>
+        <th class="nr">세후 예상 수익금</th>
+        <th class="nr">세후 예상 상환금액</th>
+        <th class="tc">현재 기준 상태</th>
+      </tr></thead>
+      <tbody id="es-tb"></tbody>
+      <tfoot><tr class="tfoot" id="es-tf"></tr></tfoot>
+    </table>
+  </div>
+</div>
+
 <!-- ====== 모달들 ====== -->
 
 <!-- 상품 등록/수정 -->
@@ -525,7 +551,16 @@ tr:hover td{background:#f8fafc}
         <div class="fg"><label class="fl">상품명 <span class="req">*</span></label><input type="text" class="fi" id="pf-name" placeholder="KB 스텝다운 ELS 1234호"></div>
         <div class="fg"><label class="fl">증권사 <span class="req">*</span></label><input type="text" class="fi" id="pf-iss" placeholder="KB증권"></div>
         <div class="fg"><label class="fl">소속 계좌 <span class="req">*</span></label><select class="fsl" id="pf-acc"></select></div>
-        <div class="fg"><label class="fl">투자원금 (원) <span class="req">*</span></label><input type="number" class="fi" id="pf-pr" placeholder="10000000" min="0"></div>
+        <div class="fg">
+          <label class="fl">투자원금 <span class="req">*</span></label>
+          <div style="display:flex;gap:6px">
+            <input type="number" class="fi" id="pf-pr" placeholder="10000000" min="0" style="flex:1">
+            <select class="fsl" id="pf-cur" style="width:80px;min-width:72px;flex-shrink:0">
+              <option value="KRW">KRW</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+        </div>
         <div class="fg"><label class="fl">가입일 <span class="req">*</span></label><input type="date" class="fi" id="pf-sd"></div>
         <div class="fg"><label class="fl">만기일 <span class="req">*</span></label><input type="date" class="fi" id="pf-md"></div>
         <div class="fg"><label class="fl">KI 배리어 (%)</label><input type="number" class="fi" id="pf-ki" placeholder="50" min="0" max="100"></div>
@@ -706,7 +741,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.03.9';
+const VER = 'V26.03.11';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -825,6 +860,13 @@ function dbadge(d){
   return`<span class="badge bgr">${d}일</span>`;
 }
 function fm(n){if(n===null||n===undefined||isNaN(n))return'-';return Math.round(n).toLocaleString('ko-KR')+'원';}
+/** 통화별 금액 표시: KRW → 한국식 원, USD → $달러 */
+function fmc(n, currency){
+  if(n===null||n===undefined||isNaN(n))return'-';
+  const v=Math.round(n);
+  if((currency||'KRW')==='USD') return '$'+v.toLocaleString('en-US');
+  return v.toLocaleString('ko-KR')+'원';
+}
 function fp(n,d=2){if(n===null||n===undefined||isNaN(n))return'-';return n.toFixed(d)+'%';}
 function esc(s){if(!s&&s!==0)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function dy(d){return d?d.slice(0,4):null;}
@@ -843,13 +885,21 @@ function scoreInline(s){
   return`<span class="score-sm ${cls}" title="조기상환 참고 점수 (heuristic — 비공식 추정치)">${s}%</span>`;
 }
 
-/** 기초자산별 도달값 계산 (현재가 - 기준가) */
-function calcDiffs(underlyings, prices){
+/**
+ * 기초자산별 도달값 계산
+ * diff = 현재가 − (기준가 × 현재 차수 배리어%)
+ * 양수(+): 배리어 초과 → 조기상환 가능 범위
+ * 음수(−): 배리어까지 아직 부족한 금액
+ * barrier가 없으면 null 반환
+ */
+function calcBarrierDiffs(underlyings, prices, barrier){
+  if(!barrier) return (underlyings||[]).map(u=>({name:u.name, diff:null}));
   return (underlyings||[]).map(u=>{
     const cur  = Number(prices[u.name]);
     const base = Number(u.basePrice);
     if(!cur||!base) return {name:u.name, diff:null};
-    return {name:u.name, diff:cur-base};
+    const target = base * barrier / 100;
+    return {name:u.name, diff:cur-target};
   });
 }
 /** 도달값 배열 → HTML (색상 포함) */
@@ -877,6 +927,7 @@ function renderTab(tab){
   if(tab==='sim')       renderSim();
   if(tab==='accounts')  renderAccounts();
   if(tab==='backup')    renderBackup();
+  if(tab==='earlysim')  renderEarlySim();
 }
 function reAll(){updateCnts();renderTab(curTab);}
 function updateCnts(){
@@ -1097,18 +1148,6 @@ function renderHolding(accounts, products){
   el.innerHTML=list.map(p=>prodCard(p,accounts)).join('');
 }
 
-/**
- * prodCard — compact 보유 카드 (V26.03.9)
- *
- * 레이아웃:
- *   [상품명] [증권사] [N차] [확률%] ··· [과세유형]
- *   [계좌뱃지] [KI확정] [시뮬주의]
- *   다음 평가일  |  날짜  남은일수
- *   만기일       |  날짜  남은일수  KI N%
- *   도달값(자산명/자산명) | +값 / -값
- *   [stage 카드]
- *   [액션 버튼]
- */
 function prodCard(p, accounts){
   const acc   = accounts.find(a=>a.id===p.accountId);
   const cur   = p.currentRoundIndex||0;
@@ -1120,11 +1159,19 @@ function prodCard(p, accounts){
   const prices= loadPP(p.id);
   const score = calcScore(p);
   const ki    = Number(p.knockin)||0;
+  const curBarrier = Number(curSt?.barrier)||0;
+  const ccy   = p.currency||'KRW';
 
-  /* 도달값 (현재가 - 기준가) */
-  const diffs    = calcDiffs(p.underlyings, prices);
+  /* 도달값: 현재가 − (기준가 × 현재 배리어%) */
+  const diffs    = calcBarrierDiffs(p.underlyings, prices, curBarrier);
   const diffNms  = diffs.map(d=>d.name).join('/');
   const diffHtml = diffText(diffs);
+
+  /* 이번 차수 세후 예상 상환금액 */
+  const cr      = Number(curSt?.couponRateCumulative)||0;
+  const simGross= Number(p.principal||0) * cr / 100;
+  const simT    = calcTax(simGross, acc?.type, p.principal);
+  const hasCr   = cr > 0;
 
   /* KI 시뮬 주의 */
   const worst = calcWorst(p.underlyings, prices);
@@ -1134,32 +1181,37 @@ function prodCard(p, accounts){
   const stages = buildStages(p);
 
   return`<div class="pc">
-    <!-- 압축 헤더 -->
+    <!-- 압축 헤더 한 줄 -->
     <div class="pc-hd2">
       <span class="pc-nm2">${esc(p.name)}</span>
       <span class="pc-iss">${esc(p.issuer)}</span>
       <span class="badge bbl">${cur+1}/${tot||'?'}차</span>
       ${score!==null?scoreInline(score):''}
-      <span class="badge ${TAXB[acc?.type||'normal']} pc-tax">${TAXL[acc?.type||'normal']}</span>
-    </div>
-    <!-- 태그 -->
-    <div class="pc-mt">
       <span class="badge bgr">${esc(acc?.name||'계좌없음')}</span>
       ${p.kiHit?`<span class="ki-confirmed">🔴 KI확정</span>`:''}
       ${kiSimNote}
+      <span class="badge ${TAXB[acc?.type||'normal']} pc-tax">${TAXL[acc?.type||'normal']}</span>
     </div>
     <!-- 정보 행 -->
+    <div class="pc-row">
+      <span>투자원금</span>
+      <span class="v">${fmc(p.principal,ccy)}${ccy==='USD'?` <span style="font-size:10px;color:var(--txt3)">USD</span>`:''}</span>
+    </div>
     <div class="pc-row">
       <span>다음 평가일</span>
       <span class="v">${nxd||'-'} ${evD!==null?dbadge(evD):''}</span>
     </div>
     <div class="pc-row">
-      <span>만기일</span>
-      <span class="v">${p.maturityDate||'-'} ${matD!==null?dbadge(matD):''}${ki?` <span class="badge bam" style="font-size:9px;padding:1px 5px">KI ${ki}%</span>`:''}</span>
+      <span>만기일${ki?` <span class="badge bam" style="font-size:9px;padding:1px 5px;margin-left:4px">KI ${ki}%</span>`:''}</span>
+      <span class="v">${p.maturityDate||'-'} ${matD!==null?dbadge(matD):''}</span>
     </div>
     ${diffs.length?`<div class="pc-row">
-      <span>도달값${diffNms?` <span style="font-size:10px;color:var(--txt3)">(${esc(diffNms)})</span>`:''}</span>
+      <span>도달값${curBarrier?` <span style="font-size:10px;color:var(--txt3)">(배리어 ${curBarrier}% 기준)</span>`:''}${diffNms?`<br><span style="font-size:10px;color:var(--txt3)">${esc(diffNms)}</span>`:''}</span>
       <span class="v" style="font-variant-numeric:tabular-nums">${diffHtml}</span>
+    </div>`:''}
+    ${hasCr?`<div class="pc-row">
+      <span>세후 예상 상환금액 <span style="font-size:10px;color:var(--txt3)">(${cur+1}차 가정)</span></span>
+      <span class="v"><b class="ta">${fmc(simT.total,ccy)}</b> <span style="font-size:10px;color:var(--txt3)">수익 ${fmc(simT.net,ccy)}</span></span>
     </div>`:''}
     <!-- 조기상환 단계 -->
     ${stages}
@@ -1206,7 +1258,7 @@ function buildStages(p){
     if(saved&&saved.result==='pass') resBadge=`<div class="es-res" style="background:var(--g-bg);color:var(--g)">확정 통과</div>`;
     else if(saved&&saved.result==='fail') resBadge=`<div class="es-res" style="background:var(--r-bg);color:var(--r)">확정 미달</div>`;
     const cr = Number(e.couponRateCumulative)||0;
-    const coupon = cr>0?`<div class="es-c">누적 ${cr}%</div>`:'';
+    const coupon = cr>0?`<div class="es-c">수익률 ${cr}%</div>`:'';
     return`<div class="es ${cls}" title="${e.date} | 배리어 ${barrier}% | 도달율 ${ratioLabel} | 누적 ${cr}%">
       <div class="es-r">${round}차</div>
       <div class="es-d">${e.date||'-'}</div>
@@ -1491,6 +1543,72 @@ function renderBackup(){
           <div style="font-size:16px;font-weight:700">${v}</div>
         </div>`).join('')}
     </div>`;
+}
+
+/* ─ §17b 조기상환 시 탭 렌더 ─ */
+function renderEarlySim(){
+  const{accounts,products}=load();
+  const active=products.filter(p=>p.status==='active');
+  document.getElementById('es-cnt').textContent=active.length+'개';
+  const tb=document.getElementById('es-tb');
+  const tf=document.getElementById('es-tf');
+  if(!active.length){
+    tb.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--txt3);padding:28px">보유 중인 상품이 없습니다.</td></tr>`;
+    tf.innerHTML='';return;
+  }
+  let totPr=0,totNet=0,totRed=0;
+  tb.innerHTML=active.map(p=>{
+    const acc     = accounts.find(a=>a.id===p.accountId);
+    const curIdx  = p.currentRoundIndex||0;
+    const curSt   = p.evalDates?.[curIdx];
+    const ccy     = p.currency||'KRW';
+    const pr      = Number(p.principal)||0;
+    const cr      = Number(curSt?.couponRateCumulative)||0;
+    const barrier = Number(curSt?.barrier)||0;
+    const gross   = pr*cr/100;
+    const t       = calcTax(gross, acc?.type, pr);
+    totPr+=pr; totNet+=t.net; totRed+=t.total;
+
+    // 도달값
+    const prices  = loadPP(p.id);
+    const diffs   = calcBarrierDiffs(p.underlyings, prices, barrier);
+    const diffHtml= diffs.length ? diffText(diffs)+'<br><span style="font-size:10px;color:var(--txt3)">'+diffs.map(d=>d.name).join('/')+'</span>' : '-';
+
+    // 현재 기준 상태
+    let stateCls='bgr', stateStr='현재가 미입력';
+    if(p.kiHit){
+      stateCls='br'; stateStr='KI 기록';
+    } else if(barrier){
+      const entries=getRatioEntries(p,prices);
+      const hasAll=entries.length>0&&entries.every(e=>e.ratio!=null);
+      if(hasAll){
+        stateStr=entries.every(e=>e.ratio>=barrier)?'현재 기준 가능':'현재 기준 미달';
+        stateCls=entries.every(e=>e.ratio>=barrier)?'bg':'bam';
+      }
+    }
+    return`<tr>
+      <td>
+        <b>${esc(p.name)}</b>
+        <div style="font-size:11px;color:var(--txt3)">${esc(p.issuer)} · <span class="badge bgr" style="font-size:10px">${esc(acc?.name||'-')}</span></div>
+      </td>
+      <td class="tc"><span class="badge bbl">${curIdx+1}차</span></td>
+      <td class="nr">${fmc(pr,ccy)}</td>
+      <td>
+        <div style="font-size:12px">${curSt?.date||'-'}</div>
+        <div style="font-size:11px;color:var(--txt3)">배리어 ${barrier?barrier+'%':'-'} · 수익률 ${cr?cr+'%':'-'}</div>
+      </td>
+      <td style="font-variant-numeric:tabular-nums">${diffHtml}</td>
+      <td class="nr"><b class="tg">${fmc(t.net,ccy)}</b><div style="font-size:10px;color:var(--txt3)">세금 ${fmc(t.tax,ccy)}</div></td>
+      <td class="nr"><b class="ta">${fmc(t.total,ccy)}</b></td>
+      <td class="tc"><span class="badge ${stateCls}">${stateStr}</span></td>
+    </tr>`;
+  }).join('');
+  tf.innerHTML=`<td colspan="2" style="font-weight:700">합계</td>
+    <td class="nr">${fm(totPr)}</td>
+    <td colspan="2"></td>
+    <td class="nr"><b class="tg">${fm(totNet)}</b></td>
+    <td class="nr"><b class="ta">${fm(totRed)}</b></td>
+    <td></td>`;
 }
 
 /* ─ §18 조기상환 완료 처리 ─ */
@@ -1868,6 +1986,7 @@ function openProdModal(pid){
     Object.entries(vals).forEach(([id,v])=>document.getElementById(id).value=v);
     document.getElementById('pf-pt').value=p.payoffType||'standard-stepdown';
     document.getElementById('pf-nkm').value=p.noKiMode||'coupon';
+    document.getElementById('pf-cur').value=p.currency||'KRW';
     fillAccSel('pf-acc',p.accountId);
     (p.underlyings||[]).forEach(u=>addU(u.name,u.basePrice));
     (p.evalDates||[]).forEach((e,i)=>addE(i+1,e.date,e.barrier,e.couponRateCumulative||''));
@@ -1876,6 +1995,7 @@ function openProdModal(pid){
     FIELDS.forEach(i=>document.getElementById(i).value='');
     document.getElementById('pf-pt').value='standard-stepdown';
     document.getElementById('pf-nkm').value='coupon';
+    document.getElementById('pf-cur').value='KRW';
     fillAccSel('pf-acc',null);addU();addE(1);
   }
   om('mo-prod');
@@ -1899,6 +2019,7 @@ function saveProd(){
   document.querySelectorAll('#el-list .dyni').forEach((r,i)=>{const dt=r.querySelector('.e-dt')?.value,ba=r.querySelector('.e-br')?.value,cr=r.querySelector('.e-cr')?.value;if(dt)evalDates.push({round:i+1,date:dt,barrier:Number(ba)||0,couponRateCumulative:Number(cr)||0});});
   const data={
     name:nm, issuer:iss, accountId:acc, principal:Number(pr), startDate:sd, maturityDate:md,
+    currency:document.getElementById('pf-cur').value||'KRW',
     knockin:Number(document.getElementById('pf-ki').value)||0,
     expectedYield:Number(document.getElementById('pf-yr').value)||0,
     payoffType:document.getElementById('pf-pt').value,
@@ -2026,13 +2147,15 @@ function importAll(ev){
       if(!Array.isArray(data.accounts)||!Array.isArray(data.products)){toast('올바른 ELS 백업 파일이 아닙니다.','err');return;}
       const hasStatus=data.products.every(p=>p.status);
       if(!hasStatus){toast('이 파일은 이전 버전입니다. 불러올 수 없습니다.','err');return;}
+      // currency 필드 없으면 KRW 기본값 보완
+      const normalizedProducts=data.products.map(p=>({currency:'KRW',...p}));
       if(!confirm(`계좌 ${data.accounts.length}개, 상품 ${data.products.length}개를 불러옵니다.\n기존 데이터(현재가 캐시 포함)를 완전히 덮어씁니다.\n계속하시겠습니까?`))return;
       Object.keys(localStorage).forEach(k=>{
         if(k.startsWith('els_ap_')||k.startsWith('els_pp_')||k==='els_ord')
           localStorage.removeItem(k);
       });
       saveAcc2(data.accounts);
-      saveProd2(data.products);
+      saveProd2(normalizedProducts);
       if(data.accountOrder)saveOrd(data.accountOrder);
       if(data.assetPrices)Object.entries(data.assetPrices).forEach(([k,v])=>saveAP(k,v));
       if(data.prodPrices)Object.entries(data.prodPrices).forEach(([pid,v])=>savePP(pid,v));
@@ -2074,7 +2197,7 @@ function initSample(){
   ];
   function doff(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);}
   const prods=[
-    {id:genId(),createdAt:'2024-06-15T00:00:00Z',name:'KB 스텝다운 ELS 5678호',issuer:'KB증권',accountId:a1,
+    {id:genId(),createdAt:'2024-06-15T00:00:00Z',name:'KB 스텝다운 ELS 5678호',issuer:'KB증권',accountId:a1,currency:'KRW',
      principal:30000000,startDate:'2024-06-15',maturityDate:doff(480),knockin:50,expectedYield:8.2,
      payoffType:'standard-stepdown',finalBarrier:70,maturityCouponCumulative:16.4,noKiMode:'coupon',
      couponMemo:'연 8.2%, 6개월 조기상환',checklist:'원금보장 없음, KI 50%',caution:'KI 접근 시 손실 가능',extra:'',memo:'',
@@ -2084,7 +2207,7 @@ function initSample(){
      settlementDate:'',settlementType:'',settlementMemo:'',resultCheckSource:DEF_SRC,
      actualGrossProfit:0,actualTax:0,actualNetProfit:0,actualRedemptionAmount:0,actualYieldNet:0,redeemedRound:null,
      kiHit:false,kiHitDate:'',kiHitMemo:'',kiObservationType:'unknown'},
-    {id:genId(),createdAt:'2025-01-10T00:00:00Z',name:'한투 글로벌 ELS 9901호',issuer:'한국투자증권',accountId:a3,
+    {id:genId(),createdAt:'2025-01-10T00:00:00Z',name:'한투 글로벌 ELS 9901호',issuer:'한국투자증권',accountId:a3,currency:'KRW',
      principal:50000000,startDate:'2025-01-10',maturityDate:doff(800),knockin:55,expectedYield:10.3,
      payoffType:'standard-stepdown',finalBarrier:65,maturityCouponCumulative:30.9,noKiMode:'coupon',
      couponMemo:'연 10.3%',checklist:'3개 기초자산 worst 기준',caution:'변동성 주의',extra:'',memo:'',
@@ -2094,7 +2217,7 @@ function initSample(){
      settlementDate:'',settlementType:'',settlementMemo:'',resultCheckSource:DEF_SRC,
      actualGrossProfit:0,actualTax:0,actualNetProfit:0,actualRedemptionAmount:0,actualYieldNet:0,redeemedRound:null,
      kiHit:false,kiHitDate:'',kiHitMemo:'',kiObservationType:'unknown'},
-    {id:genId(),createdAt:'2023-09-01T00:00:00Z',name:'삼성 스텝다운 ELS 2234호',issuer:'삼성증권',accountId:a2,
+    {id:genId(),createdAt:'2023-09-01T00:00:00Z',name:'삼성 스텝다운 ELS 2234호',issuer:'삼성증권',accountId:a2,currency:'KRW',
      principal:20000000,startDate:'2023-09-01',maturityDate:'2026-09-01',knockin:0,expectedYield:5.5,
      payoffType:'no-ki-stepdown',finalBarrier:80,maturityCouponCumulative:8.25,noKiMode:'coupon',
      couponMemo:'연 5.5%, KI 없음',checklist:'',caution:'',extra:'',memo:'',
