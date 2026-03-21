@@ -91,13 +91,6 @@ body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px;l
 .fi:focus,.fsl:focus,.fta:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
 .fta{resize:vertical;min-height:64px}
 .fhint{font-size:11px;color:var(--txt3)}
-.dateparts{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;width:100%}
-.dateparts .fi{min-width:0}
-.dp-year{width:88px;max-width:88px;text-align:center}
-.dp-mm,.dp-dd{width:58px;max-width:58px;text-align:center}
-.dp-sep{font-size:13px;color:var(--txt3);font-weight:700;flex-shrink:0}
-.date-hidden{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
-.es-k{font-size:8px;font-weight:800;margin-top:2px;padding:1px 4px;border-radius:3px;background:rgba(0,0,0,.08)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .sp2{grid-column:1/-1}
@@ -263,16 +256,16 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">ELS Manager</div>
-      <span class="ver-badge">V26.03.6</span>
+      <span class="ver-badge">V26.03.8</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
-      <button class="tbtn" data-tab="completed" onclick="sw('completed')">✅ 완료<span class="tcnt" id="cnt-c">0</span></button>
       <button class="tbtn" data-tab="all" onclick="sw('all')">📋 전체<span class="tcnt" id="cnt-a">0</span></button>
       <button class="tbtn" data-tab="annual" onclick="sw('annual')">📊 연간 실적</button>
       <button class="tbtn" data-tab="sim" onclick="sw('sim')">🔬 시뮬</button>
       <button class="tbtn" data-tab="accounts" onclick="sw('accounts')">🏦 계좌</button>
       <button class="tbtn" data-tab="backup" onclick="sw('backup')">💾 백업</button>
+      <button class="tbtn" data-tab="completed" onclick="sw('completed')">✅ 완료<span class="tcnt" id="cnt-c">0</span></button>
     </nav>
     <div class="bar-r">
       <button class="btn bp sm" onclick="openProdModal()">＋ 상품</button>
@@ -298,7 +291,6 @@ tr:hover td{background:#f8fafc}
       </div>
       <span class="sim-note">🔬 시뮬레이션 참고용</span>
     </div>
-    <div class="fhint" style="margin-top:-4px;margin-bottom:10px">현재가 수동 입력 → 전체 보유상품 참고 상태 일괄 반영</div>
     <div id="asset-grid" class="agrid"></div>
   </div>
 
@@ -548,7 +540,7 @@ tr:hover td{background:#f8fafc}
           </select>
         </div>
         <div class="fg"><label class="fl">만기 최종 배리어 (%)</label><input type="number" class="fi" id="pf-fb" placeholder="65" step="0.1"></div>
-        <div class="fg"><label class="fl">만기 누적 수익률 (% — 만기 시 지급)</label><input type="number" class="fi" id="pf-mc" placeholder="18.0" step="0.01" oninput="this.dataset.manual='1'"></div>
+        <div class="fg"><label class="fl">만기 누적 수익률 (% — 만기 시 지급)</label><input type="number" class="fi" id="pf-mc" placeholder="18.0" step="0.01"></div>
       </div>
       <div class="hr"></div>
       <div class="fg">
@@ -702,7 +694,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.03.6';
+const VER = 'V26.03.8';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -755,6 +747,21 @@ function calcWorst(underlyings,prices){
     if(worst===null||pct<worst.pct)worst={name:u.name,pct,cur,base};
   });
   return worst;
+}
+function getRatioEntries(p, prices=loadPP(p.id)){
+  return (p.underlyings||[]).map(u=>{
+    const cur=Number(prices[u.name]);
+    const base=Number(u.basePrice);
+    const ratio=(cur&&base)?(cur/base*100):null;
+    return {name:u.name, cur:cur||null, base:base||null, ratio};
+  });
+}
+function ratioNames(entries){
+  return (entries||[]).map(e=>e.name).join(' / ');
+}
+function ratioText(entries){
+  const vals=(entries||[]).map(e=>e.ratio!=null?`${e.ratio.toFixed(1)}%`:'-');
+  return vals.length?vals.join(' / '):'-';
 }
 
 /* ─ §4 만기 자동 계산 — 단일 함수 (UI 표시와 저장에 동일하게 사용) ─
@@ -821,53 +828,6 @@ function dy(d){return d?d.slice(0,4):null;}
 function today(){return new Date().toISOString().slice(0,10);}
 function nextEvalDate(p){if(!p.evalDates?.length)return null;const i=p.currentRoundIndex||0;return p.evalDates[i]?.date||null;}
 
-function enhanceDateInputs(root=document){
-  root.querySelectorAll('input[type="date"]').forEach(inp=>{
-    if(inp.dataset.partsEnhanced==='1') return;
-    inp.dataset.partsEnhanced='1';
-    const wrap=document.createElement('div');
-    wrap.className='dateparts';
-    const y=document.createElement('input'); y.type='text'; y.inputMode='numeric'; y.maxLength=4; y.placeholder='YYYY'; y.className='fi dp-year';
-    const m=document.createElement('input'); m.type='text'; m.inputMode='numeric'; m.maxLength=2; m.placeholder='MM'; m.className='fi dp-mm';
-    const d=document.createElement('input'); d.type='text'; d.inputMode='numeric'; d.maxLength=2; d.placeholder='DD'; d.className='fi dp-dd';
-    const s1=document.createElement('span'); s1.className='dp-sep'; s1.textContent='-';
-    const s2=document.createElement('span'); s2.className='dp-sep'; s2.textContent='-';
-    wrap.append(y,s1,m,s2,d);
-    function syncFromValue(){
-      const v=inp.value||'';
-      if(/^\d{4}-\d{2}-\d{2}$/.test(v)){
-        const [yy,mm,dd]=v.split('-'); y.value=yy; m.value=mm; d.value=dd;
-      } else { y.value=''; m.value=''; d.value=''; }
-    }
-    function updateValue(trigger=true){
-      y.value=y.value.replace(/\D/g,'').slice(0,4);
-      m.value=m.value.replace(/\D/g,'').slice(0,2);
-      d.value=d.value.replace(/\D/g,'').slice(0,2);
-      if(y.value.length===4 && m.value.length>=1 && d.value.length>=1){
-        const mm=String(Math.min(12,Math.max(1,Number(m.value)||1))).padStart(2,'0');
-        const dd=String(Math.min(31,Math.max(1,Number(d.value)||1))).padStart(2,'0');
-        m.value=mm; d.value=dd; inp.value=`${y.value}-${mm}-${dd}`;
-      } else {
-        inp.value='';
-      }
-      if(trigger) inp.dispatchEvent(new Event('change',{bubbles:true}));
-    }
-    y.addEventListener('input',()=>{updateValue(); if(y.value.length===4) m.focus();});
-    m.addEventListener('input',()=>{updateValue(); if(m.value.length===2) d.focus();});
-    d.addEventListener('input',()=>{updateValue();});
-    m.addEventListener('keydown',e=>{ if(e.key==='Backspace' && !m.value){ y.focus(); y.setSelectionRange(y.value.length,y.value.length);} });
-    d.addEventListener('keydown',e=>{ if(e.key==='Backspace' && !d.value){ m.focus(); m.setSelectionRange(m.value.length,m.value.length);} });
-    inp.classList.add('date-hidden');
-    inp.after(wrap);
-    syncFromValue();
-  });
-}
-function refreshDateInputs(root=document){
-  root.querySelectorAll('.dateparts').forEach(w=>w.remove());
-  root.querySelectorAll('input[type="date"]').forEach(inp=>{inp.classList.remove('date-hidden'); delete inp.dataset.partsEnhanced;});
-  enhanceDateInputs(root);
-}
-
 /* ─ §6 탭 전환 ─ */
 function sw(tab){
   curTab=tab;
@@ -918,30 +878,6 @@ function scoreSm(s){
   const lbl=s<40?'낮음':s<70?'보통':'높음';
   return`<span class="score-sm ${cls}" title="조기상환 참고 점수 (heuristic — 비공식 추정치)">참고 ${s}% ${lbl}</span>`;
 }
-function getRatioEntries(p, prices=loadPP(p.id)){
-  return (p.underlyings||[]).map(u=>{
-    const cur=Number(prices[u.name]);
-    const base=Number(u.basePrice);
-    const ratio=(cur&&base)?(cur/base*100):null;
-    return {name:u.name, cur:cur||null, base:base||null, ratio};
-  });
-}
-function ratioText(entries){
-  const vals=(entries||[]).map(e=>e.ratio!=null?`${e.ratio.toFixed(1)}%`:'-');
-  return vals.length?vals.join(' / '):'-';
-}
-function currentBarrierHint(p, prices=loadPP(p.id)){
-  const curIdx=p.currentRoundIndex||0;
-  const st=p.evalDates?.[curIdx];
-  if(!st)return {label:'평가일 없음', cls:'bgr'};
-  if(p.kiHit===true)return {label:'현재 기준 KI 기록', cls:'br'};
-  const entries=getRatioEntries(p, prices);
-  const hasAll=entries.length>0 && entries.every(e=>e.ratio!=null);
-  if(!hasAll)return {label:'현재가 미입력', cls:'bgr'};
-  const barrier=Number(st.barrier)||0;
-  const ok=entries.every(e=>e.ratio>=barrier);
-  return ok?{label:'현재 기준 조기상환 가능', cls:'bg'}:{label:'현재 기준 조기상환 불가', cls:'bam'};
-}
 
 /* ─ §8 기초자산 현재가 ─ */
 function renderAssets(){
@@ -950,8 +886,7 @@ function renderAssets(){
   products.filter(p=>p.status==='active').forEach(p=>{
     (p.underlyings||[]).forEach(u=>{
       if(!u.name)return;
-      if(!map[u.name])map[u.name]={bases:[],pids:[]};
-      map[u.name].bases.push(Number(u.basePrice)||0);
+      if(!map[u.name])map[u.name]={pids:[]};
       map[u.name].pids.push(p.id);
     });
   });
@@ -960,14 +895,10 @@ function renderAssets(){
   const el=document.getElementById('asset-grid');
   if(!nms.length){el.innerHTML=`<div style="color:var(--txt3);font-size:13px">보유 중인 상품의 기초자산이 없습니다.</div>`;return;}
   el.innerHTML=nms.map(nm=>{
-    const info=map[nm];
-    const uniq=[...new Set(info.bases.filter(v=>v))];
-    const note=uniq.length===1?`대표 기준가: ${uniq[0].toLocaleString('ko-KR')}`:'기준가: 상품별 상이 가능';
     const cur=loadAP(nm);
     return`<div class="acard">
       <div class="ac-nm">${esc(nm)}</div>
-      <div class="ac-nt">${note}</div>
-      <input type="number" inputmode="decimal" class="fi" placeholder="현재가 입력" value="${esc(cur)}"
+      <input type="number" class="fi" placeholder="현재가 입력" value="${esc(cur)}"
         onchange='onAP(${JSON.stringify(nm)},this.value)'>
     </div>`;
   }).join('');
@@ -975,18 +906,12 @@ function renderAssets(){
 function onAP(nm,val){
   saveAP(nm,val);
   const{products}=load();
-  products.forEach(p=>{
-    if((p.underlyings||[]).some(u=>u.name===nm)){
-      const pp=loadPP(p.id);
-      if(val===''||val===null) delete pp[nm]; else pp[nm]=val;
-      savePP(p.id,pp);
-    }
-  });
+  products.forEach(p=>{if((p.underlyings||[]).some(u=>u.name===nm)){const pp=loadPP(p.id);pp[nm]=val;savePP(p.id,pp);}});
   renderAssets();
-  renderHolding();
-  renderSchedule();
+  if(curTab==='dash'){renderHolding();renderSchedule();}
   if(curTab==='sim')renderSim();
 }
+
 /* ─ §9 대시보드 렌더 ─ */
 function renderDash(){
   const{accounts,products}=load();
@@ -1153,16 +1078,21 @@ function prodCard(p,accounts){
   const worst=calcWorst(p.underlyings,prices);
   const score=calcScore(p);
   const ki=Number(p.knockin)||0;
+  let kiSimNote='';
+  if(worst&&ki>0){const ratio=100+worst.pct;kiSimNote=`<span class="sim-note">🔬 KI ${ratio<=ki?'주의':'이상'}</span>`;}
   const stages=buildStages(p);
   const entries=getRatioEntries(p, prices);
   const ratioLine=ratioText(entries);
-  const curHint=currentBarrierHint(p, prices);
-  const ratioRows=entries.length?entries.map(e=>`<div class="pc-row"><span>${esc(e.name)}</span><span class="v ${e.ratio!=null && e.ratio>=100?'tg':'tr'}">${e.ratio!=null?e.ratio.toFixed(1)+'%':'-'}</span></div>`).join(''):'';
+  const ratioNamesLine=ratioNames(entries);
+
   return`<div class="pc">
     <div class="pc-hd">
       <div style="flex:1;min-width:0">
         <div class="pc-nm">${esc(p.name)}</div>
-        <div class="pc-is">${esc(p.issuer)}</div>
+        <div class="pc-is" style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:4px">
+          <span>${esc(p.issuer)}</span>
+          <span class="badge bbl">${cur+1}/${tot||'?'}차</span>
+        </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
         <span class="badge ${TAXB[acc?.type||'normal']}">${TAXL[acc?.type||'normal']}</span>
@@ -1170,18 +1100,15 @@ function prodCard(p,accounts){
     </div>
     <div class="pc-mt">
       <span class="badge bgr">${esc(acc?.name||'계좌없음')}</span>
-      <span class="badge bbl">${cur+1}/${tot||'?'}차</span>
       ${ki?`<span class="badge bam">KI ${ki}%</span>`:''}
       ${p.kiHit?`<span class="ki-confirmed">🔴 KI확정</span>`:''}
       ${score!==null?scoreSm(score):''}
+      ${kiSimNote}
     </div>
     <div class="pc-row"><span>투자원금</span><span class="v">${fm(p.principal)}</span></div>
     <div class="pc-row"><span>다음 평가일</span><span class="v">${nxd||'-'} ${evD!==null?dbadge(evD):''}</span></div>
     <div class="pc-row"><span>만기일</span><span class="v">${p.maturityDate||'-'} ${matD!==null?dbadge(matD):''}</span></div>
-    <div class="pc-row"><span>현재 도달율</span><span class="v">${ratioLine}</span></div>
-    <div class="pc-row"><span>현재 판단</span><span class="v"><span class="badge ${curHint.cls}">${curHint.label}</span></span></div>
-    ${ratioRows}
-    ${worst?`<div class="pc-row"><span>참고 Worst</span><span class="v ${worst.pct>=0?'tg':'tr'}">${esc(worst.name)} ${worst.pct>=0?'+':''}${worst.pct.toFixed(2)}%</span></div>`:''}
+    <div class="pc-row"><span>현재 도달율${ratioNamesLine?` (${esc(ratioNamesLine)})`:''}</span><span class="v">${ratioLine}</span></div>
     ${stages}
     <div class="pc-act">
       <div class="pc-ar">
@@ -1205,31 +1132,38 @@ function prodCard(p,accounts){
 /* ─ §11 조기상환 단계 UI ─ */
 function buildStages(p){
   if(!p.evalDates?.length)return'';
-  const stages=p.evalDates, results=p.evalResults||[];
+  const stages=p.evalDates,results=p.evalResults||[];
   const prices=loadPP(p.id);
   const entries=getRatioEntries(p, prices);
-  const hasAllPrices=entries.length>0 && entries.every(e=>e.ratio!=null);
+  const hasAll=entries.length>0 && entries.every(e=>e.ratio!=null);
   const ratioLabel=ratioText(entries);
   const html=stages.map((e,i)=>{
-    const round=i+1, barrier=Number(e.barrier)||0;
+    const round=i+1,barrier=Number(e.barrier)||0;
     const saved=results.find(r=>r.round===round);
-    const canRedeemNow=hasAllPrices && entries.every(ent=>ent.ratio>=barrier);
-    let cls='es-fut', state='미입력';
-    if(p.kiHit===true){ cls='es-fail'; state='KI'; }
-    else if(hasAllPrices && canRedeemNow){ cls='es-pass'; state='가능'; }
-    else if(hasAllPrices){ cls='es-cur'; state='미달'; }
+    const canRedeemNow=hasAll && entries.every(en=>en.ratio>=barrier);
+    let cls='es-fut',resBadge='',stateTxt='미입력';
+    if(p.kiHit===true){
+      cls='es-fail';
+      stateTxt='KI';
+    } else if(hasAll && canRedeemNow){
+      cls='es-pass';
+      stateTxt='가능';
+    } else if(hasAll && !canRedeemNow){
+      cls='es-cur';
+      stateTxt='미달';
+    }
+    if(saved&&saved.result==='pass')resBadge=`<div class="es-res" style="background:var(--g-bg);color:var(--g)">확정 통과</div>`;
+    else if(saved&&saved.result==='fail')resBadge=`<div class="es-res" style="background:var(--r-bg);color:var(--r)">확정 미달</div>`;
     const cr=Number(e.couponRateCumulative)||0;
-    const conf=saved?`<div class="es-k">${saved.result==='pass'?'확정 통과':saved.result==='fail'?'확정 미달':'확정 대기'}</div>`:'';
-    const stateBg = cls==='es-pass'?'var(--g-bg)':cls==='es-fail'?'var(--r-bg)':cls==='es-cur'?'var(--am-bg)':'var(--s2)';
-    const stateColor = cls==='es-pass'?'var(--g)':cls==='es-fail'?'var(--r)':cls==='es-cur'?'var(--am)':'var(--txt3)';
-    return`<div class="es ${cls}" title="${e.date} | 배리어 ${barrier}% | 현재 ${ratioLabel}">
+    const coupon=cr>0?`<div class="es-c">누적 ${cr}%</div>`:'';
+    return`<div class="es ${cls}" title="${e.date} | 배리어 ${barrier}% | 도달율 ${ratioLabel} | 누적 ${cr}%">
       <div class="es-r">${round}차</div>
-      <div class="es-d">${e.date?e.date.slice(5):'-'}</div>
-      <div class="es-b">배리어 ${barrier?barrier+'%':'-'}</div>
-      <div class="es-b">도달 ${ratioLabel}</div>
-      ${cr>0?`<div class="es-c">누적 ${cr}%</div>`:''}
-      <div class="es-res" style="background:${stateBg};color:${stateColor}">${state}</div>
-      ${conf}
+      <div class="es-d">${e.date||'-'}</div>
+      <div class="es-b">${barrier?barrier+'%':'-'}</div>
+      <div class="es-b">도달율 ${ratioLabel}</div>
+      ${coupon}
+      <div class="es-k">${stateTxt}</div>
+      ${resBadge}
     </div>`;
   }).join('');
   return`<div class="eswrap">
@@ -1545,8 +1479,8 @@ function openRedeem(pid){
     <div class="g2" style="gap:9px">
       <div class="fg"><label class="fl">상환일 <span class="req">*</span></label><input type="date" class="fi" id="rd-dt" value="${st?.date||today()}"></div>
       <div class="fg"><label class="fl">실제 세전 수익금 (원) <span class="req">*</span></label>
-        <input type="text" inputmode="numeric" class="fi" id="rd-gr" value="${sug?Math.round(sug).toLocaleString('ko-KR'):''}" placeholder="${sug>0?Math.round(sug).toLocaleString('ko-KR'):'직접 입력'}"
-          oninput="onMoneyInput(this);updRdPreview(parseMoneyInput(this.value),'${acc?.type||'normal'}',${Number(p.principal)||0})" onblur="fmtMoney(this)" onfocus="unFmtMoney(this)">
+        <input type="number" class="fi" id="rd-gr" value="${sug||''}" placeholder="${sug>0?sug:'직접 입력'}"
+          oninput="updRdPreview(this.value,'${acc?.type||'normal'}',${Number(p.principal)||0})">
         <div class="fhint">${sug>0?'제안값이 자동 입력됩니다. 실제와 다르면 수정하세요.':''}</div>
       </div>
       <div class="fg"><label class="fl">Worst Performer % (기록용)</label><input type="number" class="fi" id="rd-wp" placeholder="-12.5" step="0.01"></div>
@@ -1557,11 +1491,10 @@ function openRedeem(pid){
       <b style="color:var(--txt2)">확정값 미리보기</b><br>
       <span id="rd-prev-c">${buildRdPrev(sug,acc?.type||'normal',Number(p.principal)||0)}</span>
     </div>`;
-  refreshDateInputs(document.getElementById('mo-redeem'));
   om('mo-redeem');
 }
 function buildRdPrev(g,at,pr){
-  const v=parseMoneyInput(g)||0;
+  const v=Number(g)||0;
   if(!v)return'<span style="color:var(--txt3)">세전 수익금을 입력하면 자동 계산됩니다.</span>';
   const t=calcTax(v,at,pr);
   return`세전: <b>${fm(v)}</b> | 세금: <b>${fm(t.tax)}</b> | 세후: <b class="tg">${fm(t.net)}</b> | 상환금: <b class="ta">${fm(t.total)}</b>`;
@@ -1573,7 +1506,7 @@ function doRedeem(){
   const gs=document.getElementById('rd-gr').value;
   if(!dt){toast('상환일을 입력하세요.','err');return;}
   if(!gs){toast('실제 세전 수익금을 입력하세요.','err');return;}
-  const gross=parseMoneyInput(gs);
+  const gross=Number(gs);
   const wp=document.getElementById('rd-wp').value?Number(document.getElementById('rd-wp').value):null;
   const src=document.getElementById('rd-src').value.trim()||DEF_SRC;
   const mo=document.getElementById('rd-mo').value.trim();
@@ -1621,7 +1554,6 @@ function openFail(pid){
         <button class="btn bd-btn sm" onclick="cm('mo-fail');setTimeout(()=>openClose('${pid}'),80)">🔴 종료/손실확정 처리로</button>
       </div>
     </div>`:''}`;
-  refreshDateInputs(document.getElementById('mo-fail'));
   om('mo-fail');
 }
 function doFail(){
@@ -1680,10 +1612,10 @@ function openMature(pid){
     </div>
     ${isCustom?`<div style="background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r2);padding:9px 12px;margin-bottom:9px;font-size:12px;color:var(--am)">⚠️ 이 상품은 자동 계산이 불가합니다 (${esc(autoNote)}). 수동 입력으로 진행해주세요.</div>`:''}
     <div id="mt-manual" class="${isCustom?'':'hidden'} g2" style="gap:9px">
-      <div class="fg sp2"><label class="fl">실제 세전 수익금 (원) <span class="req">*</span></label><input type="text" inputmode="numeric" class="fi" id="mt-gr" placeholder="실제 세전 수익금" oninput="onMoneyInput(this)" onblur="fmtMoney(this)" onfocus="unFmtMoney(this)"></div>
+      <div class="fg sp2"><label class="fl">실제 세전 수익금 (원) <span class="req">*</span></label><input type="number" class="fi" id="mt-gr" placeholder="실제 세전 수익금"></div>
       <div class="fg sp2"><label class="fl">또는 실제 상환금액으로 역산</label>
-        <input type="text" inputmode="numeric" class="fi" id="mt-tot" placeholder="상환금액 입력 → 세전 수익금 자동 계산"
-          oninput="onMoneyInput(this);calcMtFromTotal(this.value,${Number(p.principal)||0},'${acc?.type||'normal'}')" onblur="fmtMoney(this)" onfocus="unFmtMoney(this)">
+        <input type="number" class="fi" id="mt-tot" placeholder="상환금액 입력 → 세전 수익금 자동 계산"
+          oninput="calcMtFromTotal(this.value,${Number(p.principal)||0},'${acc?.type||'normal'}')">
         <div class="fhint">상환금액 입력 시 세전 수익금을 역산합니다.</div>
       </div>
     </div>
@@ -1693,7 +1625,6 @@ function openMature(pid){
       <div class="fg sp2"><label class="fl">메모 (settlementMemo)</label><input type="text" class="fi" id="mt-mo" placeholder="선택"></div>
     </div>`;
   if(isCustom){document.querySelector('input[name="mt-mode"][value="manual"]').checked=true;}
-  refreshDateInputs(document.getElementById('mo-mature'));
   om('mo-mature');
 }
 function togMt(m){
@@ -1702,9 +1633,9 @@ function togMt(m){
 }
 function calcMtFromTotal(totVal,pr,accType){
   if(!totVal)return;
-  const tot=parseMoneyInput(totVal),rate=TAX[accType]??TAX.normal;
+  const tot=Number(totVal),rate=TAX[accType]??TAX.normal;
   const grossBack=rate<1?(tot-pr)/(1-rate):(tot-pr);
-  const el=document.getElementById('mt-gr');if(el)el.value=Math.round(grossBack).toLocaleString('ko-KR');
+  const el=document.getElementById('mt-gr');if(el)el.value=Math.round(grossBack);
 }
 function doMature(){
   const pid=pendPid;
@@ -1727,7 +1658,7 @@ function doMature(){
   } else {
     const v=document.getElementById('mt-gr').value;
     if(!v){toast('세전 수익금을 입력하세요.','err');return;}
-    gross=parseMoneyInput(v);
+    gross=Number(v);
   }
   const t=calcTax(gross,acc?.type,p.principal);
   products[idx]={...p,status:'matured',settlementDate:dt,settlementType:'maturity-redemption',
@@ -1747,18 +1678,17 @@ function openClose(pid){
     </div>
     <div class="g2" style="gap:9px">
       <div class="fg"><label class="fl">종료일 <span class="req">*</span></label><input type="date" class="fi" id="cl-dt" value="${today()}"></div>
-      <div class="fg"><label class="fl">실제 손익 (원, 손실이면 음수)</label><input type="text" inputmode="numeric" class="fi" id="cl-gr" placeholder="예: -5,000,000" oninput="this.value=this.value.replace(/[^\d,-]/g,'')"><div class="fhint">손실이면 세금은 0으로 계산됩니다.</div></div>
+      <div class="fg"><label class="fl">실제 손익 (원, 손실이면 음수)</label><input type="number" class="fi" id="cl-gr" placeholder="예: -5000000"><div class="fhint">손실이면 세금은 0으로 계산됩니다.</div></div>
       <div class="fg"><label class="fl">확인 출처</label><input type="text" class="fi" id="cl-src" value="${DEF_SRC}"></div>
       <div class="fg"><label class="fl">메모</label><input type="text" class="fi" id="cl-mo" placeholder="종료 사유 등"></div>
     </div>`;
-  refreshDateInputs(document.getElementById('mo-close'));
   om('mo-close');
 }
 function doClose(){
   const pid=pendPid;
   const dt=document.getElementById('cl-dt').value;
   if(!dt){toast('종료일을 입력하세요.','err');return;}
-  const gs=document.getElementById('cl-gr').value,gross=gs?Number(String(gs).replace(/,/g,'')):0;
+  const gs=document.getElementById('cl-gr').value,gross=gs?Number(gs):0;
   const src=document.getElementById('cl-src').value.trim()||DEF_SRC;
   const mo=document.getElementById('cl-mo').value.trim();
   const{accounts,products}=load();
@@ -1801,7 +1731,6 @@ function openKi(pid){
       <div class="fg sp2"><label class="fl">메모</label><input type="text" class="fi" id="ki-mo" value="${esc(p.kiHitMemo||'')}" placeholder="KOSPI200 장중 KI 배리어 하향 돌파 확인"></div>
     </div>
     ${p.kiHit?`<div style="margin-top:9px;padding:8px 10px;background:var(--r-bg);border:1px solid var(--r-bd);border-radius:var(--r2);font-size:13px">현재 기록: <b style="color:var(--r)">KI 발생 확정</b> — ${p.kiHitDate||'-'} (${p.kiObservationType||'-'})${p.kiHitMemo?' · '+esc(p.kiHitMemo):''}</div>`:''}`;
-  refreshDateInputs(document.getElementById('mo-ki'));
   om('mo-ki');
 }
 function doKi(){
@@ -1861,13 +1790,11 @@ function addE(rnd=0,dt='',bar='',cr=''){
   const rn=rnd||(document.getElementById('el-list').children.length+1);
   const div=document.createElement('div');div.className='dyni';
   div.innerHTML=`<label>${rn}차</label>
-    <input type="date" class="fi e-dt" value="${esc(dt)}" style="flex:1.4" title="평가일" onchange="autoCalcOneEval(this,false)">
+    <input type="date" class="fi e-dt" value="${esc(dt)}" style="flex:1.4" title="평가일">
     <label>배리어%</label><input type="number" class="fi e-br" value="${esc(String(bar))}" placeholder="85" style="width:64px" min="0" max="100">
-    <label>누적%</label><input type="number" class="fi e-cr" value="${esc(String(cr))}" placeholder="7.5" style="width:70px" step="0.01" title="이 차수 조기상환 시 세전 누적 수익률" oninput="this.dataset.manual='1'">
-    <button type="button" class="btn bs xs" onclick="const r=this.parentElement; const c=r.querySelector('.e-cr'); if(c) c.dataset.manual=''; autoCalcOneEval(r.querySelector('.e-dt'),true)" title="연수익률 × 기간으로 이 차수 누적수익률 자동계산">자동</button>
+    <label>누적%</label><input type="number" class="fi e-cr" value="${esc(String(cr))}" placeholder="7.5" style="width:70px" step="0.01" title="이 차수 조기상환 시 세전 누적 수익률">
     <button class="btn bd-btn ic xs" onclick="this.parentElement.remove()">✕</button>`;
   document.getElementById('el-list').appendChild(div);
-  enhanceDateInputs(div);
 }
 function openProdModal(pid){
   editProdId=pid||null;
@@ -1903,7 +1830,6 @@ function openProdModal(pid){
     document.getElementById('pf-nkm').value='coupon';
     fillAccSel('pf-acc',null);addU();addE(1);
   }
-  refreshDateInputs(document.getElementById('mo-prod'));
   om('mo-prod');
 }
 function saveProd(){
@@ -1913,18 +1839,17 @@ function saveProd(){
   const pr=document.getElementById('pf-pr').value;
   const sd=document.getElementById('pf-sd').value;
   const md=document.getElementById('pf-md').value;
-  const prNum=parseMoneyInput(pr);
   if(!nm){toast('상품명을 입력하세요.','err');return;}
   if(!iss){toast('증권사명을 입력하세요.','err');return;}
   if(!acc){toast('계좌를 선택하세요.','err');return;}
-  if(!pr||prNum<=0){toast('투자원금을 입력하세요.','err');return;}
+  if(!pr||Number(pr)<=0){toast('투자원금을 입력하세요.','err');return;}
   if(!sd){toast('가입일을 입력하세요.','err');return;}
   if(!md){toast('만기일을 입력하세요.','err');return;}
   const underlyings=[];
   document.querySelectorAll('#ul-list .dyni').forEach(r=>{const n=r.querySelector('.u-nm')?.value.trim(),b=r.querySelector('.u-bp')?.value;if(n)underlyings.push({name:n,basePrice:Number(b)||0});});
   const evalDates=[];
   document.querySelectorAll('#el-list .dyni').forEach((r,i)=>{const dt=r.querySelector('.e-dt')?.value,ba=r.querySelector('.e-br')?.value,cr=r.querySelector('.e-cr')?.value;if(dt)evalDates.push({round:i+1,date:dt,barrier:Number(ba)||0,couponRateCumulative:Number(cr)||0});});
-  const data={name:nm,issuer:iss,accountId:acc,principal:prNum,startDate:sd,maturityDate:md,
+  const data={name:nm,issuer:iss,accountId:acc,principal:Number(pr),startDate:sd,maturityDate:md,
     knockin:Number(document.getElementById('pf-ki').value)||0,
     expectedYield:Number(document.getElementById('pf-yr').value)||0,
     payoffType:document.getElementById('pf-pt').value,
@@ -2023,63 +1948,6 @@ function openDet(pid){
   om('mo-detail');
 }
 
-function normalizeAccount(raw={}){
-  return {
-    id: raw.id||genId(),
-    name: raw.name||'계좌',
-    kind: raw.kind||'',
-    type: ['normal','isa','tax-free'].includes(raw.type)?raw.type:'normal',
-    memo: raw.memo||'',
-    createdAt: raw.createdAt||new Date().toISOString(),
-  };
-}
-function normalizeProduct(raw={}){
-  const startDate=raw.startDate||'';
-  const maturityDate=raw.maturityDate||'';
-  const expectedYield=Number(raw.expectedYield)||0;
-  const underlyings=Array.isArray(raw.underlyings)?raw.underlyings.map(u=>({name:u?.name||'',basePrice:Number(u?.basePrice)||0})).filter(u=>u.name):[];
-  const maturityCouponCumulative = raw.maturityCouponCumulative!=null && raw.maturityCouponCumulative!==''
-    ? Number(raw.maturityCouponCumulative)||0
-    : (startDate&&maturityDate&&expectedYield ? Number((expectedYield*(daysBetween(startDate,maturityDate)/365)).toFixed(2)) : 0);
-  const evalDates = Array.isArray(raw.evalDates)?raw.evalDates.map((e,i)=>({
-    round: Number(e?.round)||i+1,
-    date: e?.date||'',
-    barrier: Number(e?.barrier)||0,
-    couponRateCumulative: e?.couponRateCumulative!=null && e?.couponRateCumulative!==''
-      ? Number(e.couponRateCumulative)||0
-      : (startDate && e?.date && expectedYield ? Number((expectedYield*(daysBetween(startDate,e.date)/365)).toFixed(2)) : 0)
-  })).filter(e=>e.date):[];
-  return {
-    id: raw.id||genId(),
-    createdAt: raw.createdAt||new Date().toISOString(),
-    name: raw.name||'상품', issuer: raw.issuer||'', accountId: raw.accountId||'',
-    principal: parseMoneyInput(raw.principal), startDate, maturityDate,
-    knockin: Number(raw.knockin)||0, expectedYield,
-    payoffType: raw.payoffType||'standard-stepdown',
-    finalBarrier: Number(raw.finalBarrier)||0,
-    maturityCouponCumulative, noKiMode: raw.noKiMode||'coupon',
-    couponMemo: raw.couponMemo||'', checklist: raw.checklist||'', caution: raw.caution||'', extra: raw.extra||'', memo: raw.memo||'',
-    underlyings, evalDates,
-    status: raw.status||'active', currentRoundIndex: Number(raw.currentRoundIndex)||0,
-    evalResults: Array.isArray(raw.evalResults)?raw.evalResults.map((r,i)=>({round:Number(r?.round)||i+1,date:r?.date||'',result:['pending','pass','fail'].includes(r?.result)?r.result:'pending',decidedAt:r?.decidedAt||'',worstPctAtDecision:r?.worstPctAtDecision!=null?Number(r.worstPctAtDecision):null,note:r?.note||''})):[],
-    settlementDate: raw.settlementDate||'', settlementType: raw.settlementType||'', settlementMemo: raw.settlementMemo||'', resultCheckSource: raw.resultCheckSource||DEF_SRC,
-    actualGrossProfit: Number(raw.actualGrossProfit)||0, actualTax: Number(raw.actualTax)||0, actualNetProfit: Number(raw.actualNetProfit)||0, actualRedemptionAmount: Number(raw.actualRedemptionAmount)||0, actualYieldNet: Number(raw.actualYieldNet)||0,
-    redeemedRound: raw.redeemedRound!=null?Number(raw.redeemedRound):null,
-    kiHit: raw.kiHit===true, kiHitDate: raw.kiHitDate||'', kiHitMemo: raw.kiHitMemo||'', kiObservationType: raw.kiObservationType||'unknown',
-  };
-}
-function normalizeBackup(data={}){
-  return {
-    version: data.version||VER,
-    exportedAt: data.exportedAt||new Date().toISOString(),
-    accounts: Array.isArray(data.accounts)?data.accounts.map(normalizeAccount):[],
-    products: Array.isArray(data.products)?data.products.map(normalizeProduct):[],
-    accountOrder: Array.isArray(data.accountOrder)?data.accountOrder:[],
-    assetPrices: data.assetPrices && typeof data.assetPrices==='object' ? data.assetPrices : {},
-    prodPrices: data.prodPrices && typeof data.prodPrices==='object' ? data.prodPrices : {},
-  };
-}
-
 /* ─ §25 내보내기·불러오기 ─ */
 function exportAll(){
   const{accounts,products}=load();
@@ -2097,20 +1965,24 @@ function importAll(ev){
   const reader=new FileReader();
   reader.onload=e=>{
     try{
-      const parsed=JSON.parse(e.target.result);
-      const data=normalizeBackup(parsed);
+      // 1) 파싱 및 구조 검증 (아직 기존 데이터 건드리지 않음)
+      const data=JSON.parse(e.target.result);
       if(!Array.isArray(data.accounts)||!Array.isArray(data.products)){toast('올바른 ELS 백업 파일이 아닙니다.','err');return;}
-      if(!confirm(`계좌 ${data.accounts.length}개, 상품 ${data.products.length}개를 불러옵니다.
-기존 데이터(현재가 캐시 포함)를 완전히 덮어씁니다.
-계속하시겠습니까?`))return;
+      const hasStatus=data.products.every(p=>p.status);
+      if(!hasStatus){toast('이 파일은 이전 버전입니다. 불러올 수 없습니다.','err');return;}
+      // 2) 확인창 (취소 시 기존 데이터 유지)
+      if(!confirm(`계좌 ${data.accounts.length}개, 상품 ${data.products.length}개를 불러옵니다.\n기존 데이터(현재가 캐시 포함)를 완전히 덮어씁니다.\n계속하시겠습니까?`))return;
+      // 3) 기존 캐시 키 삭제 (els_acc/els_prod 제외 — 아래서 덮어씀)
       Object.keys(localStorage).forEach(k=>{
-        if(k.startsWith('els_ap_')||k.startsWith('els_pp_')||k==='els_ord') localStorage.removeItem(k);
+        if(k.startsWith('els_ap_')||k.startsWith('els_pp_')||k==='els_ord')
+          localStorage.removeItem(k);
       });
+      // 4) 새 데이터 저장
       saveAcc2(data.accounts);
       saveProd2(data.products);
-      saveOrd(data.accountOrder||[]);
-      Object.entries(data.assetPrices||{}).forEach(([k,v])=>saveAP(k,v));
-      Object.entries(data.prodPrices||{}).forEach(([pid,v])=>savePP(pid,v));
+      if(data.accountOrder)saveOrd(data.accountOrder);
+      if(data.assetPrices)Object.entries(data.assetPrices).forEach(([k,v])=>saveAP(k,v));
+      if(data.prodPrices)Object.entries(data.prodPrices).forEach(([pid,v])=>savePP(pid,v));
       toast('불러오기 완료','ok');location.reload();
     }catch(err){toast('JSON 파싱 오류: '+err.message,'err');}
     ev.target.value='';
@@ -2177,7 +2049,7 @@ function initSample(){
      status:'redeemed',currentRoundIndex:1,
      evalResults:[{round:1,date:'2024-03-01',result:'fail',decidedAt:'2024-03-01T09:00:00Z',worstPctAtDecision:-7.3,note:'HSCEI 미달'},{round:2,date:'2024-09-01',result:'pass',decidedAt:'2024-09-01T09:00:00Z',worstPctAtDecision:2.1,note:'조기상환 완료'}],
      redeemedRound:2,settlementDate:'2024-09-05',settlementType:'early-redemption',
-     settlementMemo:'2차 조기상환 완료 확인',resultCheckSource:'앱 확인',
+     settlementMemo:'2차 조기상환 완료 확인',resultCheckSource:'증권사 앱',
      actualGrossProfit:1100000,actualTax:108900,actualNetProfit:991100,actualRedemptionAmount:20991100,actualYieldNet:4.956,
      kiHit:false,kiHitDate:'',kiHitMemo:'',kiObservationType:'unknown'},
   ];
@@ -2189,7 +2061,6 @@ function initSample(){
   initSample();
   updateCnts();
   renderTab('dash');
-  enhanceDateInputs(document);
 })();
 </script>
 </body>
