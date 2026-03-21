@@ -1018,15 +1018,32 @@ function renderKPI(accounts,products){
   const thisYrNet=done.filter(p=>dy(p.settlementDate)===thisYr).reduce((s,p)=>s+Number(p.actualNetProfit||0),0);
   const near30eval=active.filter(p=>{const d=dl(nextEvalDate(p));return d!==null&&d>=0&&d<=30;}).length;
   const near30mat =active.filter(p=>{const d=dl(p.maturityDate);return d!==null&&d>=0&&d<=30;}).length;
+
+  /* 해당년도 예상 수익금 — 도달값이 전부 + 인 active 상품 세후 합산 */
+  let estNet = 0;
+  active.forEach(p=>{
+    const acc      = accounts.find(a=>a.id===p.accountId);
+    const curIdx   = p.currentRoundIndex||0;
+    const curSt    = p.evalDates?.[curIdx];
+    const barrier  = Number(curSt?.barrier)||0;
+    const cr       = Number(curSt?.couponRateCumulative)||0;
+    if(!barrier||!cr) return;
+    const prices   = loadPP(p.id);
+    const diffs    = calcBarrierDiffs(p.underlyings, prices, barrier);
+    const allPos   = diffs.length>0 && diffs.every(d=>d.diff!==null && d.diff>=0);
+    if(!allPos) return;
+    const t = calcTax(Number(p.principal||0)*cr/100, acc?.type, p.principal);
+    estNet += t.net;
+  });
+
   const items=[
-    {lbl:'전체 상품',     val:products.length+'개', sub:'전체 등록 상품',      cls:''},
-    {lbl:'현재 보유',     val:active.length+'개',   sub:'보유중',              cls:'blue'},
-    {lbl:'완료 상품',     val:done.length+'개',     sub:'종료·상환 완료',      cls:''},
-    {lbl:'전체 투자원금', val:fm(totalPr),           sub:'보유중 합계',         cls:''},
-    {lbl:'실제 세후 수익금',val:fm(totalNet),         sub:'전체 완료 합계',     cls:totalNet>=0?'green':'red'},
-    {lbl:thisYr+'년 세후 수익금',val:fm(thisYrNet),  sub:thisYr+'년 완료 기준',cls:thisYrNet>=0?'green':'red'},
-    {lbl:'30일내 평가일', val:near30eval+'건',        sub:'조기상환 평가 임박', cls:near30eval>0?'warn':''},
-    {lbl:'30일내 만기',   val:near30mat+'건',         sub:'만기 임박',          cls:near30mat>0?'warn':''},
+    {lbl:'현재 보유',          val:active.length+'개', sub:'보유중',              cls:'blue'},
+    {lbl:'전체 투자원금',       val:fm(totalPr),         sub:'보유중 합계',         cls:''},
+    {lbl:thisYr+'년 예상 수익금',val:fm(estNet),          sub:'배리어 초과 상품 세후',cls:estNet>0?'green':''},
+    {lbl:'실제 세후 수익금',    val:fm(totalNet),         sub:'전체 완료 합계',      cls:totalNet>=0?'green':'red'},
+    {lbl:thisYr+'년 세후 수익금',val:fm(thisYrNet),       sub:thisYr+'년 완료 기준', cls:thisYrNet>=0?'green':'red'},
+    {lbl:'30일내 평가일',       val:near30eval+'건',       sub:'조기상환 평가 임박',  cls:near30eval>0?'warn':''},
+    {lbl:'30일내 만기',         val:near30mat+'건',        sub:'만기 임박',           cls:near30mat>0?'warn':''},
   ];
   document.getElementById('kpi-grid').innerHTML=items.map(i=>`
     <div class="kpi-card">
