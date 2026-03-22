@@ -329,6 +329,7 @@ tr:hover td{background:#f8fafc}
       <div class="sec-hl">
         <span class="sec-t">📌 기초자산 현재가</span>
         <span class="cbadge" id="acnt">0개</span>
+        <button class="btn bp sm" onclick="applyAllAP()" style="font-size:11px">✅ 일괄 적용</button>
       </div>
       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
         <label style="font-size:12px;font-weight:700;color:var(--txt2);white-space:nowrap">💱 USD/KRW 환율</label>
@@ -353,7 +354,7 @@ tr:hover td{background:#f8fafc}
         <input class="fi sm" id="h-q" placeholder="검색" style="width:140px;min-height:36px" oninput="renderHolding()">
         <select class="fsl sm" style="width:120px;min-height:36px" id="h-sort" onchange="renderHolding()">
           <option value="maturity">만기일순</option>
-          <option value="eval">평가일순</option>
+          <option value="eval">다음평가일순</option>
           <option value="recent">최근 등록순</option>
           <option value="yield">수익률순</option>
           <option value="redeemable">상환가능순</option>
@@ -1183,12 +1184,35 @@ function renderAssets(){
     return`<div class="acard">
       <div class="ac-nm">${esc(nm)}</div>
       <div style="display:flex;align-items:center;gap:6px">
-        <input type="number" class="fi" placeholder="현재가 입력" value="${esc(cur)}"
+        <input type="number" id="ap-input-${esc(nm.replace(/[^a-zA-Z0-9]/g,'_'))}" class="fi" placeholder="현재가 입력" value="${esc(cur)}"
           style="flex:1" oninput='onAPLive(${JSON.stringify(nm)},this)' onchange='onAP(${JSON.stringify(nm)},this.value)'>
-        <span id="apcv-${esc(nm.replace(/[^a-zA-Z0-9]/g,'_'))}" style="font-size:12px;font-weight:700;color:var(--acc);white-space:nowrap;flex-shrink:0">${cur?Number(cur).toLocaleString():'-'}</span>
       </div>
+      <div style="margin-top:4px;font-size:12px;color:var(--acc);font-weight:700" id="apcv-${esc(nm.replace(/[^a-zA-Z0-9]/g,'_'))}">${cur?Number(cur).toLocaleString():'-'}</div>
     </div>`;
   }).join('');
+}
+/** 일괄 적용 버튼 — 모든 기초자산 입력값 강제 저장 + 전체 갱신 */
+function applyAllAP(){
+  const{products}=load();
+  let count=0;
+  document.querySelectorAll('[id^="ap-input-"]').forEach(input=>{
+    const val=input.value;
+    if(!val)return;
+    // id에서 자산명 복원은 어렵기 때문에 onchange 이벤트를 직접 발화
+    input.dispatchEvent(new Event('change'));
+    count++;
+  });
+  if(count>0) toast(`${count}개 현재가 일괄 적용됐습니다.`,'ok');
+  else toast('입력된 현재가가 없습니다.','err');
+}
+/** 적용 버튼 클릭 시 현재 입력값 강제 저장 + 전체 갱신 */
+function doApplyAP(nm){
+  const inputId='ap-input-'+nm.replace(/[^a-zA-Z0-9]/g,'_');
+  const input=document.getElementById(inputId);
+  const val=input?input.value:'';
+  if(!val){toast('현재가를 입력해주세요.','err');return;}
+  onAP(nm,val);
+  toast(`${nm} 현재가 적용됐습니다.`,'ok');
 }
 function onAPLive(nm,input){
   const v=input.value;
@@ -1471,20 +1495,20 @@ function prodCard(p, accounts){
   const stages = buildStages(p);
 
   return`<div class="pc">
-    <!-- 헤더: 계좌명 > 상품명 > 증권사 > 차수 > 확률 > 과세유형 -->
+    <!-- 헤더: 계좌명 > 상품명 > 증권사 > 차수 > 연수익률(노란) > 과세유형 -->
     <div class="pc-hd2">
       <span class="badge bgr" style="flex-shrink:0">${esc(acc?.name||'계좌없음')}</span>
       <span class="pc-nm2">${esc(p.name)}</span>
       <span class="pc-iss">${esc(p.issuer)}</span>
       <span class="badge bbl">${cur+1}/${tot||'?'}차</span>
-      ${score!==null?scoreInline(score):''}
+      ${p.expectedYield?`<span class="badge bam" style="flex-shrink:0">연 ${p.expectedYield}%</span>`:''}
       ${p.kiHit?`<span class="ki-confirmed">🔴 KI확정</span>`:''}
       ${kiSimNote}
       <span class="badge ${TAXB[acc?.type||'normal']} pc-tax">${TAXL[acc?.type||'normal']}</span>
     </div>
     <!-- 정보 행 -->
     <div class="pc-row">
-      <span>투자원금${p.expectedYield?` <span style="font-size:10px;color:var(--txt3);font-weight:400">연 ${p.expectedYield}%</span>`:''}</span>
+      <span>투자원금</span>
       <span class="v">${fmcX(p.principal,ccy,rate)}</span>
     </div>
     <div class="pc-row">
@@ -1505,7 +1529,7 @@ function prodCard(p, accounts){
       <span class="v">${p.maturityDate||'-'} ${matD!==null?dbadge(matD):''}</span>
     </div>
     ${diffs.length?`<div class="pc-row">
-      <span>조기상환 조건${curBarrier?` <span style="font-size:10px;color:var(--txt3)">(배리어 ${curBarrier}%)</span>`:''}${diffNms?`<br><span style="font-size:10px;color:var(--txt3)">${esc(diffNms)}</span>`:''}</span>
+      <span>조기상환 조건${curBarrier?` <span style="font-size:10px;color:var(--txt3)">(배리어 ${curBarrier}%)</span>`:''}${diffNms?`<br><span style="font-size:10px;color:var(--txt);font-weight:600">${esc(diffNms)}</span>`:''}</span>
       <span class="v" style="font-variant-numeric:tabular-nums">${diffHtml}</span>
     </div>`:''}
     ${hasCr?`<div class="pc-row">
