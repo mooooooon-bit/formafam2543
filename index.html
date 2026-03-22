@@ -1437,8 +1437,7 @@ function prodCard(p, accounts){
       <span class="v">${nxd||'-'} ${evD!==null?dbadge(evD):''}</span>
     </div>
     <div class="pc-row">
-      <span>만기일${ki?` <span class="badge bam" style="font-size:9px;padding:1px 5px;margin-left:4px">KI ${ki}%</span>`:''}</span>
-      <span class="v">${p.maturityDate||'-'} ${matD!==null?dbadge(matD):''}${(()=>{
+      <span>만기일${ki?` <span class="badge bam" style="font-size:9px;padding:1px 5px;margin-left:4px">KI ${ki}%</span>${(()=>{
         const ratios=(p.underlyings||[]).map(u=>{
           const c=Number(prices[u.name]),b=Number(u.basePrice);
           return(c&&b)?{r:c/b*100,close:ki>0&&(c/b*100)<=ki+20}:null;
@@ -1446,8 +1445,9 @@ function prodCard(p, accounts){
         const valid=ratios.filter(v=>v!==null);
         if(!valid.length)return'';
         const html=valid.map(v=>`<span style="font-size:10px;font-weight:600;${v.close?'color:var(--r)':'color:var(--txt3)'}">${v.r.toFixed(1)}%</span>`).join('<span style="color:var(--txt3);font-size:10px"> / </span>');
-        return` <span style="margin-left:4px">${html}</span>`;
-      })()}</span>
+        return` <span style="margin-left:2px">${html}</span>`;
+      })()}`:''}</span>
+      <span class="v">${p.maturityDate||'-'} ${matD!==null?dbadge(matD):''}</span>
     </div>
     ${diffs.length?`<div class="pc-row">
       <span>조기상환 조건${curBarrier?` <span style="font-size:10px;color:var(--txt3)">(배리어 ${curBarrier}%)</span>`:''}${diffNms?`<br><span style="font-size:10px;color:var(--txt3)">${esc(diffNms)}</span>`:''}</span>
