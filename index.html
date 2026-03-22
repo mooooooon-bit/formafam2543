@@ -558,6 +558,13 @@ tr:hover td{background:#f8fafc}
   <div class="sim-banner">💰 <span><b>조기상환 시 시뮬레이션</b> — 이번 차수에서 조기상환된다고 가정했을 때의 예상 수익입니다. 실제 확정값이 아닙니다.</span></div>
   <div class="sec-hd">
     <div class="sec-hl"><span class="sec-t">💰 이번 차수 조기상환 시 예상 수익</span><span class="cbadge" id="es-cnt">0개</span></div>
+    <select class="fsl sm" id="es-sort" style="width:130px;min-height:36px" onchange="renderEarlySim()">
+      <option value="round">차수순</option>
+      <option value="principal">투자원금순</option>
+      <option value="diff">도달값순</option>
+      <option value="net">수익금순</option>
+      <option value="state">현재 기준 상태순</option>
+    </select>
   </div>
   <!-- 데스크탑/태블릿: 표 -->
   <div class="tw es-table-view">
@@ -1089,34 +1096,58 @@ function updateCnts(){
   document.getElementById('cnt-a').textContent=products.length;
 }
 
-/* ─ §7 조기상환 가능성 점수 (heuristic) ─ */
+/* ─ §7 조기상환 가능성 점수 (heuristic) ─
+ * 핵심 설계 원칙:
+ *  - worst performer 기준가 대비 비율과 배리어 거리가 핵심
+ *  - 배리어를 이미 넘었으면 기본 60~80점대, 크게 넘을수록 높음
+ *  - 배리어 미달이면 기본 20~40점대, 많이 부족할수록 낮음
+ *  - 자산 수 많을수록, 자산간 격차 클수록 불리
+ *  - 이전 미달 횟수 많을수록 불리
+ *  - 남은 일수는 미달 시에만 소폭 유리 (만회 가능성)
+ */
 function calcScore(p){
   const prices   = loadPP(p.id);
   const curIdx   = p.currentRoundIndex||0;
   const stage    = p.evalDates?.[curIdx];
   if(!stage||!p.underlyings?.length) return null;
-  const nextBarrier = Number(stage.barrier)||0;
-  if(!nextBarrier) return null;
-  const ratios = p.underlyings.map(u=>{const c=Number(prices[u.name]),b=Number(u.basePrice);return(c&&b)?c/b*100:null;}).filter(v=>v!==null);
+  const barrier = Number(stage.barrier)||0;
+  if(!barrier) return null;
+  const ratios = p.underlyings.map(u=>{
+    const c=Number(prices[u.name]),b=Number(u.basePrice);
+    return(c&&b)?c/b*100:null;
+  }).filter(v=>v!==null);
   if(!ratios.length) return null;
-  const worstPct   = Math.min(...ratios);
-  const avgPct     = ratios.reduce((a,b)=>a+b,0)/ratios.length;
-  const dispersion = Math.max(0,avgPct-worstPct);
-  const days       = Math.max(1,dl(stage.date)||1);
-  const failCount  = (p.evalResults||[]).filter(r=>r.result==='fail').length;
-  const assetCount = p.underlyings.length;
-  // 보정: worstPct 기준 거리 민감도 높임, timeAdj 절반으로, 자산수·dispersion 페널티 강화
-  const dist = worstPct - nextBarrier; // + 이면 배리어 초과, - 이면 미달
-  const timeAdj = dist < 0
-    ? 0.20 * Math.log(1 + days / 60)   // 미달: 시간 많아도 소폭만 보정
-    : -0.15 * Math.log(1 + days / 30); // 초과: 시간이 짧을수록 유리하지 않게
-  const z = (dist / 8)               // 거리 민감도 낮춤(기존 /6 → /8)
-    + timeAdj
-    - 0.25 * (assetCount - 1)        // 자산 수 페널티 강화
-    - 0.05 * dispersion              // dispersion 페널티 강화
-    - 0.25 * failCount               // 실패 이력 페널티 강화
-    - 0.5;                           // 전반적으로 보수적으로 내림
-  return Math.min(93, Math.max(3, Math.round(100 / (1 + Math.exp(-z)))));
+
+  const worst    = Math.min(...ratios);
+  const avg      = ratios.reduce((a,b)=>a+b,0)/ratios.length;
+  const disp     = Math.max(0,avg-worst);           // 자산간 격차
+  const days     = Math.max(1,dl(stage.date)||1);   // 남은 일수
+  const fails    = (p.evalResults||[]).filter(r=>r.result==='fail').length;
+  const nAssets  = p.underlyings.length;
+  const gap      = worst - barrier;                 // + 이면 초과, - 이면 미달
+
+  // 기본 점수: 배리어와의 거리 기반 (선형 → sigmoid)
+  // gap +10 → 약 75점, gap 0 → 50점, gap -10 → 약 25점
+  let base = 100 / (1 + Math.exp(-gap / 7));
+
+  // 남은 일수 보정: 미달일 때만 소폭 가산 (최대 +8점)
+  if(gap < 0){
+    base += Math.min(8, 3 * Math.log(1 + days / 45));
+  }
+
+  // 자산 수 페널티: 자산 1개 추가당 -5점
+  base -= 5 * (nAssets - 1);
+
+  // 격차 페널티: worst와 avg 차이 1%당 -1점
+  base -= disp * 1.0;
+
+  // 이전 미달 페널티: 미달 1회당 -8점
+  base -= 8 * fails;
+
+  // kiHit이면 대폭 하향
+  if(p.kiHit) base = Math.min(base, 15);
+
+  return Math.min(95, Math.max(3, Math.round(base)));
 }
 function scoreSm(s){
   if(s===null) return '';
@@ -1367,19 +1398,31 @@ function renderHolding(accounts, products){
       return cb-ca;
     }
     if(sort==='redeemable'||sort==='unredeemable'){
-      const getWorstRatio=p=>{
+      const getWorstInfo=p=>{
         const prices=loadPP(p.id);
         const curIdx=p.currentRoundIndex||0;
         const barrier=Number(p.evalDates?.[curIdx]?.barrier)||0;
         if(!barrier)return null;
         const ratios=p.underlyings.map(u=>{const c=Number(prices[u.name]),b=Number(u.basePrice);return(c&&b)?c/b*100:null;}).filter(v=>v!==null);
-        return ratios.length?Math.min(...ratios):null;
+        if(!ratios.length)return null;
+        const worst=Math.min(...ratios);
+        return{worst,aboveBarrier:worst>=barrier};
       };
-      const ra=getWorstRatio(a),rb=getWorstRatio(b);
+      const ra=getWorstInfo(a),rb=getWorstInfo(b);
       if(ra===null&&rb===null)return 0;
       if(ra===null)return 1;
       if(rb===null)return -1;
-      return sort==='redeemable'?rb-ra:ra-rb;
+      if(sort==='redeemable'){
+        // 배리어 초과 우선, 같으면 ratio 높은 순
+        if(ra.aboveBarrier&&!rb.aboveBarrier)return -1;
+        if(!ra.aboveBarrier&&rb.aboveBarrier)return 1;
+        return rb.worst-ra.worst;
+      } else {
+        // 배리어 미달 우선, 같으면 ratio 낮은 순
+        if(!ra.aboveBarrier&&rb.aboveBarrier)return -1;
+        if(ra.aboveBarrier&&!rb.aboveBarrier)return 1;
+        return ra.worst-rb.worst;
+      }
     }
     return new Date(b.createdAt||0)-new Date(a.createdAt||0);
   });
@@ -1441,7 +1484,7 @@ function prodCard(p, accounts){
     </div>
     <!-- 정보 행 -->
     <div class="pc-row">
-      <span>투자원금</span>
+      <span>투자원금${p.expectedYield?` <span style="font-size:10px;color:var(--txt3);font-weight:400">연 ${p.expectedYield}%</span>`:''}</span>
       <span class="v">${fmcX(p.principal,ccy,rate)}</span>
     </div>
     <div class="pc-row">
@@ -1814,6 +1857,7 @@ function renderBackup(){
 function renderEarlySim(){
   const{accounts,products}=load();
   const rate=loadFxRate();
+  const esSort=document.getElementById('es-sort')?.value||'round';
   const active=products.filter(p=>p.status==='active');
   document.getElementById('es-cnt').textContent=active.length+'개';
   const tb=document.getElementById('es-tb');
@@ -1855,6 +1899,29 @@ function renderEarlySim(){
       }
     }
     return{p,acc,curIdx,curSt,ccy,pr,cr,barrier,t,diffHtml,stateCls,stateStr};
+  });
+  /* 정렬 */
+  const stateOrder={'현재 기준 가능':0,'현재가 미입력':1,'현재 기준 미달':2,'KI 기록':3};
+  rows.sort((a,b)=>{
+    if(esSort==='round')     return (a.curIdx||0)-(b.curIdx||0);
+    if(esSort==='principal') return toKRW(b.pr,b.ccy,rate)-toKRW(a.pr,a.ccy,rate);
+    if(esSort==='diff'){
+      /* worst diff 값 기준 (높을수록 = 조기상환 여유 많음 → 상위) */
+      const getWorst=row=>row.p.underlyings.map(u=>{
+        const prices=loadPP(row.p.id);
+        return Number(prices[u.name])&&Number(u.basePrice)&&row.barrier
+          ?(Number(prices[u.name])-Number(u.basePrice)*row.barrier/100):null;
+      }).filter(v=>v!==null);
+      const wa=getWorst(a),wb=getWorst(b);
+      const ma=wa.length?Math.min(...wa):null,mb=wb.length?Math.min(...wb):null;
+      if(ma===null&&mb===null)return 0;
+      if(ma===null)return 1;
+      if(mb===null)return -1;
+      return mb-ma;
+    }
+    if(esSort==='net')   return toKRW(b.t.net,b.ccy,rate)-toKRW(a.t.net,a.ccy,rate);
+    if(esSort==='state') return (stateOrder[a.stateStr]??9)-(stateOrder[b.stateStr]??9);
+    return 0;
   });
   /* 데스크탑 표 */
   tb.innerHTML=rows.map(({p,acc,curIdx,curSt,ccy,pr,cr,barrier,t,diffHtml,stateCls,stateStr})=>`<tr>
