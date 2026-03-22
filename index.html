@@ -1161,9 +1161,20 @@ function renderAssets(){
 }
 function onAPLive(nm,input){
   const v=input.value;
+  /* 표시 span 업데이트 */
   const id='apcv-'+nm.replace(/[^a-zA-Z0-9]/g,'_');
   const el=document.getElementById(id);
   if(el)el.textContent=v?Number(v).toLocaleString():'-';
+  /* 즉시 저장 (renderAssets 제외 — 포커스 유지) */
+  if(v!==''&&v!==null){
+    saveAP(nm,v);
+    const{products}=load();
+    products.forEach(p=>{if((p.underlyings||[]).some(u=>u.name===nm)){const pp=loadPP(p.id);pp[nm]=v;savePP(p.id,pp);}});
+  }
+  /* 카드/계산 갱신 */
+  if(curTab==='dash'){renderHolding();renderSchedule();}
+  if(curTab==='sim') renderSim();
+  if(curTab==='earlysim') renderEarlySim();
 }
 function onAP(nm,val){
   saveAP(nm,val);
@@ -1172,6 +1183,7 @@ function onAP(nm,val){
   renderAssets();
   if(curTab==='dash'){renderHolding();renderSchedule();}
   if(curTab==='sim') renderSim();
+  if(curTab==='earlysim') renderEarlySim();
 }
 function onFxRate(val){
   const rate=Number(val)||0;
