@@ -296,16 +296,16 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">ELS Manager</div>
-      <span class="ver-badge">V26.03.14</span>
+      <span class="ver-badge">V26.03.15</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
-      <button class="tbtn" data-tab="all" onclick="sw('all')">📋 전체<span class="tcnt" id="cnt-a">0</span></button>
+      <button class="tbtn" data-tab="earlysim" onclick="sw('earlysim')">💰 조기상환 시</button>
       <button class="tbtn" data-tab="annual" onclick="sw('annual')">📊 연간 실적</button>
       <button class="tbtn" data-tab="sim" onclick="sw('sim')">🔬 시뮬</button>
       <button class="tbtn" data-tab="accounts" onclick="sw('accounts')">🏦 계좌</button>
       <button class="tbtn" data-tab="backup" onclick="sw('backup')">💾 백업</button>
-      <button class="tbtn" data-tab="earlysim" onclick="sw('earlysim')">💰 조기상환 시</button>
+      <button class="tbtn" data-tab="all" onclick="sw('all')">📋 전체<span class="tcnt" id="cnt-a">0</span></button>
       <button class="tbtn" data-tab="completed" onclick="sw('completed')">✅ 완료<span class="tcnt" id="cnt-c">0</span></button>
     </nav>
     <div class="bar-r">
@@ -780,7 +780,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.03.14';
+const VER = 'V26.03.15';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -1438,10 +1438,19 @@ function prodCard(p, accounts){
     </div>
     <div class="pc-row">
       <span>만기일${ki?` <span class="badge bam" style="font-size:9px;padding:1px 5px;margin-left:4px">KI ${ki}%</span>`:''}</span>
-      <span class="v">${p.maturityDate||'-'} ${matD!==null?dbadge(matD):''}</span>
+      <span class="v">${p.maturityDate||'-'} ${matD!==null?dbadge(matD):''}${(()=>{
+        const ratios=(p.underlyings||[]).map(u=>{
+          const c=Number(prices[u.name]),b=Number(u.basePrice);
+          return(c&&b)?{r:c/b*100,close:ki>0&&(c/b*100)<=ki+20}:null;
+        });
+        const valid=ratios.filter(v=>v!==null);
+        if(!valid.length)return'';
+        const html=valid.map(v=>`<span style="font-size:10px;font-weight:600;${v.close?'color:var(--r)':'color:var(--txt3)'}">${v.r.toFixed(1)}%</span>`).join('<span style="color:var(--txt3);font-size:10px"> / </span>');
+        return` <span style="margin-left:4px">${html}</span>`;
+      })()}</span>
     </div>
     ${diffs.length?`<div class="pc-row">
-      <span>도달값${curBarrier?` <span style="font-size:10px;color:var(--txt3)">(배리어 ${curBarrier}%)</span>`:''}${diffNms?`<br><span style="font-size:10px;color:var(--txt3)">${esc(diffNms)}</span>`:''}</span>
+      <span>조기상환 조건${curBarrier?` <span style="font-size:10px;color:var(--txt3)">(배리어 ${curBarrier}%)</span>`:''}${diffNms?`<br><span style="font-size:10px;color:var(--txt3)">${esc(diffNms)}</span>`:''}</span>
       <span class="v" style="font-variant-numeric:tabular-nums">${diffHtml}</span>
     </div>`:''}
     ${hasCr?`<div class="pc-row">
