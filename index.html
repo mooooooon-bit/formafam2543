@@ -6,10 +6,9 @@
 <title>ELS Manager</title>
 <style>
 /* =============================================================
-   ELS Manager V26.21
-   - 자산 매핑 관리 모달 (사용자 정의 티커 localStorage)
-   - 연간 실적 탭: 계좌별 실제/예상 수익 카드
-   - 종합소득세 계산기 탭 추가
+   ELS Manager V26.22
+   - 계좌 탭: 투자 원금 / 계좌 총 금액 컬럼 추가
+   - 시뮬 탭: 총 자산 성장 추적 카드 추가
    ============================================================= */
 :root {
   --bg:#f2f5f9; --surface:#fff; --s2:#f0f4f9; --s3:#e6ecf5;
@@ -290,7 +289,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">ELS Manager</div>
-      <span class="ver-badge">V26.21</span>
+      <span class="ver-badge">V26.22</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
@@ -547,6 +546,40 @@ tr:hover td{background:#f8fafc}
         <th class="nr">세금</th><th class="nr">세후수익금</th>
         <th class="nr">세후수익률</th><th>만기일</th>
       </tr></thead><tbody id="sim-ytb"></tbody></table>
+    </div>
+  </div>
+
+  <!-- 총 자산 성장 추적 -->
+  <div class="card mt">
+    <div class="sec-hd" style="margin-bottom:12px">
+      <div class="sec-hl"><span class="sec-t">💹 총 자산 성장 추적</span></div>
+      <div class="fl-row">
+        <label style="font-size:12px;font-weight:700;color:var(--txt2)">보기</label>
+        <select class="fsl sm" id="ag-view" style="width:90px;min-height:32px" onchange="renderAssetGrowthTracker()">
+          <option value="yearly">연도별</option>
+          <option value="monthly">월별</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:12px">
+      <div class="fg"><label class="fl">시작 자산 (원)</label><input type="text" inputmode="numeric" class="fi" id="ag-init" placeholder="100,000,000" oninput="onAGInput()"></div>
+      <div class="fg"><label class="fl">월 추가 입금액 (원)</label><input type="text" inputmode="numeric" class="fi" id="ag-monthly" placeholder="1,000,000" oninput="onAGInput()"></div>
+      <div class="fg"><label class="fl">예상 연수익률 (%)</label><input type="number" class="fi" id="ag-rate" placeholder="7.0" step="0.1" min="0" max="50" oninput="onAGInput()"></div>
+      <div class="fg"><label class="fl">기간 (년, 최대 40)</label><input type="number" class="fi" id="ag-years" placeholder="10" step="1" min="1" max="40" oninput="onAGInput()"></div>
+      <div class="fg"><label class="fl">입금 시점</label>
+        <select class="fsl" id="ag-timing" onchange="onAGInput()">
+          <option value="start">매월 초</option>
+          <option value="end">매월 말</option>
+        </select>
+      </div>
+    </div>
+    <div id="ag-kpi" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px"></div>
+    <div class="svgwrap"><svg id="ag-svg" viewBox="0 0 780 200" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="tw" style="margin-top:12px">
+      <table><thead><tr>
+        <th>경과</th><th class="nr">누적 입금원금</th>
+        <th class="nr">예상 총 자산</th><th class="nr">평가수익</th><th class="nr">수익률</th>
+      </tr></thead><tbody id="ag-tb"></tbody></table>
     </div>
   </div>
 </div>
@@ -872,7 +905,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.21';
+const VER = 'V26.22';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -1706,7 +1739,7 @@ function renderTab(tab){
   if(tab==='completed') renderCompleted();
   if(tab==='all')       renderAll2();
   if(tab==='annual')    { renderAnnual(); initAccYearSel(); renderAccYearSummary(); }
-  if(tab==='sim')       renderSim();
+  if(tab==='sim')       { renderSim(); initAssetGrowthInputs(); renderAssetGrowthTracker(); }
   if(tab==='accounts')  renderAccounts();
   if(tab==='backup')    renderBackup();
   if(tab==='earlysim')  renderEarlySim();
@@ -2343,17 +2376,38 @@ function drawSvg(svg,pr,rate){
 /* ─ §15 계좌 관리 렌더 ─ */
 function renderAccounts(){
   const{accounts,products}=load();
+  const rate=loadFxRate();
   const el=document.getElementById('acc-card');
   if(!accounts.length){el.innerHTML=`<div class="empty"><div class="ei">🏦</div><div class="em">등록된 계좌가 없습니다.</div><button class="btn bp sm" onclick="openAccModal()">＋ 계좌 추가</button></div>`;return;}
   el.innerHTML=`<div class="tw"><table>
-    <thead><tr><th>계좌명</th><th>계좌 종류</th><th>과세유형</th><th class="nr">보유</th><th class="nr">완료</th><th></th></tr></thead>
+    <thead><tr>
+      <th>계좌명</th><th>계좌 종류</th><th>과세유형</th>
+      <th class="nr">투자 원금</th><th class="nr">계좌 총 금액</th>
+      <th class="nr">보유</th><th class="nr">완료</th><th></th>
+    </tr></thead>
     <tbody>${accounts.map(acc=>{
-      const act=products.filter(p=>p.accountId===acc.id&&p.status==='active').length;
-      const don=products.filter(p=>p.accountId===acc.id&&p.status!=='active').length;
+      const accProds=products.filter(p=>p.accountId===acc.id);
+      const act=accProds.filter(p=>p.status==='active').length;
+      const don=accProds.filter(p=>p.status!=='active').length;
+      // 투자 원금: 전체 상품 principal 합계 (환율 적용)
+      const totalPr=accProds.reduce((s,p)=>s+toKRW(Number(p.principal||0),p.currency,rate),0);
+      // 계좌 총 금액: 원금 + 세후 수익(완료: actualNetProfit, active: calcSim)
+      let totalNet=0;
+      accProds.forEach(p=>{
+        if(p.status!=='active'){
+          totalNet+=toKRW(Number(p.actualNetProfit||0),p.currency,rate);
+        } else {
+          const c=calcSim(p,acc);
+          totalNet+=toKRW(c.net,p.currency,rate);
+        }
+      });
+      const totalAmt=totalPr+totalNet;
       return`<tr>
         <td><b>${esc(acc.name)}</b><div style="font-size:11px;color:var(--txt3)">${esc(acc.memo||'')}</div></td>
         <td><span class="badge bgr">${esc(acc.kind||'—')}</span></td>
         <td><span class="badge ${TAXB[acc.type]}">${TAXL[acc.type]}</span></td>
+        <td class="nr">${fm(totalPr)}</td>
+        <td class="nr b7 ${totalAmt>=totalPr?'tg':''}">${fm(totalAmt)}</td>
         <td class="nr">${act}</td><td class="nr">${don}</td>
         <td><div style="display:flex;gap:4px">
           <button class="btn bgh xs" onclick="openAccModal('${acc.id}')">수정</button>
@@ -3188,6 +3242,144 @@ function initSample(){
      kiHit:false,kiHitDate:'',kiHitMemo:'',kiObservationType:'unknown'},
   ];
   saveAcc2(accs);saveProd2(prods);
+}
+
+/* ═══════════════════════════════════════════════════════
+   § 총 자산 성장 추적 (Asset Growth Tracker)
+   localStorage key: els_asset_growth_v1
+   ═══════════════════════════════════════════════════════ */
+const AG_KEY = 'els_asset_growth_v1';
+
+function loadAssetGrowthInputs(){
+  return lsGet(AG_KEY, {init:'100000000', monthly:'1000000', rate:'7.0', years:'10', timing:'start'});
+}
+function saveAssetGrowthInputs(o){ lsSet(AG_KEY, o); }
+
+function initAssetGrowthInputs(){
+  const d = loadAssetGrowthInputs();
+  const set = (id,v)=>{ const el=document.getElementById(id); if(el&&!el.value) el.value=v; };
+  set('ag-init',   d.init);
+  set('ag-monthly',d.monthly);
+  set('ag-rate',   d.rate);
+  set('ag-years',  d.years);
+  const tm = document.getElementById('ag-timing');
+  if(tm) tm.value = d.timing||'start';
+}
+
+function onAGInput(){
+  const get = id => document.getElementById(id)?.value||'';
+  saveAssetGrowthInputs({
+    init:    get('ag-init'),
+    monthly: get('ag-monthly'),
+    rate:    get('ag-rate'),
+    years:   get('ag-years'),
+    timing:  document.getElementById('ag-timing')?.value||'start'
+  });
+  renderAssetGrowthTracker();
+}
+
+/** 월별 누적 자산 시뮬 배열 반환 */
+function calcAssetGrowthSeries(){
+  const parseN = s => Math.max(0, Number(String(s||'').replace(/,/g,''))||0);
+  const init    = parseN(document.getElementById('ag-init')?.value);
+  const monthly = parseN(document.getElementById('ag-monthly')?.value);
+  const rateYr  = Math.max(0, Math.min(50, parseFloat(document.getElementById('ag-rate')?.value)||0));
+  const years   = Math.max(1, Math.min(40, parseInt(document.getElementById('ag-years')?.value)||10));
+  const timing  = document.getElementById('ag-timing')?.value||'start';
+  const rateM   = rateYr / 100 / 12;
+  const months  = years * 12;
+  const series  = [];
+  let asset = init;
+  let deposited = init;
+  for(let m=1; m<=months; m++){
+    if(timing==='start') asset += monthly;
+    asset = asset * (1 + rateM);
+    if(timing==='end') asset += monthly;
+    if(m > 1 || timing==='start') deposited += monthly;
+    else deposited += monthly; // m===1 end: 이미 포함
+    series.push({ m, deposited, asset: Math.round(asset) });
+  }
+  return { series, init, monthly, rateYr, years };
+}
+
+function renderAssetGrowthTracker(){
+  const viewEl = document.getElementById('ag-view');
+  const view   = viewEl?.value||'yearly';
+  const { series, init, monthly, rateYr, years } = calcAssetGrowthSeries();
+  if(!series.length) return;
+  const last    = series[series.length-1];
+  const totalDeposited = init + monthly * series.length;
+  const profit  = last.asset - totalDeposited;
+  const profitRate = totalDeposited > 0 ? profit / totalDeposited * 100 : 0;
+
+  // KPI
+  const kpiEl = document.getElementById('ag-kpi');
+  if(kpiEl) kpiEl.innerHTML=[
+    {lbl:'최종 총 자산',        val:fm(last.asset),         cls:'green'},
+    {lbl:'총 입금원금',         val:fm(totalDeposited),     cls:''},
+    {lbl:'총 평가수익',         val:fm(profit),             cls:profit>=0?'green':'red'},
+    {lbl:'최종 수익률',         val:fp(profitRate),         cls:profit>=0?'green':'red'},
+  ].map(i=>`<div class="kpi-card"><div class="kpi-lbl">${i.lbl}</div><div class="kpi-val ${i.cls}" style="font-size:17px">${i.val}</div></div>`).join('');
+
+  // 표시 데이터 (월별/연도별)
+  let rows;
+  if(view==='yearly'){
+    rows = series.filter(d=>d.m%12===0);
+    if(rows[rows.length-1]?.m !== series[series.length-1]?.m) rows.push(series[series.length-1]);
+  } else {
+    rows = series;
+  }
+
+  // SVG 그래프
+  const svg = document.getElementById('ag-svg');
+  if(svg && rows.length>1){
+    const W=780,H=200,P={t:18,r:18,b:30,l:80};
+    const cW=W-P.l-P.r, cH=H-P.t-P.b;
+    const mn=init, mx=last.asset;
+    const px=i=>P.l+i/(rows.length-1)*cW;
+    const py=v=>P.t+cH-((v-mn)/(mx-mn||1))*cH;
+    // 자산선
+    const assetPts = rows.map((d,i)=>`${px(i)},${py(d.asset)}`).join(' ');
+    const depPts   = rows.map((d,i)=>`${px(i)},${py(d.deposited)}`).join(' ');
+    // 폴리곤 영역
+    const ap = `${px(0)},${py(rows[0].asset)} ${assetPts} ${px(rows.length-1)},${P.t+cH} ${px(0)},${P.t+cH}`;
+    // y축 눈금
+    const yg = Array.from({length:4},(_,i)=>{
+      const v=mn+(mx-mn)*i/3, yy=py(v);
+      return`<line x1="${P.l}" y1="${yy}" x2="${W-P.r}" y2="${yy}" stroke="#dde4ef" stroke-width="1"/>
+             <text x="${P.l-4}" y="${yy+4}" text-anchor="end" font-size="9" fill="#8899b0">${(v/1e8).toFixed(1)}억</text>`;
+    }).join('');
+    // x축 레이블 (6~8개만)
+    const step = Math.max(1, Math.floor(rows.length/7));
+    const xt = rows.filter((_,i)=>i%step===0||i===rows.length-1).map((d,_,arr)=>{
+      const i = rows.indexOf(d);
+      const lbl = view==='yearly' ? `${d.m/12}년` : `${d.m}M`;
+      return`<text x="${px(i)}" y="${P.t+cH+13}" text-anchor="middle" font-size="9" fill="#8899b0">${lbl}</text>`;
+    }).join('');
+    svg.innerHTML=`<defs>
+      <linearGradient id="ag-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1d4ed8" stop-opacity=".15"/>
+        <stop offset="100%" stop-color="#1d4ed8" stop-opacity=".01"/>
+      </linearGradient></defs>
+      ${yg}${xt}
+      <polygon points="${ap}" fill="url(#ag-grad)"/>
+      <polyline points="${depPts}" fill="none" stroke="#047857" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>
+      <polyline points="${assetPts}" fill="none" stroke="#1d4ed8" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+
+  // 표
+  const tb = document.getElementById('ag-tb');
+  if(tb) tb.innerHTML = rows.map(d=>{
+    const pf = d.asset - d.deposited;
+    const lbl = view==='yearly' ? `${d.m/12}년` : `${d.m}개월`;
+    return`<tr>
+      <td>${lbl}</td>
+      <td class="nr">${fm(d.deposited)}</td>
+      <td class="nr ta b7">${fm(d.asset)}</td>
+      <td class="nr ${pf>=0?'tg':'tr'}">${fm(pf)}</td>
+      <td class="nr ${pf>=0?'tg':'tr'}">${fp(d.deposited>0?pf/d.deposited*100:0)}</td>
+    </tr>`;
+  }).join('');
 }
 
 /* ─ §30 초기화 ─ */
