@@ -1170,12 +1170,43 @@ function sortActiveProducts(list, sortKey){
    § 계좌별 연간 실제/예상 수익 요약
    ═══════════════════════════════════════════════════════ */
 
-/** 예상 귀속 연도 판정: nextEvalDate → maturityDate 순 */
-function calcExpectedAttributionYear(p){
-  const nd = nextEvalDate(p);
-  if(nd && nd.length>=4) return nd.slice(0,4);
-  if(p.maturityDate && p.maturityDate.length>=4) return p.maturityDate.slice(0,4);
-  return null;
+/**
+ * 현재가 기준으로 조기상환 배리어를 충족하는 첫 번째 차수를 찾아
+ * 해당 평가일 연도와 couponRateCumulative를 반환.
+ * 충족 차수가 없으면 null 반환.
+ * @returns {year: string, date: string, cr: number, round: number} | null
+ */
+function calcFirstRedeemableRound(p){
+  if(!p.evalDates?.length) return null;
+  const prices = loadPP(p.id);
+  const underlyings = p.underlyings||[];
+  if(!underlyings.length) return null;
+  // 모든 차수를 순서대로 확인 (이미 완료된 차수 포함, evalResults 로 걸러냄)
+  for(let i=0; i<p.evalDates.length; i++){
+    const stage = p.evalDates[i];
+    const barrier = Number(stage?.barrier)||0;
+    if(!barrier||!stage?.date) continue;
+    // 이미 실제 미달 확정된 차수는 건너뜀
+    const savedResult = (p.evalResults||[]).find(r=>r.round===i+1);
+    if(savedResult?.result==='fail') continue;
+    // 현재가 기준으로 모든 기초자산이 배리어 이상인지 확인
+    const ratios = underlyings.map(u=>{
+      const cur = Number(prices[u.name]);
+      const base = Number(u.basePrice);
+      return (cur&&base) ? cur/base*100 : null;
+    });
+    if(ratios.some(r=>r===null)) continue; // 현재가 미입력 차수는 판단 불가 → 건너뜀
+    const allAbove = ratios.every(r=>r>=barrier);
+    if(allAbove){
+      return {
+        year: stage.date.slice(0,4),
+        date: stage.date,
+        cr: Number(stage.couponRateCumulative)||0,
+        round: i+1
+      };
+    }
+  }
+  return null; // 충족 차수 없음 → 예상 수익 미포함
 }
 
 /** 연도별 계좌별 실제/예상 수익 데이터 생성 */
@@ -1197,17 +1228,21 @@ function getAccountYearProfitSummary(year){
     result[p.accountId].actualNet += net;
     result[p.accountId].actualItems.push({name:p.name, net, date:p.settlementDate, status:'실제', ccy:p.currency});
   });
-  // 예상 수익 (active 상품, 귀속 연도 판정)
+  // 예상 수익 (active 상품, 현재가 기준 첫 조기상환 충족 차수의 평가일 연도)
   products.filter(p=>p.status==='active').forEach(p=>{
-    const attrYr = calcExpectedAttributionYear(p);
-    if(attrYr !== yr) return;
+    const hit = calcFirstRedeemableRound(p);
+    if(!hit || hit.year !== yr) return;          // 충족 차수 없거나 해당 연도 아님
     if(!result[p.accountId]) return;
     const acc = accounts.find(a=>a.id===p.accountId);
-    const c = calcSim(p, acc);
-    const net = toKRW(c.net, p.currency, rate);
+    const pr = Number(p.principal)||0;
+    const gross = pr * hit.cr / 100;
+    const t = calcTax(gross, acc?.type, pr);
+    const net = toKRW(t.net, p.currency, rate);
     result[p.accountId].expectedNet += net;
-    const attrDate = nextEvalDate(p)||p.maturityDate||'-';
-    result[p.accountId].expectedItems.push({name:p.name, net, date:attrDate, status:'예상', ccy:p.currency});
+    result[p.accountId].expectedItems.push({
+      name: `${p.name} (${hit.round}차 기준)`,
+      net, date: hit.date, status:'예상', ccy: p.currency
+    });
   });
   return Object.values(result);
 }
@@ -1230,8 +1265,10 @@ function initAccYearSel(){
   years.add(thisYr);
   products.forEach(p=>{
     if(p.settlementDate) years.add(p.settlementDate.slice(0,4));
-    const ay = calcExpectedAttributionYear(p);
-    if(ay) years.add(ay);
+    if(p.status==='active'){
+      const hit = calcFirstRedeemableRound(p);
+      if(hit?.year) years.add(hit.year);
+    }
   });
   const sorted = [...years].sort().reverse();
   const cur = sel.value||thisYr;
