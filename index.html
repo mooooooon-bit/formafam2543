@@ -6,7 +6,7 @@
 <title>ELS Manager</title>
 <style>
 /* =============================================================
-   ELS Manager V26.25
+   ELS Manager V26.26
    - 계좌 탭: 계좌 총 금액 = 완료 상품 실제 금액만 반영
    - 시뮬 탭: 총 자산 성장 추적 → 실제 스냅샷 기록기로 교체
    - 연간 실적 탭: 올해/내년/내후년 예상 수익 3개 연도 동시 표시
@@ -296,7 +296,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">ELS Manager</div>
-      <span class="ver-badge">V26.25</span>
+      <span class="ver-badge">V26.26</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
@@ -619,18 +619,26 @@ tr:hover td{background:#f8fafc}
   <!-- GitHub 동기화 카드 -->
   <div class="card mt">
     <div class="sec-t" style="margin-bottom:4px">☁️ GitHub 동기화</div>
-    <div style="font-size:12px;color:var(--txt3);margin-bottom:12px">GitHub 저장소에 전체 백업을 업로드하거나 불러옵니다. 수동 버튼 방식이며 자동 동기화가 아닙니다.</div>
-    <div class="disclaimer" style="margin-bottom:12px">※ GitHub 토큰은 이 브라우저 localStorage에 저장됩니다. 개인 전용 repo와 최소 권한(contents: write) 토큰 사용을 강력 권장합니다.</div>
+    <div style="font-size:12px;color:var(--txt3);margin-bottom:8px">GitHub private repo에 백업 JSON을 업로드하거나 불러옵니다. 수동 버튼 방식이며 자동 동기화가 아닙니다.</div>
+    <div class="disclaimer" style="margin-bottom:12px">※ GitHub 토큰은 이 브라우저 localStorage에 저장됩니다. 개인 전용 private repo와 최소 권한(contents: write) 토큰 사용 권장</div>
     <div class="g2">
-      <div class="fg"><label class="fl">GitHub Personal Access Token</label><input type="password" class="fi" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" oninput="saveGhConfig()"></div>
-      <div class="fg"><label class="fl">Owner (사용자명 또는 조직명)</label><input type="text" class="fi" id="gh-owner" placeholder="my-github-id" oninput="saveGhConfig()"></div>
-      <div class="fg"><label class="fl">Repository 이름</label><input type="text" class="fi" id="gh-repo" placeholder="els-backup" oninput="saveGhConfig()"></div>
-      <div class="fg"><label class="fl">Branch</label><input type="text" class="fi" id="gh-branch" placeholder="main" oninput="saveGhConfig()"></div>
-      <div class="fg sp2"><label class="fl">백업 파일 경로 (repo 내 경로)</label><input type="text" class="fi" id="gh-path" placeholder="backups/els-backup.json" oninput="saveGhConfig()"></div>
+      <!-- Token 입력 -->
+      <div class="fg sp2">
+        <label class="fl">GitHub Personal Access Token</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <input type="password" class="fi" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" style="flex:1;min-width:160px" oninput="saveGitSyncSettings()">
+          <button class="btn bgh sm" onclick="toggleGitTokenVisibility()" id="gh-token-vis-btn" style="flex-shrink:0">보기</button>
+          <button class="btn bd-btn sm" onclick="clearGitToken()" style="flex-shrink:0">토큰 지우기</button>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Owner</label><input type="text" class="fi" id="gh-owner" placeholder="mooooooon-bit" oninput="saveGitSyncSettings()"></div>
+      <div class="fg"><label class="fl">Repository 이름</label><input type="text" class="fi" id="gh-repo" placeholder="ellsbuppri" oninput="saveGitSyncSettings()"></div>
+      <div class="fg"><label class="fl">Branch</label><input type="text" class="fi" id="gh-branch" placeholder="main" oninput="saveGitSyncSettings()"></div>
+      <div class="fg"><label class="fl">백업 파일 경로</label><input type="text" class="fi" id="gh-path" placeholder="backups/els-backup.json" oninput="saveGitSyncSettings()"></div>
     </div>
     <div class="fl-row" style="margin-top:12px">
-      <button class="btn bp" id="gh-upload-btn" onclick="githubUpload()">⬆ GitHub에 백업 업로드</button>
-      <button class="btn bs" id="gh-download-btn" onclick="githubDownload()">⬇ GitHub에서 백업 불러오기</button>
+      <button class="btn bp" id="gh-upload-btn" onclick="uploadBackupToGitHub()">⬆ GitHub에 백업 업로드</button>
+      <button class="btn bs" id="gh-download-btn" onclick="downloadBackupFromGitHub()">⬇ GitHub에서 백업 불러오기</button>
     </div>
     <div id="gh-status" style="font-size:12px;color:var(--txt3);margin-top:8px"></div>
   </div>
@@ -925,7 +933,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.25';
+const VER = 'V26.26';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -3229,103 +3237,166 @@ function importAll(ev){
   };
   reader.readAsText(file);
 }
-/* ─ GitHub 동기화 ─ */
-const GH_CFG_KEY = 'els_github_config_v1';
+/* ═══════════════════════════════════════════════════════
+   § GitHub 수동 동기화
+   localStorage keys:
+     els_git_token_v1 / els_git_owner_v1 / els_git_repo_v1
+     els_git_branch_v1 / els_git_backup_path_v1
+   ═══════════════════════════════════════════════════════ */
 
-function loadGhConfig(){ return lsGet(GH_CFG_KEY, {token:'',owner:'',repo:'',branch:'main',path:'backups/els-backup.json'}); }
-function saveGhConfig(){
-  const cfg={
-    token:  document.getElementById('gh-token')?.value||'',
-    owner:  document.getElementById('gh-owner')?.value||'',
-    repo:   document.getElementById('gh-repo')?.value||'',
-    branch: document.getElementById('gh-branch')?.value||'main',
-    path:   document.getElementById('gh-path')?.value||'backups/els-backup.json',
+const GIT_KEYS = {
+  token:  'els_git_token_v1',
+  owner:  'els_git_owner_v1',
+  repo:   'els_git_repo_v1',
+  branch: 'els_git_branch_v1',
+  path:   'els_git_backup_path_v1',
+};
+const GIT_DEFAULTS = {
+  token:'', owner:'mooooooon-bit', repo:'ellsbuppri', branch:'main', path:'backups/els-backup.json'
+};
+
+function loadGitSyncSettings(){
+  return {
+    token:  localStorage.getItem(GIT_KEYS.token)||GIT_DEFAULTS.token,
+    owner:  localStorage.getItem(GIT_KEYS.owner)||GIT_DEFAULTS.owner,
+    repo:   localStorage.getItem(GIT_KEYS.repo)||GIT_DEFAULTS.repo,
+    branch: localStorage.getItem(GIT_KEYS.branch)||GIT_DEFAULTS.branch,
+    path:   localStorage.getItem(GIT_KEYS.path)||GIT_DEFAULTS.path,
   };
-  lsSet(GH_CFG_KEY, cfg);
+}
+function saveGitSyncSettings(){
+  const g=id=>document.getElementById(id)?.value||'';
+  localStorage.setItem(GIT_KEYS.token,  g('gh-token'));
+  localStorage.setItem(GIT_KEYS.owner,  g('gh-owner')||GIT_DEFAULTS.owner);
+  localStorage.setItem(GIT_KEYS.repo,   g('gh-repo')||GIT_DEFAULTS.repo);
+  localStorage.setItem(GIT_KEYS.branch, g('gh-branch')||GIT_DEFAULTS.branch);
+  localStorage.setItem(GIT_KEYS.path,   g('gh-path')||GIT_DEFAULTS.path);
+}
+function clearGitToken(){
+  localStorage.removeItem(GIT_KEYS.token);
+  const el=document.getElementById('gh-token');
+  if(el)el.value='';
+  toast('토큰이 지워졌습니다.','ok');
+}
+function toggleGitTokenVisibility(){
+  const inp=document.getElementById('gh-token');
+  const btn=document.getElementById('gh-token-vis-btn');
+  if(!inp)return;
+  const hidden=inp.type==='password';
+  inp.type=hidden?'text':'password';
+  if(btn)btn.textContent=hidden?'숨기기':'보기';
 }
 function initGhConfig(){
-  const cfg=loadGhConfig();
+  const s=loadGitSyncSettings();
   const set=(id,v)=>{const el=document.getElementById(id);if(el&&!el.value)el.value=v;};
-  set('gh-token', cfg.token);
-  set('gh-owner', cfg.owner);
-  set('gh-repo',  cfg.repo);
-  set('gh-branch',cfg.branch||'main');
-  set('gh-path',  cfg.path||'backups/els-backup.json');
+  set('gh-token',  s.token);
+  set('gh-owner',  s.owner||GIT_DEFAULTS.owner);
+  set('gh-repo',   s.repo||GIT_DEFAULTS.repo);
+  set('gh-branch', s.branch||GIT_DEFAULTS.branch);
+  set('gh-path',   s.path||GIT_DEFAULTS.path);
 }
-function setGhStatus(msg, ok=null){
+// 하위 호환 alias
+function saveGhConfig(){ saveGitSyncSettings(); }
+
+function setGhStatus(msg,ok=null){
   const el=document.getElementById('gh-status');
-  if(el) el.innerHTML=`<span style="color:${ok===true?'var(--g)':ok===false?'var(--r)':'var(--txt3)'}">${msg}</span>`;
+  if(el)el.innerHTML=`<span style="color:${ok===true?'var(--g)':ok===false?'var(--r)':'var(--txt3)'}">${msg}</span>`;
 }
-function buildBackupJson(){
+
+/** 전체 백업 페이로드 생성 (exportAll과 동일 범위) */
+function getFullBackupPayload(){
   const{accounts,products}=load();
   const ap={},pp={};
   Object.keys(localStorage).forEach(k=>{if(k.startsWith('els_ap_'))ap[k.slice(7)]=localStorage.getItem(k);});
   products.forEach(p=>{const v=loadPP(p.id);if(Object.keys(v).length)pp[p.id]=v;});
-  return {version:VER, exportedAt:new Date().toISOString(), accounts, products, accountOrder:loadOrd(), assetPrices:ap, prodPrices:pp, totalAssetHistory:loadTotalAssetHistory()};
+  return {version:VER, exportedAt:new Date().toISOString(), accounts, products,
+    accountOrder:loadOrd(), assetPrices:ap, prodPrices:pp,
+    totalAssetHistory:loadTotalAssetHistory()};
 }
-async function githubUpload(){
-  const cfg=loadGhConfig();
-  if(!cfg.token||!cfg.owner||!cfg.repo||!cfg.path){toast('GitHub 설정을 모두 입력하세요.','err');return;}
+
+/** 백업 페이로드 복원 (importAll과 동일 흐름) */
+function applyFullBackupPayload(data){
+  if(!Array.isArray(data.accounts)||!Array.isArray(data.products))
+    throw new Error('올바른 ELS 백업 파일이 아닙니다.');
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith('els_ap_')||k.startsWith('els_pp_')||k==='els_ord')
+      localStorage.removeItem(k);
+  });
+  const normalized=data.products.map(p=>({currency:'KRW',...p}));
+  saveAcc2(data.accounts); saveProd2(normalized);
+  if(data.accountOrder) saveOrd(data.accountOrder);
+  if(data.assetPrices)  Object.entries(data.assetPrices).forEach(([k,v])=>saveAP(k,v));
+  if(data.prodPrices)   Object.entries(data.prodPrices).forEach(([pid,v])=>savePP(pid,v));
+  if(Array.isArray(data.totalAssetHistory)) saveTotalAssetHistory(data.totalAssetHistory);
+}
+
+/** GitHub REST API 공통 요청 헬퍼 */
+async function githubRequest(method, url, token, body=null){
+  const opts={method, headers:{Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const res=await fetch(url, opts);
+  const json=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(json.message||`HTTP ${res.status}`);
+  return json;
+}
+
+/** GitHub에 백업 업로드 */
+async function uploadBackupToGitHub(){
+  const s=loadGitSyncSettings();
+  if(!s.token||!s.owner||!s.repo||!s.path){toast('GitHub 토큰·Owner·Repo·경로를 모두 입력하세요.','err');return;}
   const btn=document.getElementById('gh-upload-btn');
   if(btn){btn.disabled=true;btn.textContent='업로드 중...';}
-  setGhStatus('업로드 중...');
+  setGhStatus('GitHub에 업로드 중...');
   try{
-    const content=btoa(unescape(encodeURIComponent(JSON.stringify(buildBackupJson(),null,2))));
-    // 기존 파일 SHA 조회 (업데이트 시 필요)
+    const payload=JSON.stringify(getFullBackupPayload(),null,2);
+    const content=btoa(unescape(encodeURIComponent(payload)));
+    const apiBase=`https://api.github.com/repos/${s.owner}/${s.repo}/contents/${s.path}`;
+    // 기존 파일 SHA 조회
     let sha='';
-    try{
-      const r=await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}?ref=${cfg.branch}`,
-        {headers:{Authorization:`Bearer ${cfg.token}`,Accept:'application/vnd.github+json'}});
-      if(r.ok){const d=await r.json();sha=d.sha||'';}
-    }catch{}
-    const body={message:`ELS 백업 업로드 ${new Date().toISOString()}`,content,branch:cfg.branch};
+    try{const r=await githubRequest('GET',`${apiBase}?ref=${s.branch}`,s.token);sha=r.sha||'';}catch{}
+    const body={message:'ELS backup update',content,branch:s.branch};
     if(sha) body.sha=sha;
-    const res=await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`,
-      {method:'PUT',headers:{Authorization:`Bearer ${cfg.token}`,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(!res.ok){const err=await res.json();throw new Error(err.message||res.status);}
-    toast('GitHub 업로드 완료','ok');
-    setGhStatus(`✅ 업로드 완료 (${new Date().toLocaleTimeString()})`, true);
+    await githubRequest('PUT',apiBase,s.token,body);
+    toast('GitHub 백업 업로드 완료','ok');
+    setGhStatus(`✅ 업로드 완료 (${new Date().toLocaleTimeString()})`,true);
   }catch(e){
-    toast('업로드 실패: '+e.message,'err');
-    setGhStatus('❌ 오류: '+e.message, false);
+    toast('GitHub 업로드 실패: '+e.message,'err');
+    setGhStatus('❌ 업로드 오류: '+e.message,false);
   }finally{
     if(btn){btn.disabled=false;btn.textContent='⬆ GitHub에 백업 업로드';}
   }
 }
-async function githubDownload(){
-  const cfg=loadGhConfig();
-  if(!cfg.token||!cfg.owner||!cfg.repo||!cfg.path){toast('GitHub 설정을 모두 입력하세요.','err');return;}
+// 하위 호환 alias
+function githubUpload(){ return uploadBackupToGitHub(); }
+
+/** GitHub에서 백업 불러오기 */
+async function downloadBackupFromGitHub(){
+  const s=loadGitSyncSettings();
+  if(!s.token||!s.owner||!s.repo||!s.path){toast('GitHub 토큰·Owner·Repo·경로를 모두 입력하세요.','err');return;}
   const btn=document.getElementById('gh-download-btn');
   if(btn){btn.disabled=true;btn.textContent='불러오는 중...';}
-  setGhStatus('불러오는 중...');
+  setGhStatus('GitHub에서 불러오는 중...');
   try{
-    const res=await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}?ref=${cfg.branch}`,
-      {headers:{Authorization:`Bearer ${cfg.token}`,Accept:'application/vnd.github+json'}});
-    if(!res.ok){const err=await res.json();throw new Error(err.message||res.status);}
-    const meta=await res.json();
+    const apiUrl=`https://api.github.com/repos/${s.owner}/${s.repo}/contents/${s.path}?ref=${s.branch}`;
+    const meta=await githubRequest('GET',apiUrl,s.token);
     const jsonStr=decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))));
     const data=JSON.parse(jsonStr);
-    if(!Array.isArray(data.accounts)||!Array.isArray(data.products)){throw new Error('올바른 ELS 백업 파일이 아닙니다.');}
-    if(!confirm(`GitHub에서 불러옵니다.\n계좌 ${data.accounts.length}개, 상품 ${data.products.length}개\n기존 데이터를 덮어씁니다. 계속하시겠습니까?`)){
-      setGhStatus('취소됨');return;
+    if(!confirm(`GitHub에서 불러옵니다.\n계좌 ${data.accounts?.length||0}개, 상품 ${data.products?.length||0}개\n기존 데이터를 덮어씁니다. 계속하시겠습니까?`)){
+      setGhStatus('취소됨'); return;
     }
-    Object.keys(localStorage).forEach(k=>{if(k.startsWith('els_ap_')||k.startsWith('els_pp_')||k==='els_ord')localStorage.removeItem(k);});
-    const normalized=data.products.map(p=>({currency:'KRW',...p}));
-    saveAcc2(data.accounts);saveProd2(normalized);
-    if(data.accountOrder)saveOrd(data.accountOrder);
-    if(data.assetPrices)Object.entries(data.assetPrices).forEach(([k,v])=>saveAP(k,v));
-    if(data.prodPrices)Object.entries(data.prodPrices).forEach(([pid,v])=>savePP(pid,v));
-    if(Array.isArray(data.totalAssetHistory))saveTotalAssetHistory(data.totalAssetHistory);
-    toast('GitHub에서 불러오기 완료','ok');
-    setGhStatus(`✅ 불러오기 완료 (${new Date().toLocaleTimeString()})`, true);
+    applyFullBackupPayload(data);
+    toast('GitHub 백업 불러오기 완료','ok');
+    setGhStatus(`✅ 불러오기 완료 (${new Date().toLocaleTimeString()})`,true);
     location.reload();
   }catch(e){
-    toast('불러오기 실패: '+e.message,'err');
-    setGhStatus('❌ 오류: '+e.message, false);
+    toast('GitHub 불러오기 실패: '+e.message,'err');
+    setGhStatus('❌ 불러오기 오류: '+e.message,false);
   }finally{
     if(btn){btn.disabled=false;btn.textContent='⬇ GitHub에서 백업 불러오기';}
   }
 }
+// 하위 호환 alias
+function githubDownload(){ return downloadBackupFromGitHub(); }
 function clearAll(){
   if(!confirm('모든 데이터를 초기화합니다. 되돌릴 수 없습니다. 계속하시겠습니까?'))return;
   Object.keys(localStorage).filter(k=>k.startsWith('els_')).forEach(k=>localStorage.removeItem(k));
