@@ -6,7 +6,7 @@
 <title>ELS Manager</title>
 <style>
 /* =============================================================
-   ELS Manager V26.27
+   ELS Manager V26.28
    - 계좌 탭: 계좌 총 금액 = 완료 상품 실제 금액만 반영
    - 시뮬 탭: 총 자산 성장 추적 → 실제 스냅샷 기록기로 교체
    - 연간 실적 탭: 올해/내년/내후년 예상 수익 3개 연도 동시 표시
@@ -287,6 +287,25 @@ tr:hover td{background:#f8fafc}
   .es-table-view{display:none}
   .es-card-view{display:flex}
 }
+
+/* ─ 신규 ELS 비교 탭 ─ */
+.cmp-table-view{display:block}
+.cmp-card-view{display:none}
+.cmp-card-grid{display:flex;flex-direction:column;gap:10px}
+.cmp-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:13px 14px;box-shadow:var(--sh)}
+.cmp-card-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.cmp-card-nm{font-weight:700;font-size:14px;flex:1;min-width:0}
+.cmp-card-row{display:flex;justify-content:space-between;font-size:13px;color:var(--txt2);padding:3px 0;border-bottom:1px solid var(--bd)}
+.cmp-card-row:last-of-type{border-bottom:none}
+.cmp-card-row .v{font-weight:600;color:var(--txt);text-align:right}
+.cmp-fav{cursor:pointer;font-size:14px;flex-shrink:0;background:none;border:none;padding:0}
+.cmp-ok{background:var(--g-bg);color:var(--g)}
+.cmp-partial{background:var(--am-bg);color:var(--am)}
+.cmp-lack{background:var(--r-bg);color:var(--r)}
+@media(max-width:700px){
+  .cmp-table-view{display:none}
+  .cmp-card-view{display:flex}
+}
 </style>
 </head>
 <body>
@@ -296,11 +315,12 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">ELS Manager</div>
-      <span class="ver-badge">V26.27</span>
+      <span class="ver-badge">V26.28</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
       <button class="tbtn" data-tab="earlysim" onclick="sw('earlysim')">💰 조기상환 시</button>
+      <button class="tbtn" data-tab="compare" onclick="sw('compare')">🔎 신규 ELS 비교</button>
       <button class="tbtn" data-tab="annual" onclick="sw('annual')">📊 연간 실적</button>
       <button class="tbtn" data-tab="sim" onclick="sw('sim')">🔬 시뮬</button>
       <button class="tbtn" data-tab="accounts" onclick="sw('accounts')">🏦 계좌</button>
@@ -644,6 +664,167 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
+<!-- ====== 탭: 신규 ELS 비교 ====== -->
+<div class="page" id="tab-compare">
+  <div class="disclaimer">🔎 이 탭은 가입 후보 ELS 상품 비교 전용입니다. 기존 보유 상품과는 별개로 관리됩니다.</div>
+
+  <!-- 상단 툴바 -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="sec-hd" style="flex-wrap:wrap;gap:8px">
+      <div class="sec-hl">
+        <span class="sec-t">🔎 신규 ELS 비교</span>
+        <span class="cbadge" id="cmp-cnt">0개</span>
+      </div>
+      <div class="fl-row">
+        <button class="btn bp sm" onclick="openCompareModal()">＋ 상품 추가</button>
+        <button class="btn bs sm" onclick="importCompareItemsJson()">📂 JSON 가져오기</button>
+        <button class="btn bs sm" onclick="exportCompareItemsJson()">⬇ JSON 내보내기</button>
+        <input type="file" id="cmp-import-f" accept=".json" style="display:none" onchange="onCompareImportFile(event)">
+      </div>
+    </div>
+    <!-- 필터 바 -->
+    <div class="fl-row" style="margin-top:8px;flex-wrap:wrap;gap:6px">
+      <select class="fsl sm" id="cmp-f-co" style="min-width:100px" onchange="renderCompareTab()">
+        <option value="">증권사 전체</option>
+      </select>
+      <select class="fsl sm" id="cmp-f-asset" style="min-width:110px" onchange="renderCompareTab()">
+        <option value="">기초자산 전체</option>
+      </select>
+      <select class="fsl sm" id="cmp-sort" style="min-width:120px" onchange="renderCompareTab()">
+        <option value="added">추가순</option>
+        <option value="annual_desc">연환산수익률↓</option>
+        <option value="ki_desc">KI높은순</option>
+        <option value="ki_asc">KI낮은순</option>
+        <option value="maturity_asc">만기짧은순</option>
+        <option value="maturity_desc">만기긴순</option>
+        <option value="assets_asc">기초자산수↑</option>
+        <option value="completeness_asc">정보완성도낮은순</option>
+        <option value="fav">즐겨찾기먼저</option>
+      </select>
+      <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer">
+        <input type="checkbox" id="cmp-f-fav" onchange="renderCompareTab()"> 즐겨찾기만
+      </label>
+    </div>
+  </div>
+
+  <!-- 데스크탑: 테이블 / 모바일: 카드 -->
+  <div class="cmp-table-view">
+    <div class="tw">
+      <table id="cmp-table">
+        <thead><tr>
+          <th style="width:28px">★</th>
+          <th>증권사</th><th>상품명</th><th>기초자산</th>
+          <th class="nr">만기</th><th class="nr">차수</th>
+          <th class="nr">1차 배리어</th><th class="nr">만기 배리어</th>
+          <th class="nr">KI</th><th class="nr">만기수익률</th>
+          <th class="nr">연환산</th><th>월지급</th>
+          <th>완성도</th><th style="width:64px"></th>
+        </tr></thead>
+        <tbody id="cmp-tb"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="cmp-card-view cmp-card-grid" id="cmp-cards"></div>
+
+  <!-- JSON 예시 안내 -->
+  <div class="card mt" id="cmp-json-guide" style="display:none">
+    <div class="sec-t" style="margin-bottom:8px">📋 JSON 형식 안내</div>
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:6px">아래 형식으로 ChatGPT 등이 정리한 JSON을 가져올 수 있습니다.</div>
+    <pre style="background:var(--s2);border-radius:var(--r2);padding:12px;font-size:10px;overflow-x:auto;white-space:pre-wrap;color:var(--txt2)">[
+  {
+    "securitiesCompany": "한국투자증권",
+    "productName": "ELS 12345",
+    "productCode": "12345",
+    "offerPeriodStart": "2026-04-01",
+    "offerPeriodEnd": "2026-04-03",
+    "issueDate": "2026-04-05",
+    "maturityDate": "2029-04-05",
+    "currency": "KRW",
+    "principal": 10000000,
+    "underlyingAssets": ["S&P500", "NASDAQ100", "EURO STOXX 50"],
+    "evalSchedule": [
+      {"date":"2026-10-05","barrier":85,"couponRateCumulative":4.5},
+      {"date":"2027-04-05","barrier":85,"couponRateCumulative":9.0}
+    ],
+    "kiBarrier": 50,
+    "finalBarrier": 65,
+    "maturityCouponCumulative": 27,
+    "payoffType": "standard-stepdown",
+    "noKiMode": "coupon",
+    "note": "월지급식 아님",
+    "sourceMemo": "증권사 캡처 기준"
+  }
+]</pre>
+    <button class="btn bgh sm" style="margin-top:8px" onclick="document.getElementById('cmp-json-guide').style.display='none'">닫기</button>
+  </div>
+</div>
+
+<!-- 비교 상품 등록/수정 모달 -->
+<div class="mo" id="mo-compare">
+  <div class="md mdlg">
+    <div class="md-hd"><div class="md-t" id="cmp-modal-title">비교 상품 추가</div><button class="md-x" onclick="cm('mo-compare')">✕</button></div>
+    <div class="md-b">
+      <div class="g2">
+        <div class="fg"><label class="fl">증권사 <span class="req">*</span></label><input type="text" class="fi" id="cf-co" placeholder="한국투자증권"></div>
+        <div class="fg"><label class="fl">상품명 <span class="req">*</span></label><input type="text" class="fi" id="cf-nm" placeholder="ELS 12345"></div>
+        <div class="fg"><label class="fl">상품코드</label><input type="text" class="fi" id="cf-code" placeholder="12345"></div>
+        <div class="fg"><label class="fl">통화</label>
+          <select class="fsl" id="cf-cur">
+            <option value="KRW">KRW</option><option value="USD">USD</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">모집 시작일</label><input type="date" class="fi" id="cf-os"></div>
+        <div class="fg"><label class="fl">모집 종료일</label><input type="date" class="fi" id="cf-oe"></div>
+        <div class="fg"><label class="fl">발행일</label><input type="date" class="fi" id="cf-issue"></div>
+        <div class="fg"><label class="fl">만기일 <span class="req">*</span></label><input type="date" class="fi" id="cf-mat"></div>
+        <div class="fg"><label class="fl">기초자산 (쉼표 구분)</label><input type="text" class="fi" id="cf-assets" placeholder="S&P500, NASDAQ100"></div>
+        <div class="fg"><label class="fl">KI 배리어 (%)</label><input type="number" class="fi" id="cf-ki" placeholder="50" min="0" max="100"></div>
+        <div class="fg"><label class="fl">만기 최종 배리어 (%)</label><input type="number" class="fi" id="cf-fb" placeholder="65" step="0.1"></div>
+        <div class="fg"><label class="fl">만기 누적 수익률 (%)</label><input type="number" class="fi" id="cf-mc" placeholder="27" step="0.01"></div>
+        <div class="fg"><label class="fl">상품 구조</label>
+          <select class="fsl" id="cf-pt">
+            <option value="standard-stepdown">스텝다운 (KI 있음)</option>
+            <option value="no-ki-stepdown">스텝다운 (KI 없음)</option>
+            <option value="monthly-coupon">월지급식</option>
+            <option value="custom">기타</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">월지급식 여부</label>
+          <select class="fsl" id="cf-monthly">
+            <option value="no">아니오</option><option value="yes">예</option>
+          </select>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="fg">
+        <label class="fl">조기상환 평가일 <span style="font-size:11px;color:var(--txt3);">(날짜 · 배리어% · 누적수익률%)</span></label>
+        <div id="cf-eval-list" class="dynl"></div>
+        <button class="addbtn" onclick="addCmpEval()">＋ 평가일 추가</button>
+      </div>
+      <div class="hr"></div>
+      <div class="g2">
+        <div class="fg sp2"><label class="fl">메모</label><input type="text" class="fi" id="cf-note" placeholder="특이사항 등"></div>
+        <div class="fg sp2"><label class="fl">출처 메모 (캡처 링크, 날짜 등)</label><input type="text" class="fi" id="cf-src" placeholder="증권사 앱 캡처 2026-04-01"></div>
+      </div>
+    </div>
+    <div class="md-ft">
+      <button class="btn bgh" onclick="cm('mo-compare')">취소</button>
+      <button class="btn bp" onclick="saveCompareItem()">💾 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 비교 상품 상세 모달 -->
+<div class="mo" id="mo-compare-det">
+  <div class="md mdlg">
+    <div class="md-hd"><div class="md-t" id="cmp-det-title">비교 상품 상세</div><button class="md-x" onclick="cm('mo-compare-det')">✕</button></div>
+    <div class="md-b" id="cmp-det-body"></div>
+    <div class="md-ft" id="cmp-det-ft">
+      <button class="btn bgh" onclick="cm('mo-compare-det')">닫기</button>
+    </div>
+  </div>
+</div>
+
 <!-- ====== 탭: 조기상환 시 (이번 차수 가정 시뮬) ====== -->
 <div class="page" id="tab-earlysim">
   <div class="sim-banner">💰 <span><b>조기상환 시 시뮬레이션</b> — 이번 차수에서 조기상환된다고 가정했을 때의 예상 수익입니다. 실제 확정값이 아닙니다.</span></div>
@@ -933,7 +1114,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.27';
+const VER = 'V26.28';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -1804,6 +1985,7 @@ function renderTab(tab){
   if(tab==='backup')    { renderBackup(); initGhConfig(); }
   if(tab==='earlysim')  renderEarlySim();
   if(tab==='taxcalc')   calcTaxDashboard();
+  if(tab==='compare')   renderCompareTab();
 }
 function reAll(){updateCnts();renderTab(curTab);}
 function updateCnts(){
@@ -3215,7 +3397,8 @@ function exportAll(){
   Object.keys(localStorage).forEach(k=>{if(k.startsWith('els_ap_'))ap[k.slice(7)]=localStorage.getItem(k);});
   products.forEach(p=>{const v=loadPP(p.id);if(Object.keys(v).length)pp[p.id]=v;});
   const totalAssetHistory=loadTotalAssetHistory();
-  const data={version:VER,exportedAt:new Date().toISOString(),accounts,products,accountOrder:loadOrd(),assetPrices:ap,prodPrices:pp,totalAssetHistory};
+  const compareItems=loadCompareItems();
+  const data={version:VER,exportedAt:new Date().toISOString(),accounts,products,accountOrder:loadOrd(),assetPrices:ap,prodPrices:pp,totalAssetHistory,compareItems};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`els-backup-${today()}.json`;a.click();
@@ -3244,6 +3427,7 @@ function importAll(ev){
       if(data.assetPrices)Object.entries(data.assetPrices).forEach(([k,v])=>saveAP(k,v));
       if(data.prodPrices)Object.entries(data.prodPrices).forEach(([pid,v])=>savePP(pid,v));
       if(Array.isArray(data.totalAssetHistory))saveTotalAssetHistory(data.totalAssetHistory);
+      if(Array.isArray(data.compareItems))saveCompareItems(data.compareItems);
       toast('불러오기 완료','ok');location.reload();
     }catch(err){toast('JSON 파싱 오류: '+err.message,'err');}
     ev.target.value='';
@@ -3324,7 +3508,7 @@ function getFullBackupPayload(){
   products.forEach(p=>{const v=loadPP(p.id);if(Object.keys(v).length)pp[p.id]=v;});
   return {version:VER, exportedAt:new Date().toISOString(), accounts, products,
     accountOrder:loadOrd(), assetPrices:ap, prodPrices:pp,
-    totalAssetHistory:loadTotalAssetHistory()};
+    totalAssetHistory:loadTotalAssetHistory(), compareItems:loadCompareItems()};
 }
 
 /** 백업 페이로드 복원 (importAll과 동일 흐름) */
@@ -3341,6 +3525,7 @@ function applyFullBackupPayload(data){
   if(data.assetPrices)  Object.entries(data.assetPrices).forEach(([k,v])=>saveAP(k,v));
   if(data.prodPrices)   Object.entries(data.prodPrices).forEach(([pid,v])=>savePP(pid,v));
   if(Array.isArray(data.totalAssetHistory)) saveTotalAssetHistory(data.totalAssetHistory);
+  if(Array.isArray(data.compareItems)) saveCompareItems(data.compareItems);
 }
 
 /** GitHub REST API 공통 요청 헬퍼 */
@@ -3601,6 +3786,337 @@ function renderTotalAssetTracker(){
       <td><button class="btn bd-btn xs" onclick="deleteTotalAssetEntry('${h.date}')">삭제</button></td>
     </tr>`;
   }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════
+   § 신규 ELS 비교 기능
+   localStorage key: els_compare_items_v1
+   ═══════════════════════════════════════════════════════ */
+const CMP_KEY = 'els_compare_items_v1';
+let editCmpId = null;
+
+function loadCompareItems(){ return lsGet(CMP_KEY, []); }
+function saveCompareItems(arr){ lsSet(CMP_KEY, arr); }
+
+/** 정보 완성도 계산 */
+function getCompareCompleteness(item){
+  const required = [
+    ['securitiesCompany','증권사'],['productName','상품명'],['maturityDate','만기일'],
+    ['underlyingAssets','기초자산'],['evalSchedule','조기상환 평가일'],
+    ['kiBarrier','KI 배리어'],['finalBarrier','만기 배리어'],['maturityCouponCumulative','만기 수익률'],
+  ];
+  const missing = required.filter(([k])=>{
+    const v=item[k];
+    if(v===null||v===undefined||v==='') return true;
+    if(Array.isArray(v)&&!v.length) return true;
+    return false;
+  }).map(([,lbl])=>lbl);
+  const pct = Math.round((required.length-missing.length)/required.length*100);
+  const level = pct===100?'완료':pct>=60?'일부 누락':'정보 부족';
+  const cls   = pct===100?'cmp-ok':pct>=60?'cmp-partial':'cmp-lack';
+  return {pct, level, cls, missing};
+}
+
+/** 연환산 수익률 계산 */
+function calcAnnualizedYield(item){
+  const mc = Number(item.maturityCouponCumulative);
+  if(!mc) return null;
+  const sd = item.issueDate||item.offerPeriodEnd||item.offerPeriodStart;
+  const md = item.maturityDate;
+  if(sd&&md){
+    const days=(new Date(md)-new Date(sd))/86400000;
+    if(days>0) return mc/(days/365);
+  }
+  if(item.maxTenorMonths){ return mc/(item.maxTenorMonths/12); }
+  return null;
+}
+
+/** 비교 모달 열기 */
+function openCompareModal(id){
+  editCmpId = id||null;
+  document.getElementById('cf-eval-list').innerHTML='';
+  const FIELDS=['cf-co','cf-nm','cf-code','cf-os','cf-oe','cf-issue','cf-mat','cf-assets','cf-ki','cf-fb','cf-mc','cf-note','cf-src'];
+  if(id){
+    const item=loadCompareItems().find(x=>x.id===id);if(!item)return;
+    document.getElementById('cmp-modal-title').textContent='비교 상품 수정';
+    const set=(el,v)=>{const e=document.getElementById(el);if(e)e.value=v??'';};
+    set('cf-co',item.securitiesCompany);set('cf-nm',item.productName);
+    set('cf-code',item.productCode);set('cf-cur',item.currency||'KRW');
+    set('cf-os',item.offerPeriodStart);set('cf-oe',item.offerPeriodEnd);
+    set('cf-issue',item.issueDate);set('cf-mat',item.maturityDate);
+    set('cf-assets',(item.underlyingAssets||[]).join(', '));
+    set('cf-ki',item.kiBarrier);set('cf-fb',item.finalBarrier);
+    set('cf-mc',item.maturityCouponCumulative);set('cf-pt',item.payoffType||'standard-stepdown');
+    set('cf-monthly',item.monthlyCoupon?'yes':'no');
+    set('cf-note',item.note);set('cf-src',item.sourceMemo);
+    (item.evalSchedule||[]).forEach((e,i)=>addCmpEval(i+1,e.date,e.barrier,e.couponRateCumulative));
+  } else {
+    document.getElementById('cmp-modal-title').textContent='비교 상품 추가';
+    FIELDS.forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    document.getElementById('cf-cur').value='KRW';
+    document.getElementById('cf-pt').value='standard-stepdown';
+    document.getElementById('cf-monthly').value='no';
+    addCmpEval(1);
+  }
+  om('mo-compare');
+}
+
+/** 평가일 행 추가 */
+function addCmpEval(rnd,dt='',bar='',cr=''){
+  const n=rnd||(document.getElementById('cf-eval-list').children.length+1);
+  const div=document.createElement('div');div.className='dyni';
+  div.innerHTML=`<label>${n}차</label>
+    <input type="date" class="fi cf-edt" value="${esc(dt)}" style="flex:1.4">
+    <label>배리어%</label><input type="number" class="fi cf-ebr" value="${esc(String(bar))}" placeholder="85" style="width:64px" min="0" max="100">
+    <label>누적%</label><input type="number" class="fi cf-ecr" value="${esc(String(cr))}" placeholder="9.0" style="width:70px" step="0.01">
+    <button class="btn bd-btn ic xs" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('cf-eval-list').appendChild(div);
+}
+
+/** 비교 상품 저장 */
+function saveCompareItem(){
+  const get=id=>document.getElementById(id)?.value.trim()||'';
+  const co=get('cf-co'),nm=get('cf-nm');
+  if(!co){toast('증권사를 입력하세요.','err');return;}
+  if(!nm){toast('상품명을 입력하세요.','err');return;}
+  const evalSchedule=[];
+  document.querySelectorAll('#cf-eval-list .dyni').forEach((r,i)=>{
+    const dt=r.querySelector('.cf-edt')?.value,
+          br=r.querySelector('.cf-ebr')?.value,
+          cr=r.querySelector('.cf-ecr')?.value;
+    if(dt) evalSchedule.push({date:dt,barrier:Number(br)||0,couponRateCumulative:Number(cr)||0});
+  });
+  const assets=get('cf-assets').split(',').map(s=>s.trim()).filter(Boolean);
+  const item={
+    id:editCmpId||genId(),
+    createdAt:editCmpId?(loadCompareItems().find(x=>x.id===editCmpId)?.createdAt||new Date().toISOString()):new Date().toISOString(),
+    updatedAt:new Date().toISOString(),
+    securitiesCompany:co, productName:nm, productCode:get('cf-code'),
+    currency:get('cf-cur')||'KRW',
+    offerPeriodStart:get('cf-os'), offerPeriodEnd:get('cf-oe'),
+    issueDate:get('cf-issue'), maturityDate:get('cf-mat'),
+    underlyingAssets:assets, evalSchedule,
+    kiBarrier:Number(get('cf-ki'))||0,
+    finalBarrier:Number(get('cf-fb'))||0,
+    maturityCouponCumulative:Number(get('cf-mc'))||0,
+    payoffType:get('cf-pt')||'standard-stepdown',
+    monthlyCoupon:get('cf-monthly')==='yes',
+    note:get('cf-note'), sourceMemo:get('cf-src'),
+    favorite:editCmpId?(loadCompareItems().find(x=>x.id===editCmpId)?.favorite||false):false,
+  };
+  let items=loadCompareItems();
+  if(editCmpId){ items=items.map(x=>x.id===editCmpId?item:x); }
+  else { items.push(item); }
+  saveCompareItems(items);
+  cm('mo-compare');
+  renderCompareTab();
+  toast(editCmpId?'비교 상품이 수정됐습니다.':'비교 상품이 추가됐습니다.','ok');
+}
+
+/** 즐겨찾기 토글 */
+function toggleCmpFav(id){
+  const items=loadCompareItems().map(x=>x.id===id?{...x,favorite:!x.favorite}:x);
+  saveCompareItems(items);renderCompareTab();
+}
+
+/** 비교 상품 삭제 */
+function deleteCmpItem(id){
+  if(!confirm('이 비교 상품을 삭제하시겠습니까?'))return;
+  saveCompareItems(loadCompareItems().filter(x=>x.id!==id));
+  renderCompareTab();toast('삭제됐습니다.');
+}
+
+/** 보유 상품 등록 폼으로 가져오기 */
+function convertCompareItemToProduct(id){
+  const item=loadCompareItems().find(x=>x.id===id);
+  if(!item)return;
+  cm('mo-compare-det');
+  openProdModal();
+  // 기본값 채우기
+  setTimeout(()=>{
+    const s=(elId,v)=>{const e=document.getElementById(elId);if(e)e.value=v??'';};
+    s('pf-name',item.productName);s('pf-iss',item.securitiesCompany);
+    s('pf-ki',item.kiBarrier);s('pf-yr','');
+    s('pf-fb',item.finalBarrier);s('pf-mc',item.maturityCouponCumulative);
+    document.getElementById('pf-cur').value=item.currency||'KRW';
+    document.getElementById('pf-pt').value=item.payoffType||'standard-stepdown';
+    // 만기일
+    if(item.maturityDate){
+      document.getElementById('pf-md-wrap').innerHTML=makeDateSplitHtml(item.maturityDate);
+      bindDateSplit(document.getElementById('pf-md-wrap'),()=>autoCalcMaturity(true));
+    }
+    // 기초자산
+    document.getElementById('ul-list').innerHTML='';
+    (item.underlyingAssets||[]).forEach(nm=>addU(nm,''));
+    // 평가일
+    document.getElementById('el-list').innerHTML='';
+    (item.evalSchedule||[]).forEach((e,i)=>addE(i+1,e.date,e.barrier,e.couponRateCumulative||''));
+    toast('비교 상품 데이터를 상품 등록 폼에 채웠습니다. 확인 후 저장하세요.','ok');
+  },200);
+}
+
+/** 상세 보기 */
+function openCmpDetail(id){
+  const item=loadCompareItems().find(x=>x.id===id);if(!item)return;
+  const {pct,level,cls,missing}=getCompareCompleteness(item);
+  const ay=calcAnnualizedYield(item);
+  document.getElementById('cmp-det-title').textContent=`${item.productName} — ${item.securitiesCompany}`;
+  document.getElementById('cmp-det-body').innerHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <span class="badge ${cls} b7">${level} (${pct}%)</span>
+      ${item.favorite?'<span class="badge bam">★ 즐겨찾기</span>':''}
+      <span class="badge bgr">${item.currency||'KRW'}</span>
+    </div>
+    ${missing.length?`<div style="background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r2);padding:9px 12px;font-size:12px;margin-bottom:12px;color:var(--am)">
+      <b>누락 정보:</b> ${missing.join(' · ')}</div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;margin-bottom:12px">
+      ${[['증권사',item.securitiesCompany],['상품명',item.productName],['상품코드',item.productCode||'-'],
+         ['모집기간',(item.offerPeriodStart||'-')+' ~ '+(item.offerPeriodEnd||'-')],
+         ['발행일',item.issueDate||'-'],['만기일',item.maturityDate||'-'],
+         ['기초자산',(item.underlyingAssets||[]).join(' / ')||'-'],
+         ['KI 배리어',item.kiBarrier?item.kiBarrier+'%':'-'],
+         ['만기 배리어',item.finalBarrier?item.finalBarrier+'%':'-'],
+         ['만기 누적수익률',item.maturityCouponCumulative?item.maturityCouponCumulative+'%':'-'],
+         ['연환산 수익률(참고)',ay?fp(ay):'-'],
+         ['상품구조',item.payoffType||'-'],['월지급식',item.monthlyCoupon?'예':'아니오'],
+      ].map(([k,v])=>`<div><div style="font-size:10px;color:var(--txt3);font-weight:700;margin-bottom:2px">${k}</div><b>${esc(String(v))}</b></div>`).join('')}
+    </div>
+    ${(item.evalSchedule||[]).length?`
+    <div style="font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:8px">조기상환 평가일</div>
+    <div class="tw"><table><thead><tr><th>차수</th><th>날짜</th><th class="nr">배리어%</th><th class="nr">누적수익률%</th></tr></thead>
+    <tbody>${item.evalSchedule.map((e,i)=>`<tr><td>${i+1}차</td><td>${e.date||'-'}</td><td class="nr">${e.barrier||'-'}</td><td class="nr">${e.couponRateCumulative||'-'}</td></tr>`).join('')}</tbody>
+    </table></div>`:''}
+    ${item.note?`<div class="mt8" style="font-size:13px"><b>메모:</b> ${esc(item.note)}</div>`:''}
+    ${item.sourceMemo?`<div class="mt4" style="font-size:12px;color:var(--txt3)">출처: ${esc(item.sourceMemo)}</div>`:''}`;
+  document.getElementById('cmp-det-ft').innerHTML=`
+    <button class="btn bgh" onclick="cm('mo-compare-det')">닫기</button>
+    <button class="btn bs sm" onclick="cm('mo-compare-det');openCompareModal('${id}')">✏️ 수정</button>
+    <button class="btn bg-btn sm" onclick="convertCompareItemToProduct('${id}')">📋 보유 상품으로 가져오기</button>
+    <button class="btn bd-btn sm" onclick="cm('mo-compare-det');deleteCmpItem('${id}')">🗑 삭제</button>`;
+  om('mo-compare-det');
+}
+
+/** JSON 가져오기 */
+function importCompareItemsJson(){
+  document.getElementById('cmp-import-f').click();
+}
+function onCompareImportFile(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      const arr=Array.isArray(data)?data:data.compareItems||[];
+      if(!arr.length){toast('가져올 항목이 없습니다.','err');return;}
+      const mode=confirm(`${arr.length}개 항목을 가져옵니다.\n[확인] 기존 데이터에 추가\n[취소] 기존 데이터 덮어쓰기`);
+      const normalized=arr.map(x=>({id:x.id||genId(),favorite:false,...x}));
+      if(mode){
+        const existing=loadCompareItems();
+        const existIds=new Set(existing.map(x=>x.id));
+        saveCompareItems([...existing,...normalized.filter(x=>!existIds.has(x.id))]);
+      } else { saveCompareItems(normalized); }
+      renderCompareTab();
+      toast(`${arr.length}개 비교 상품을 가져왔습니다.`,'ok');
+    }catch(err){toast('JSON 파싱 오류: '+err.message,'err');}
+    ev.target.value='';
+  };
+  r.readAsText(file);
+}
+
+/** JSON 내보내기 */
+function exportCompareItemsJson(){
+  const data=loadCompareItems();
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`els-compare-${today()}.json`;a.click();
+  URL.revokeObjectURL(url);
+  toast('비교 상품 JSON 내보내기 완료','ok');
+}
+
+/** 비교 탭 렌더 */
+function renderCompareTab(){
+  let items=loadCompareItems();
+  const co=document.getElementById('cmp-f-co')?.value||'';
+  const asset=document.getElementById('cmp-f-asset')?.value||'';
+  const sort=document.getElementById('cmp-sort')?.value||'added';
+  const favOnly=document.getElementById('cmp-f-fav')?.checked||false;
+
+  // 필터 옵션 채우기
+  const coEl=document.getElementById('cmp-f-co');
+  const coSet=new Set(items.map(x=>x.securitiesCompany).filter(Boolean));
+  const aEl=document.getElementById('cmp-f-asset');
+  const aSet=new Set(items.flatMap(x=>x.underlyingAssets||[]).filter(Boolean));
+  if(coEl){const prev=coEl.value;coEl.innerHTML='<option value="">증권사 전체</option>'+[...coSet].sort().map(v=>`<option value="${esc(v)}"${v===prev?' selected':''}>${esc(v)}</option>`).join('');}
+  if(aEl){const prev=aEl.value;aEl.innerHTML='<option value="">기초자산 전체</option>'+[...aSet].sort().map(v=>`<option value="${esc(v)}"${v===prev?' selected':''}>${esc(v)}</option>`).join('');}
+
+  // 필터 적용
+  if(co) items=items.filter(x=>x.securitiesCompany===co);
+  if(asset) items=items.filter(x=>(x.underlyingAssets||[]).includes(asset));
+  if(favOnly) items=items.filter(x=>x.favorite);
+
+  // 정렬
+  const ay=x=>calcAnnualizedYield(x)??-999;
+  if(sort==='annual_desc') items.sort((a,b)=>ay(b)-ay(a));
+  else if(sort==='ki_desc') items.sort((a,b)=>(b.kiBarrier||0)-(a.kiBarrier||0));
+  else if(sort==='ki_asc')  items.sort((a,b)=>(a.kiBarrier||0)-(b.kiBarrier||0));
+  else if(sort==='maturity_asc') items.sort((a,b)=>(a.maturityDate||'9999').localeCompare(b.maturityDate||'9999'));
+  else if(sort==='maturity_desc') items.sort((a,b)=>(b.maturityDate||'').localeCompare(a.maturityDate||''));
+  else if(sort==='assets_asc') items.sort((a,b)=>(a.underlyingAssets?.length||0)-(b.underlyingAssets?.length||0));
+  else if(sort==='completeness_asc') items.sort((a,b)=>getCompareCompleteness(a).pct-getCompareCompleteness(b).pct);
+  else if(sort==='fav') items.sort((a,b)=>(b.favorite?1:0)-(a.favorite?1:0));
+
+  document.getElementById('cmp-cnt').textContent=items.length+'개';
+
+  // 가이드 표시
+  const guide=document.getElementById('cmp-json-guide');
+  if(guide) guide.style.display=items.length===0?'block':'none';
+
+  // 데스크탑 표
+  const tb=document.getElementById('cmp-tb');
+  if(tb) tb.innerHTML=items.length?items.map(item=>{
+    const {pct,level,cls}=getCompareCompleteness(item);
+    const ay2=calcAnnualizedYield(item);
+    const first1Barrier=item.evalSchedule?.[0]?.barrier||'-';
+    return`<tr>
+      <td><button class="cmp-fav" onclick="toggleCmpFav('${item.id}')" title="즐겨찾기">${item.favorite?'★':'☆'}</button></td>
+      <td><b>${esc(item.securitiesCompany||'-')}</b></td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.productName||'-')}</td>
+      <td style="font-size:11px">${(item.underlyingAssets||[]).map(a=>esc(a)).join('<br>')}</td>
+      <td class="nr" style="white-space:nowrap">${item.maturityDate||'-'}</td>
+      <td class="nr">${(item.evalSchedule||[]).length||'-'}</td>
+      <td class="nr">${first1Barrier!=='-'?first1Barrier+'%':'-'}</td>
+      <td class="nr">${item.finalBarrier?item.finalBarrier+'%':'-'}</td>
+      <td class="nr">${item.kiBarrier?item.kiBarrier+'%':'-'}</td>
+      <td class="nr">${item.maturityCouponCumulative?item.maturityCouponCumulative+'%':'-'}</td>
+      <td class="nr ${ay2!==null?'tg':''}">${ay2!==null?fp(ay2):'-'}</td>
+      <td class="tc">${item.monthlyCoupon?'✓':'-'}</td>
+      <td><span class="badge ${cls}">${level}</span></td>
+      <td><button class="btn bgh xs" onclick="openCmpDetail('${item.id}')">상세</button></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="14" style="text-align:center;color:var(--txt3);padding:24px">비교 상품이 없습니다. ＋ 상품 추가 또는 JSON 가져오기를 사용하세요.</td></tr>`;
+
+  // 모바일 카드
+  const cards=document.getElementById('cmp-cards');
+  if(cards) cards.innerHTML=items.length?items.map(item=>{
+    const {pct,level,cls}=getCompareCompleteness(item);
+    const ay2=calcAnnualizedYield(item);
+    return`<div class="cmp-card">
+      <div class="cmp-card-hd">
+        <div class="cmp-card-nm">${esc(item.productName||'-')}<div style="font-size:11px;color:var(--txt3);font-weight:400">${esc(item.securitiesCompany||'-')}</div></div>
+        <div style="display:flex;gap:4px;align-items:center">
+          <span class="badge ${cls}">${level}</span>
+          <button class="cmp-fav" onclick="toggleCmpFav('${item.id}')">${item.favorite?'★':'☆'}</button>
+        </div>
+      </div>
+      <div class="cmp-card-row"><span>기초자산</span><span class="v" style="font-size:11px">${(item.underlyingAssets||[]).join(' / ')||'-'}</span></div>
+      <div class="cmp-card-row"><span>만기일</span><span class="v">${item.maturityDate||'-'}</span></div>
+      <div class="cmp-card-row"><span>KI 배리어</span><span class="v">${item.kiBarrier?item.kiBarrier+'%':'-'}</span></div>
+      <div class="cmp-card-row"><span>만기 배리어</span><span class="v">${item.finalBarrier?item.finalBarrier+'%':'-'}</span></div>
+      <div class="cmp-card-row"><span>만기 수익률</span><span class="v">${item.maturityCouponCumulative?item.maturityCouponCumulative+'%':'-'}</span></div>
+      <div class="cmp-card-row"><span>연환산(참고)</span><span class="v ${ay2!==null?'tg':''}">${ay2!==null?fp(ay2):'-'}</span></div>
+      <div style="margin-top:8px"><button class="btn bgh sm" style="width:100%" onclick="openCmpDetail('${item.id}')">상세 보기</button></div>
+    </div>`;
+  }).join(''):'<div style="color:var(--txt3);font-size:13px;padding:16px 0">비교 상품이 없습니다.</div>';
 }
 
 /* ─ §30 초기화 ─ */
