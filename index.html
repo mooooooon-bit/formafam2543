@@ -317,17 +317,16 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">ELS Manager</div>
-      <span class="ver-badge">V26.29</span>
+      <span class="ver-badge">V26.30</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
       <button class="tbtn" data-tab="earlysim" onclick="sw('earlysim')">💰 조기상환 시</button>
       <button class="tbtn" data-tab="annual" onclick="sw('annual')">📊 연간 실적</button>
-      <button class="tbtn" data-tab="sim" onclick="sw('sim')">🔬 시뮬</button>
+      <button class="tbtn" data-tab="sim" onclick="sw('sim')">📈 자산 현황</button>
       <button class="tbtn" data-tab="accounts" onclick="sw('accounts')">🏦 계좌</button>
       <button class="tbtn" data-tab="backup" onclick="sw('backup')">💾 백업</button>
       <button class="tbtn" data-tab="all" onclick="sw('all')">📋 전체<span class="tcnt" id="cnt-a">0</span></button>
-      <button class="tbtn" data-tab="completed" onclick="sw('completed')">✅ 완료<span class="tcnt" id="cnt-c">0</span></button>
       <button class="tbtn" data-tab="compare" onclick="sw('compare')">🔎 신규 ELS 비교</button>
       <button class="tbtn" data-tab="taxcalc" onclick="sw('taxcalc')">🧮 종합소득세</button>
     </nav>
@@ -364,7 +363,7 @@ tr:hover td{background:#f8fafc}
           style="width:110px;min-height:36px"
           value="" oninput="onFxRate(this.value)">
         <span style="font-size:11px;color:var(--txt3)" id="fx-hint"></span>
-        <span class="sim-note">🔬 시뮬레이션 참고용</span>
+        <span class="sim-note">📊 현재가 기반 추정</span>
       </div>
     </div>
     <div style="font-size:11px;color:var(--txt3);margin-bottom:8px">※ 공개 시세 기반 참고값입니다. 기본 매핑 / 직접 티커 / 사용자 정의 매핑으로 조회하며 일부 자산은 수동 입력이 필요합니다.</div>
@@ -427,19 +426,10 @@ tr:hover td{background:#f8fafc}
   <div class="card mt">
     <div class="sec-hd">
       <div class="sec-hl"><span class="sec-t">✅ 최근 완료 상품</span></div>
-      <button class="btn bgh sm" onclick="sw('completed')">전체 보기</button>
+      <button class="btn bgh sm" onclick="sw('annual')">전체 보기</button>
     </div>
     <div id="recent-completed"></div>
   </div>
-</div>
-
-<!-- ====== 탭: 완료 상품 ====== -->
-<div class="page" id="tab-completed">
-  <div class="sec-hd">
-    <div class="sec-hl"><span class="sec-t">✅ 완료 상품</span><span class="cbadge" id="c-cnt">0개</span></div>
-    <input class="fi sm" id="c-q" placeholder="상품명·계좌명" style="width:160px;min-height:36px" oninput="renderCompleted()">
-  </div>
-  <div id="completed-grid" class="dgrid"></div>
 </div>
 
 <!-- ====== 탭: 전체 상품 ====== -->
@@ -500,9 +490,20 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
   <div class="card mt">
-    <div class="sec-hd">
-      <div class="sec-hl"><span class="sec-t">완료 상품 상세 내역</span></div>
-      <input class="fi sm" id="annual-q" placeholder="검색" style="width:140px;min-height:32px" oninput="renderAnnual()">
+    <div class="sec-hd" style="flex-wrap:wrap;gap:8px">
+      <div class="sec-hl">
+        <span class="sec-t">완료 상품 상세 내역</span>
+        <span style="font-size:12px;color:var(--txt3)" id="annual-det-count"></span>
+      </div>
+      <div class="fl-row" style="flex-wrap:wrap;gap:6px">
+        <div class="fl-row" style="gap:4px">
+          <button class="btn bp sm" id="adm-recent10" onclick="setAnnualDetailMode('recent10')">최근 10개</button>
+          <button class="btn bgh sm" id="adm-all"     onclick="setAnnualDetailMode('all')">전체</button>
+          <button class="btn bgh sm" id="adm-year"    onclick="setAnnualDetailMode('year')">연도별</button>
+        </div>
+        <select class="fsl sm" id="annual-det-year" style="width:90px;min-height:32px;display:none" onchange="renderAnnual()"></select>
+        <input class="fi sm" id="annual-q" placeholder="검색" style="width:130px;min-height:32px" oninput="renderAnnual()">
+      </div>
     </div>
     <div class="tw">
       <table>
@@ -547,9 +548,9 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
-<!-- ====== 탭: 시뮬레이션 ====== -->
+<!-- ====== 탭: 자산 현황 ====== -->
 <div class="page" id="tab-sim">
-  <div class="sim-banner">🔬 <span><b>참고용 시뮬레이션</b> — 이 탭의 수치는 현재가 수동 입력 기반의 추정치입니다. 실제 상환 결과와 무관합니다.</span></div>
+  <div class="sim-banner">📈 <span>보유 자산 현황과 추정 수익, 자산 추이를 함께 확인하는 공간입니다. <b>일부 수치는 현재가 입력 기반 참고 추정치</b>이며 실제 상환 결과와 다를 수 있습니다.</span></div>
   <div class="card">
     <div class="sec-hd">
       <div class="sec-hl"><span class="sec-t">📈 복리 재투자 예상 (10년)</span></div>
@@ -1116,7 +1117,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.29';
+const VER = 'V26.30';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -1979,7 +1980,6 @@ function sw(tab){
 }
 function renderTab(tab){
   if(tab==='dash')      renderDash();
-  if(tab==='completed') renderCompleted();
   if(tab==='all')       renderAll2();
   if(tab==='annual')    { renderAnnual(); initAccYearSel(); renderAccYearSummary(); }
   if(tab==='sim')       { renderSim(); initTotalAssetInput(); renderTotalAssetTracker(); }
@@ -1992,8 +1992,6 @@ function renderTab(tab){
 function reAll(){updateCnts();renderTab(curTab);}
 function updateCnts(){
   const{products}=load();
-  const don=products.filter(p=>p.status!=='active').length;
-  document.getElementById('cnt-c').textContent=don;
   document.getElementById('cnt-a').textContent=products.length;
 }
 
@@ -2476,47 +2474,6 @@ function buildStages(p){
 }
 
 /* ─ §12 완료 상품 렌더 ─ */
-function renderCompleted(){
-  const{accounts,products}=load();
-  const q=(document.getElementById('c-q')?.value||'').toLowerCase();
-  let list=products.filter(p=>p.status!=='active').filter(p=>{
-    if(!q)return true;
-    const acc=accounts.find(a=>a.id===p.accountId);
-    return[p.name,acc?.name||''].join(' ').toLowerCase().includes(q);
-  }).sort((a,b)=>new Date(b.settlementDate||'0')-new Date(a.settlementDate||'0'));
-  document.getElementById('c-cnt').textContent=list.length+'개';
-  const el=document.getElementById('completed-grid');
-  if(!list.length){el.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">✅</div><div class="em">완료된 상품이 없습니다.</div></div>`;return;}
-  el.innerHTML=list.map(p=>{
-    const acc=accounts.find(a=>a.id===p.accountId);
-    const tl=stlLabel(p.settlementType);
-    return`<div class="dc st-${p.status}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-        <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</div><div style="font-size:12px;color:var(--txt3)">${esc(p.issuer)}</div></div>
-        <span class="badge ${STB[p.status]}" style="flex-shrink:0;margin-left:8px">${STL[p.status]}</span>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
-        <span class="badge bgr">${esc(acc?.name||'-')}</span>
-        <span class="badge bgr">${tl}</span>
-        ${p.redeemedRound?`<span class="badge bg">${p.redeemedRound}차 조기상환</span>`:''}
-        ${p.kiHit?`<span class="ki-confirmed">🔴 KI확정</span>`:''}
-      </div>
-      <div class="pc-row"><span>상환일</span><span class="v">${p.settlementDate||'-'}</span></div>
-      <div class="pc-row"><span>투자원금</span><span class="v">${fm(p.principal)}</span></div>
-      <div class="pc-row"><span>실제 세전 수익금</span><span class="v ${(p.actualGrossProfit||0)>=0?'tg':'tr'}">${fm(p.actualGrossProfit)}</span></div>
-      <div class="pc-row"><span>실제 세금</span><span class="v">${fm(p.actualTax)}</span></div>
-      <div class="pc-row"><span>실제 세후 수익금</span><span class="v ${(p.actualNetProfit||0)>=0?'tg':'tr'}">${fm(p.actualNetProfit)}</span></div>
-      <div class="pc-row"><span>실제 세후 수익률</span><span class="v ${(p.actualYieldNet||0)>=0?'tg':'tr'}">${fp(p.actualYieldNet)}</span></div>
-      <div class="pc-row"><span>실제 상환금액</span><span class="v ta b7">${fm(p.actualRedemptionAmount)}</span></div>
-      ${p.settlementMemo?`<div style="font-size:11px;color:var(--txt3);margin-top:6px;padding:5px 7px;background:var(--s2);border-radius:var(--r3)">📝 ${esc(p.settlementMemo)}</div>`:''}
-      <div style="display:flex;gap:6px;margin-top:10px;padding-top:9px;border-top:1px solid var(--bd)">
-        <button class="btn bgh sm" style="flex:1" onclick="openDet('${p.id}')">상세</button>
-        <button class="btn bgh sm" style="flex:1" onclick="openProdModal('${p.id}')">수정</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
 /* ─ §13 전체 상품 렌더 ─ */
 function renderAll2(){
   const{accounts,products}=load();
@@ -2673,6 +2630,13 @@ function renderAccounts(){
 }
 
 /* ─ §16 연간 실적 렌더 ─ */
+let annualDetailMode = 'recent10'; // 'recent10' | 'all' | 'year'
+let annualDetailYear = '';
+
+function setAnnualDetailMode(mode){
+  annualDetailMode = mode;
+  renderAnnual();
+}
 function renderAnnual(){
   const{accounts,products}=load();
   const sortDir=(document.getElementById('annual-sort')?.value)||'desc';
@@ -2721,15 +2685,42 @@ function renderAnnual(){
       <td class="nr ${tY>=0?'tg':'tr'} b7">${fp(tY)}</td>`;
   }
   const det=document.getElementById('annual-det');
-  const detList=done.filter(p=>{
+  // ── 연도 드롭다운 갱신 ──
+  const allYears=[...new Set(done.map(p=>dy(p.settlementDate)).filter(Boolean))].sort().reverse();
+  const yearSel=document.getElementById('annual-det-year');
+  if(yearSel){
+    yearSel.style.display=annualDetailMode==='year'?'':'none';
+    if(annualDetailMode==='year'){
+      if(!annualDetailYear||!allYears.includes(annualDetailYear)) annualDetailYear=allYears[0]||'';
+      yearSel.innerHTML=allYears.map(y=>`<option value="${y}"${y===annualDetailYear?' selected':''}>${y}년</option>`).join('');
+      yearSel.onchange=()=>{annualDetailYear=yearSel.value;renderAnnual();};
+    }
+  }
+  // ── 모드 버튼 active 상태 ──
+  ['recent10','all','year'].forEach(m=>{
+    const btn=document.getElementById('adm-'+m);
+    if(btn){btn.className=annualDetailMode===m?'btn bp sm':'btn bgh sm';}
+  });
+  // ── 검색 후 필터 ──
+  let detList=done.filter(p=>{
     if(!q)return true;
     const acc=accounts.find(a=>a.id===p.accountId);
     return[p.name,acc?.name||''].join(' ').toLowerCase().includes(q);
-  }).sort((a,b)=>sortDir==='desc'
-    ?new Date(b.settlementDate)-new Date(a.settlementDate)
-    :new Date(a.settlementDate)-new Date(b.settlementDate));
+  }).sort((a,b)=>new Date(b.settlementDate)-new Date(a.settlementDate));
+
+  if(annualDetailMode==='recent10') detList=detList.slice(0,10);
+  else if(annualDetailMode==='year'){
+    detList=detList.filter(p=>dy(p.settlementDate)===annualDetailYear);
+  }
+  // ── 카운트 문구 ──
+  const countEl=document.getElementById('annual-det-count');
+  if(countEl){
+    if(annualDetailMode==='recent10') countEl.textContent=`최근 완료 ${detList.length}개 표시 중`;
+    else if(annualDetailMode==='all') countEl.textContent=`전체 ${detList.length}개 표시 중`;
+    else countEl.textContent=`${annualDetailYear}년 완료 ${detList.length}개 표시 중`;
+  }
   det.innerHTML=!detList.length
-    ?`<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:18px">없음</td></tr>`
+    ?`<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:18px">완료된 상품이 없습니다.</td></tr>`
     :detList.map(p=>{
       const acc=accounts.find(a=>a.id===p.accountId);
       return`<tr>
