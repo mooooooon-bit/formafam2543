@@ -318,7 +318,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.31</span>
+      <span class="ver-badge">V26.32</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
@@ -635,6 +635,7 @@ tr:hover td{background:#f8fafc}
     <div class="hr"></div>
     <div id="bk-stats"></div>
     <div class="mt8" style="font-size:12px;color:var(--txt3);line-height:1.9">
+      <div>※ 전체 초기화는 GitHub 연결 설정을 유지하고 앱 데이터만 삭제합니다.</div>
       <div>• 내보내기: 모든 데이터가 JSON 파일 하나로 저장됩니다. (총자산 기록 포함)</div>
       <div>• 불러오기: 기존 데이터를 완전히 덮어씁니다. 먼저 내보내기로 백업하세요.</div>
       <div>• 초기화: 브라우저의 모든 ELS 데이터가 삭제됩니다.</div>
@@ -662,6 +663,7 @@ tr:hover td{background:#f8fafc}
       <div class="fg"><label class="fl">백업 파일 경로</label><input type="text" class="fi" id="gh-path" placeholder="backups/els-backup.json" oninput="saveGitSyncSettings()"></div>
     </div>
     <div class="fl-row" style="margin-top:12px">
+      <button class="btn bd-btn sm" onclick="clearGitSyncSettings()">GitHub 연결 설정 지우기</button>
       <button class="btn bp" id="gh-upload-btn" onclick="uploadBackupToGitHub()">⬆ GitHub에 백업 업로드</button>
       <button class="btn bs" id="gh-download-btn" onclick="downloadBackupFromGitHub()">⬇ GitHub에서 백업 불러오기</button>
     </div>
@@ -758,7 +760,7 @@ tr:hover td{background:#f8fafc}
     "noKiMode": "coupon",
     "note": "월지급식 아님",
     "sourceMemo": "증권사 캡처 기준"
-  }
+
 ]</pre>
     <button class="btn bgh sm" style="margin-top:8px" onclick="document.getElementById('cmp-json-guide').style.display='none'">닫기</button>
   </div>
@@ -1264,7 +1266,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.31';
+const VER = 'V26.32';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -1278,7 +1280,6 @@ function lsSet(k, v){
       ?'localStorage 용량이 초과되었습니다. 백업 후 불필요한 데이터를 정리해주세요.'
       :'데이터 저장에 실패했습니다: '+e.message);
     return false;
-  }
 }
 function lsDel(k){try{localStorage.removeItem(k);}catch{}}
 function showStorageWarn(msg){const el=document.getElementById('storage-warn');el.textContent='⚠️ '+msg;el.style.display='block';setTimeout(()=>el.style.display='none',8000);}
@@ -1868,8 +1869,8 @@ function calcTaxDashboard(){
     · 건강보험료율 ${fmRate(HI_RATE)} | 장기요양 건보료의 ${fmRate(LTC_RATE)}
   </div>`;
 }
-function loadFxRate(){return Number(lsGet('els_fx_usd',0))||0;}
-function saveFxRate(v){lsSet('els_fx_usd',Number(v)||0);}
+function loadFxRate(){return Number(lsGet(FX_KEY,0))||0;}
+function saveFxRate(v){lsSet(FX_KEY,Number(v)||0);}
 /** USD 금액을 KRW로 변환 (rate 없으면 원래 값 그대로) */
 function toKRW(amount, currency, rate){
   if((currency||'KRW')==='USD'&&rate>0) return amount*rate;
@@ -3588,6 +3589,58 @@ const GIT_DEFAULTS = {
   token:'', owner:'mooooooon-bit', repo:'ellsbuppri', branch:'main', path:'backups/els-backup.json'
 };
 
+const FX_KEY = 'els_fx_usd';
+const APP_STORAGE_KEYS = {
+  exact: ['els_acc','els_prod','els_ord',FX_KEY,CUSTOM_TICKER_MAP_KEY,'els_total_asset_history_v1','els_compare_items_v1','am_etf_trackdata_v1'],
+  prefixes: ['els_ap_','els_pp_'],
+  gitSettings: [GIT_KEYS.owner,GIT_KEYS.repo,GIT_KEYS.branch,GIT_KEYS.path],
+  gitToken: GIT_KEYS.token,
+};
+
+function isPlainObject(v){ return !!v && typeof v==='object' && !Array.isArray(v); }
+function getDefaultGitBackupSettings(){
+  return {owner:GIT_DEFAULTS.owner, repo:GIT_DEFAULTS.repo, branch:GIT_DEFAULTS.branch, path:GIT_DEFAULTS.path};
+}
+function normalizeGitBackupSettings(data){
+  const base=getDefaultGitBackupSettings();
+  if(!isPlainObject(data)) return base;
+  return {
+    owner:data.owner||base.owner,
+    repo:data.repo||base.repo,
+    branch:data.branch||base.branch,
+    path:data.path||base.path,
+  };
+}
+function getEmptyEtfTrackData(){
+  return {watchlist:[],diffLogs:[],followPositions:[],orderQueue:[],engineStatus:null,perfHistory:[],activityLogs:[]};
+}
+function normalizeEtfTrackData(data){
+  if(!isPlainObject(data)) return getEmptyEtfTrackData();
+  return {
+    watchlist:Array.isArray(data.watchlist)?data.watchlist:[],
+    diffLogs:Array.isArray(data.diffLogs)?data.diffLogs:[],
+    followPositions:Array.isArray(data.followPositions)?data.followPositions:[],
+    orderQueue:Array.isArray(data.orderQueue)?data.orderQueue:[],
+    engineStatus:isPlainObject(data.engineStatus)?data.engineStatus:null,
+    perfHistory:Array.isArray(data.perfHistory)?data.perfHistory:[],
+    activityLogs:Array.isArray(data.activityLogs)?data.activityLogs:[],
+  };
+}
+function collectPrefixedStorage(prefix){
+  const out={};
+  Object.keys(localStorage).forEach(k=>{ if(k.startsWith(prefix)) out[k.slice(prefix.length)]=localStorage.getItem(k); });
+  return out;
+}
+function clearManagedStorage({includeGitSettings=false,includeGitToken=false}={}){
+  const keys=new Set(APP_STORAGE_KEYS.exact);
+  APP_STORAGE_KEYS.prefixes.forEach(prefix=>{
+    Object.keys(localStorage).forEach(k=>{ if(k.startsWith(prefix)) keys.add(k); });
+  });
+  if(includeGitSettings) APP_STORAGE_KEYS.gitSettings.forEach(k=>keys.add(k));
+  if(includeGitToken) keys.add(APP_STORAGE_KEYS.gitToken);
+  keys.forEach(k=>localStorage.removeItem(k));
+}
+
 function loadGitSyncSettings(){
   return {
     token:  localStorage.getItem(GIT_KEYS.token)||GIT_DEFAULTS.token,
@@ -3610,6 +3663,18 @@ function clearGitToken(){
   const el=document.getElementById('gh-token');
   if(el)el.value='';
   toast('토큰이 지워졌습니다.','ok');
+}
+function clearGitSyncSettings(){
+  [GIT_KEYS.token,...APP_STORAGE_KEYS.gitSettings].forEach(k=>localStorage.removeItem(k));
+  const set=(id,v='')=>{const el=document.getElementById(id);if(el)el.value=v;};
+  set('gh-token','');
+  set('gh-owner',GIT_DEFAULTS.owner);
+  set('gh-repo',GIT_DEFAULTS.repo);
+  set('gh-branch',GIT_DEFAULTS.branch);
+  set('gh-path',GIT_DEFAULTS.path);
+  const st=document.getElementById('gh-status');
+  if(st)st.textContent='';
+  toast('GitHub ?곌껐 ?ㅼ젙???좏뻾?듬땲??','ok');
 }
 function toggleGitTokenVisibility(){
   const inp=document.getElementById('gh-token');
@@ -3639,10 +3704,9 @@ function setGhStatus(msg,ok=null){
 /** 전체 백업 페이로드 생성 — token 제외, 모든 수동 입력 데이터 포함 */
 function getFullBackupPayload(){
   const{accounts,products}=load();
-  const ap={},pp={};
-  Object.keys(localStorage).forEach(k=>{if(k.startsWith('els_ap_'))ap[k.slice(7)]=localStorage.getItem(k);});
+  const ap=collectPrefixedStorage('els_ap_'),pp={};
   products.forEach(p=>{const v=loadPP(p.id);if(Object.keys(v).length)pp[p.id]=v;});
-  const gs=loadGitSyncSettings();
+  const gs=normalizeGitBackupSettings(loadGitSyncSettings());
   return {
     version:VER, exportedAt:new Date().toISOString(),
     accounts, products,
@@ -3662,28 +3726,29 @@ function getFullBackupPayload(){
 function applyFullBackupPayload(data){
   if(!Array.isArray(data.accounts)||!Array.isArray(data.products))
     throw new Error('올바른 ELS 백업 파일이 아닙니다.');
-  Object.keys(localStorage).forEach(k=>{
-    if(k.startsWith('els_ap_')||k.startsWith('els_pp_')||k==='els_ord')
-      localStorage.removeItem(k);
-  });
+  clearManagedStorage();
   const normalized=data.products.map(p=>({currency:'KRW',...p}));
+  const assetPrices=isPlainObject(data.assetPrices)?data.assetPrices:{};
+  const prodPrices=isPlainObject(data.prodPrices)?data.prodPrices:{};
+  const gitSyncSettings=isPlainObject(data.gitSyncSettings)
+    ? normalizeGitBackupSettings({...loadGitSyncSettings(),...data.gitSyncSettings})
+    : null;
   saveAcc2(data.accounts); saveProd2(normalized);
-  if(data.accountOrder) saveOrd(data.accountOrder);
-  if(data.assetPrices)  Object.entries(data.assetPrices).forEach(([k,v])=>saveAP(k,v));
-  if(data.prodPrices)   Object.entries(data.prodPrices).forEach(([pid,v])=>savePP(pid,v));
-  if(Array.isArray(data.totalAssetHistory)) saveTotalAssetHistory(data.totalAssetHistory);
-  if(Array.isArray(data.compareItems)) saveCompareItems(data.compareItems);
-  if(data.etfTrackData&&typeof data.etfTrackData==='object') saveEtfTrackData(data.etfTrackData);
-  if(data.fxRate!=null) saveFxRate(Number(data.fxRate)||0);
-  if(data.customTickerMap&&typeof data.customTickerMap==='object') saveCustomTickerMap(data.customTickerMap);
-  if(data.gitSyncSettings){
-    const g=data.gitSyncSettings;
-    if(g.owner)  localStorage.setItem(GIT_KEYS.owner,  g.owner);
-    if(g.repo)   localStorage.setItem(GIT_KEYS.repo,   g.repo);
-    if(g.branch) localStorage.setItem(GIT_KEYS.branch, g.branch);
-    if(g.path)   localStorage.setItem(GIT_KEYS.path,   g.path);
-    // token은 복원하지 않음 — 수동 재입력 필요
+  saveOrd(Array.isArray(data.accountOrder)?data.accountOrder:[]);
+  Object.entries(assetPrices).forEach(([k,v])=>saveAP(k,v));
+  Object.entries(prodPrices).forEach(([pid,v])=>savePP(pid,v));
+  saveTotalAssetHistory(Array.isArray(data.totalAssetHistory)?data.totalAssetHistory:[]);
+  saveCompareItems(Array.isArray(data.compareItems)?data.compareItems:[]);
+  saveEtfTrackData(normalizeEtfTrackData(data.etfTrackData));
+  saveFxRate(data.fxRate!=null?Number(data.fxRate)||0:0);
+  saveCustomTickerMap(isPlainObject(data.customTickerMap)?data.customTickerMap:{});
+  if(gitSyncSettings){
+    localStorage.setItem(GIT_KEYS.owner,  gitSyncSettings.owner);
+    localStorage.setItem(GIT_KEYS.repo,   gitSyncSettings.repo);
+    localStorage.setItem(GIT_KEYS.branch, gitSyncSettings.branch);
+    localStorage.setItem(GIT_KEYS.path,   gitSyncSettings.path);
   }
+  // token은 복원하지 않음 — 수동 재입력 필요
 }
 
 /** GitHub REST API 공통 요청 헬퍼 */
@@ -3755,7 +3820,7 @@ async function downloadBackupFromGitHub(){
 function githubDownload(){ return downloadBackupFromGitHub(); }
 function clearAll(){
   if(!confirm('모든 데이터를 초기화합니다. 되돌릴 수 없습니다. 계속하시겠습니까?'))return;
-  Object.keys(localStorage).filter(k=>k.startsWith('els_')).forEach(k=>localStorage.removeItem(k));
+  clearManagedStorage();
   toast('초기화 완료');location.reload();
 }
 
@@ -4284,7 +4349,7 @@ function renderCompareTab(){
 const ETF_KEY = 'am_etf_trackdata_v1';
 
 function loadEtfTrackData(){
-  return lsGet(ETF_KEY,{watchlist:[],diffLogs:[],followPositions:[],orderQueue:[],engineStatus:null,perfHistory:[],activityLogs:[]});
+  return lsGet(ETF_KEY,getEmptyEtfTrackData());
 }
 function saveEtfTrackData(d){ lsSet(ETF_KEY,d); }
 function getEtf(){ return loadEtfTrackData(); }
