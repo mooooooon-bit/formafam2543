@@ -324,6 +324,59 @@ tr:hover td{background:#f8fafc}
 .flight-settings-lbl{color:var(--txt2);font-weight:600;min-width:160px;flex-shrink:0}
 .flight-settings-val{flex:1;min-width:120px}
 
+/* FLIGHT overview quick-input card */
+.fl-qi-card{background:linear-gradient(135deg,var(--acc-l) 0%,var(--surface) 100%);border:1.5px solid var(--acc);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh2);margin-bottom:12px}
+.fl-qi-route{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.fl-qi-leg{flex:1;min-width:130px}
+.fl-qi-sep{font-size:22px;color:var(--acc);flex-shrink:0;font-weight:800}
+.fl-qi-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--acc);margin-bottom:3px}
+.fl-qi-inp{width:100%;border:1px solid var(--bd2);border-radius:var(--r2);padding:7px 10px;font-size:13px;font-weight:700;font-family:var(--f);background:var(--surface);color:var(--txt)}
+.fl-qi-inp:focus{outline:none;border-color:var(--acc)}
+.fl-qi-sub{font-size:11px;color:var(--txt3);margin-top:2px}
+.fl-qi-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.fl-qi-save-row{display:flex;gap:6px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap}
+
+/* FLIGHT overview quick-action bar */
+.fl-qa-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.fl-qa-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid var(--bd2);background:var(--surface);color:var(--txt2);cursor:pointer;font-family:var(--f);transition:all .15s;min-height:34px}
+.fl-qa-btn:hover{background:var(--acc-l);color:var(--acc);border-color:var(--acc)}
+
+/* FLIGHT overview compact weather */
+.fl-ov-wx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:8px}
+.fl-ov-wx-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:11px 13px}
+.fl-ov-wx-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:4px}
+.fl-ov-wx-main{display:flex;align-items:center;gap:8px}
+.fl-ov-wx-temp{font-size:24px;font-weight:800;color:var(--txt)}
+.fl-ov-wx-detail{font-size:11px;color:var(--txt2);line-height:1.5}
+.fl-ov-fc-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--bd);font-size:11px}
+.fl-ov-fc-row:last-child{border-bottom:none}
+.fl-ov-fc-day{min-width:52px;color:var(--txt3);font-weight:600}
+.fl-ov-fc-emoji{width:18px;text-align:center}
+.fl-ov-fc-temp{font-weight:700;color:var(--txt);flex:1}
+.fl-ov-fc-rain{color:var(--acc)}
+
+/* FLIGHT overview note summary */
+.fl-ov-note-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;box-shadow:var(--sh);margin-bottom:8px}
+.fl-ov-note-hd{display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:wrap}
+.fl-ov-note-key{font-size:14px;font-weight:800;color:var(--txt)}
+.fl-sid-pill{display:inline-block;background:#0f172a;color:#7dd3fc;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;font-family:monospace;letter-spacing:.5px;margin:1px 2px}
+.fl-star-pill{display:inline-block;background:#1c1917;color:#fcd34d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;font-family:monospace;letter-spacing:.5px;margin:1px 2px}
+.fl-ov-note-section{font-size:11px;margin-bottom:4px}
+.fl-ov-note-sect-lbl{font-weight:700;color:var(--txt3);text-transform:uppercase;font-size:9px;letter-spacing:.4px;display:inline}
+.fl-ov-note-sect-val{color:var(--txt2);display:inline;margin-left:4px}
+
+/* FLIGHT logbook status badge */
+.fl-lb-link-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.fl-lb-link-badge.none{background:var(--r-bg);color:var(--r)}
+.fl-lb-link-badge.linked{background:var(--g-bg);color:var(--g)}
+.fl-lb-link-badge.dup{background:var(--am-bg);color:var(--am)}
+
+/* FLIGHT map readability fixes */
+.fl-map-kpi-card{background:rgba(255,255,255,.92)!important;border:1px solid rgba(0,0,0,.12)!important;border-radius:var(--r2);padding:10px 12px;color:#1c2636!important;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.fl-map-kpi-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#475569!important;margin-bottom:3px;opacity:1!important}
+.fl-map-kpi-val{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;color:#1c2636!important}
+.fl-map-tooltip{position:absolute;background:rgba(255,255,255,.97)!important;color:#1c2636!important;font-size:12px;padding:9px 13px;border-radius:10px;pointer-events:none;display:none;z-index:10;max-width:220px;line-height:1.6;border:1.5px solid rgba(29,78,216,.3)!important;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+
 /* FLIGHT plan cards */
 .fl-plan-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh);margin-bottom:10px;transition:box-shadow .15s}
 .fl-plan-card.active-plan{border-color:var(--acc);box-shadow:0 0 0 2px rgba(29,78,216,.12),var(--sh2)}
@@ -476,10 +529,10 @@ tr:hover td{background:#f8fafc}
 .fl-map-wrap{position:relative;background:#0d1b2a;border-radius:var(--r1);overflow:hidden;margin-bottom:12px}
 .fl-map-svg{width:100%;display:block}
 .fl-map-kpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:10px}
-.fl-map-kpi-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--r2);padding:10px 12px;color:#fff}
-.fl-map-kpi-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.6;margin-bottom:3px}
-.fl-map-kpi-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
-.fl-map-tooltip{position:absolute;background:rgba(10,20,35,.9);color:#fff;font-size:12px;padding:7px 11px;border-radius:8px;pointer-events:none;display:none;z-index:10;max-width:200px;line-height:1.5;border:1px solid rgba(255,255,255,.15)}
+.fl-map-kpi-card-base{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--r2);padding:10px 12px;color:#fff}
+.fl-map-kpi-lbl-base{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.6;margin-bottom:3px}
+.fl-map-kpi-val-base{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+.fl-map-kpi-card-old{display:none}
 /* logbook mode toggle */
 .fl-lb-mode-bar{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
 /* mini bar chart for aircraft */
@@ -526,7 +579,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.37</span>
+      <span class="ver-badge">V26.38</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
@@ -1469,20 +1522,65 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 
-  <!-- sub: 개요 -->
+  <!-- sub: 개요 (메인 허브) -->
   <div class="flight-sub on" id="fsub-overview">
+    <!-- 빠른 비행 입력 카드 -->
+    <div class="fl-qi-card" id="fl-qi-card">
+      <div id="fl-qi-body">
+        <div style="font-size:13px;color:var(--txt3);text-align:center;padding:8px 0">불러오는 중…</div>
+      </div>
+    </div>
+
+    <!-- Quick Action Bar -->
+    <div class="fl-qa-bar" id="fl-qa-bar">
+      <button class="fl-qa-btn" onclick="flOvFetchWx()">🔄 날씨 새로고침</button>
+      <button class="fl-qa-btn" onclick="swFlight('weather')">⛅ 날씨 상세</button>
+      <button class="fl-qa-btn" onclick="swFlight('notes')">📝 노트 편집</button>
+      <button class="fl-qa-btn" onclick="flClCreateRunAndSwitch()">✅ 체크리스트 생성</button>
+      <button class="fl-qa-btn" onclick="flOvOpenLogbook()">📖 로그북 추가</button>
+      <button class="fl-qa-btn" onclick="swFlight('map')">🗺 지도 보기</button>
+    </div>
+
+    <!-- KPI 그리드 -->
     <div class="kpi-grid" id="flight-overview-kpi" style="margin-bottom:12px"></div>
-    <!-- 활성 계획 요약 -->
-    <div id="flight-overview-active"></div>
-    <!-- 타임라인 -->
+
+    <!-- 날씨 요약 -->
+    <div class="card mt" id="flight-overview-wx-card" style="display:none">
+      <div class="sec-hd" style="margin-bottom:8px">
+        <div class="sec-hl"><span class="sec-t">⛅ 날씨 요약</span><span id="fl-ov-wx-status" style="font-size:11px;color:var(--txt3);margin-left:8px"></span></div>
+        <button class="btn bgh xs" onclick="swFlight('weather')">상세 →</button>
+      </div>
+      <div id="flight-overview-wx"></div>
+    </div>
+
+    <!-- 출발 타임라인 -->
     <div class="card mt" id="flight-overview-timeline-card" style="display:none">
       <div class="sec-hd"><div class="sec-hl"><span class="sec-t">🕐 출발 타임라인</span></div></div>
       <div id="flight-overview-timeline"></div>
     </div>
+
     <!-- 시간대 비교 -->
     <div class="card mt" id="flight-overview-tz-card" style="display:none">
       <div class="sec-hd"><div class="sec-hl"><span class="sec-t">🌍 시간대 비교</span></div></div>
       <div id="flight-overview-tz"></div>
+    </div>
+
+    <!-- 관련 노트 요약 -->
+    <div class="card mt" id="flight-overview-notes-card" style="display:none">
+      <div class="sec-hd" style="margin-bottom:8px">
+        <div class="sec-hl"><span class="sec-t">📝 관련 노트</span></div>
+        <button class="btn bgh xs" onclick="swFlight('notes')">전체 →</button>
+      </div>
+      <div id="flight-overview-notes"></div>
+    </div>
+
+    <!-- 로그북 연동 상태 -->
+    <div class="card mt" id="flight-overview-lb-card" style="display:none">
+      <div class="sec-hd" style="margin-bottom:8px">
+        <div class="sec-hl"><span class="sec-t">📖 로그북 연동</span><span id="fl-ov-lb-badge"></span></div>
+        <button class="btn bp xs" onclick="flOvOpenLogbook()">＋ 로그 추가</button>
+      </div>
+      <div id="flight-overview-lb-info" style="font-size:12px;color:var(--txt3)"></div>
     </div>
   </div>
 
@@ -1886,6 +1984,8 @@ tr:hover td{background:#f8fafc}
       <div class="fg">
         <textarea class="fl-note-ta" id="fllb-remarks" placeholder="비행 메모, 특이사항…"></textarea>
       </div>
+      <!-- hidden: linkedPlanId -->
+      <input type="hidden" id="fllb-linked-plan-id" value="">
     </div>
     <div class="md-ft">
       <button class="btn bgh" onclick="cm('mo-fl-lb')">취소</button>
@@ -1973,6 +2073,12 @@ tr:hover td{background:#f8fafc}
       </div>
       <div class="fl-sect-title" style="margin-top:0">비행 전 착안사항</div>
       <textarea class="fl-note-ta" id="fln-preflight" placeholder="출발 전 확인할 것, 주의할 것…"></textarea>
+      <div class="fl-sect-title">🛫 SID (출발 절차)</div>
+      <input type="text" class="fi" id="fln-sid" placeholder="예: ELSTA2D, RKSI EAST departure…" style="margin-bottom:4px">
+      <div class="fhint">공항 이탈 절차 (Standard Instrument Departure). 공항 노트에서만 의미 있습니다.</div>
+      <div class="fl-sect-title">🛬 STAR (도착 절차)</div>
+      <input type="text" class="fi" id="fln-star" placeholder="예: GUVAS1B, KOCHI STAR…" style="margin-bottom:4px">
+      <div class="fhint">도착 절차 (Standard Terminal Arrival Route). 공항 노트에서만 의미 있습니다.</div>
       <div class="fl-sect-title">비행 후 기록</div>
       <textarea class="fl-note-ta" id="fln-postflight" placeholder="귀국 후 느낀 점, 다음에 참고할 것…"></textarea>
       <div class="fl-sect-title">🍜 먹거리</div>
@@ -2227,8 +2333,8 @@ tr:hover td{background:#f8fafc}
 
 <script>
 /* =============================================================
-   ELS Manager V26.37
-   §F  FLIGHT (V26.37: 안정화 / 샘플 데이터 / UX 다듬기)
+   ELS Manager V26.38
+   §F  FLIGHT (V26.38: 개요 메인허브 / SID-STAR / 지도가독성)
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -2239,7 +2345,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.37';
+const VER = 'V26.38';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -5458,59 +5564,38 @@ function renderFlightSub(sub){
 }
 
 /* ═══════════════════════════════════════════════════════
-   FLIGHT §F5  개요 렌더
+   FLIGHT §F5  개요 메인 허브 렌더
    ═══════════════════════════════════════════════════════ */
 
+/* FLIGHT - 개요 메인 */
 /* FLIGHT */
 function renderFlightOverview(){
   const d = getFlight();
-  const kpiEl = document.getElementById('flight-overview-kpi');
   const activePlan = d.plans.find(p=>p.id===d.activePlanId) || d.plans[0] || null;
   const hasAnyData = d.plans.length||d.logbook.length||d.checklistTemplates.length;
 
-  // 로그북 통계
+  // 빠른 입력 카드
+  _renderFlQiCard(activePlan, d);
+
+  // KPI
   const now = new Date();
   const y = now.getFullYear(), mo = now.getMonth()+1;
   const thisMonthLog = d.logbook.filter(e=>e.flightDate?.startsWith(`${y}-${String(mo).padStart(2,'0')}`));
   const monthBlock = thisMonthLog.reduce((s,e)=>s+(Number(e.blockMinutes)||0),0);
-
+  const kpiEl = document.getElementById('flight-overview-kpi');
   if(kpiEl){
     kpiEl.innerHTML = [
-      {lbl:'비행 계획',        val: d.plans.length+'개',              cls:'blue'},
-      {lbl:'로그북 항목',       val: d.logbook.length+'개',            cls:d.logbook.length?'green':''},
-      {lbl:'이번 달 Block',    val: d.logbook.length ? _lbFmtMinLong(monthBlock)||'-' : '-', cls:''},
-      {lbl:'공항·도시 노트',   val: (Object.keys(d.airportNotes).length+Object.keys(d.cityNotes||{}).length)+'개', cls:''},
-    ].map(i=>`<div class="kpi-card">
-      <div class="kpi-lbl">${i.lbl}</div>
-      <div class="kpi-val ${i.cls}" style="font-size:20px">${i.val}</div>
-    </div>`).join('');
+      {lbl:'비행 계획', val:d.plans.length+'개', cls:'blue'},
+      {lbl:'로그북 항목', val:d.logbook.length+'개', cls:d.logbook.length?'green':''},
+      {lbl:'이번 달 Block', val:d.logbook.length?(_lbFmtMinLong(monthBlock)||'-'):'-', cls:''},
+      {lbl:'공항·도시 노트', val:(Object.keys(d.airportNotes).length+Object.keys(d.cityNotes||{}).length)+'개', cls:''},
+    ].map(i=>`<div class="kpi-card"><div class="kpi-lbl">${i.lbl}</div><div class="kpi-val ${i.cls}" style="font-size:20px">${i.val}</div></div>`).join('');
   }
 
-  const activeEl = document.getElementById('flight-overview-active');
-  if(activeEl){
-    if(!activePlan){
-      const emptyAction = hasAnyData
-        ? `<button class="btn bgh sm" onclick="swFlight('plan')">비행 계획 탭으로 →</button>`
-        : `<button class="btn bp sm" onclick="swFlight('flsettings')">🧪 샘플 데이터 넣기</button>`;
-      activeEl.innerHTML=`<div class="card">
-        <div class="sec-hd"><div class="sec-hl"><span class="sec-t">✈️ 활성 비행 계획</span></div>${emptyAction}</div>
-        <div class="empty"><div class="ei">✈️</div>
-        <div class="em">등록된 비행 계획이 없습니다.</div>
-        <div style="font-size:12px;color:var(--txt3)">${hasAnyData?'비행 계획 탭에서 새 계획을 추가하세요.':'설정 탭에서 샘플 데이터를 넣어 기능을 미리 확인해 보세요.'}</div></div>
-      </div>`;
-    } else {
-      activeEl.innerHTML=`<div class="card">
-        <div class="sec-hd">
-          <div class="sec-hl"><span class="sec-t">✈️ 활성 비행 계획</span>
-          <span class="badge bbl">${esc(activePlan.flightNumber||'편명 미입력')}</span></div>
-          <button class="btn bgh sm" onclick="swFlight('plan')">전체 목록</button>
-        </div>
-        ${flPlanSummaryHtml(activePlan)}
-      </div>`;
-    }
-  }
+  // 날씨 요약
+  _renderFlOvWeather(activePlan, d.settings);
 
-  // 타임라인 / TZ 카드
+  // 타임라인 / TZ 비교
   const tlCard = document.getElementById('flight-overview-timeline-card');
   const tzCard = document.getElementById('flight-overview-tz-card');
   if(activePlan && activePlan.depLocalDateTime){
@@ -5522,6 +5607,413 @@ function renderFlightOverview(){
     if(tlCard) tlCard.style.display='none';
     if(tzCard) tzCard.style.display='none';
   }
+
+  // 관련 노트 요약
+  _renderFlOvNotes(activePlan, d);
+
+  // 로그북 연동 상태
+  _renderFlOvLogbookStatus(activePlan, d);
+}
+
+/* FLIGHT - 빠른 입력 카드 렌더 */
+/* FLIGHT */
+function _renderFlQiCard(plan, d){
+  const el = document.getElementById('fl-qi-body');
+  if(!el) return;
+
+  if(!plan){
+    // 계획 없음 → 빠른 생성
+    el.innerHTML=`
+      <div style="font-size:14px;font-weight:700;color:var(--acc);margin-bottom:10px">✈️ 빠른 비행 입력</div>
+      <div class="fl-qi-route">
+        <div class="fl-qi-leg">
+          <div class="fl-qi-label">출발 ICAO</div>
+          <input class="fl-qi-inp" id="fl-qi-dep-icao" placeholder="RKSI" maxlength="4" oninput="this.value=this.value.toUpperCase()">
+          <div class="fl-qi-sub">도시</div>
+          <input class="fl-qi-inp" id="fl-qi-dep-city" placeholder="Seoul" style="margin-top:4px;font-weight:400;font-size:12px">
+        </div>
+        <div class="fl-qi-sep">→</div>
+        <div class="fl-qi-leg">
+          <div class="fl-qi-label">도착 ICAO</div>
+          <input class="fl-qi-inp" id="fl-qi-arr-icao" placeholder="RJTT" maxlength="4" oninput="this.value=this.value.toUpperCase()">
+          <div class="fl-qi-sub">도시</div>
+          <input class="fl-qi-inp" id="fl-qi-arr-city" placeholder="Tokyo" style="margin-top:4px;font-weight:400;font-size:12px">
+        </div>
+      </div>
+      <div class="fl-qi-meta">
+        <div class="fg">
+          <div class="fl-qi-label">비행 날짜</div>
+          <input type="date" class="fl-qi-inp" id="fl-qi-date" value="${new Date().toISOString().slice(0,10)}">
+        </div>
+        <div class="fg">
+          <div class="fl-qi-label">편명</div>
+          <input class="fl-qi-inp" id="fl-qi-fnum" placeholder="KE001">
+        </div>
+        <div class="fg">
+          <div class="fl-qi-label">출발 일시 (현지)</div>
+          <input type="datetime-local" class="fl-qi-inp" id="fl-qi-dep-dt">
+        </div>
+        <div class="fg">
+          <div class="fl-qi-label">도착 일시 (현지)</div>
+          <input type="datetime-local" class="fl-qi-inp" id="fl-qi-arr-dt">
+        </div>
+      </div>
+      <div class="fl-qi-save-row">
+        <button class="btn bgh sm" onclick="swFlight('plan')">전체 계획 탭 →</button>
+        <button class="btn bp sm" onclick="flQiCreatePlan()">✅ 빠른 생성</button>
+      </div>`;
+    return;
+  }
+
+  // 계획 있음 → 편집 모드
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="font-size:14px;font-weight:700;color:var(--acc)">✈️ 활성 비행</span>
+      <span class="badge bbl">${esc(plan.flightNumber||'편명없음')}</span>
+      <span style="font-size:12px;color:var(--txt3)">${esc(plan.tripDate||'')}</span>
+      <button class="btn bgh xs" onclick="swFlight('plan')" style="margin-left:auto">전체 계획 →</button>
+    </div>
+    <div class="fl-qi-route">
+      <div class="fl-qi-leg">
+        <div class="fl-qi-label">출발 ICAO</div>
+        <input class="fl-qi-inp" id="fl-qi-dep-icao" placeholder="RKSI" maxlength="4" value="${esc(plan.depIcao||'')}" oninput="this.value=this.value.toUpperCase()">
+        <div class="fl-qi-sub">도시</div>
+        <input class="fl-qi-inp" id="fl-qi-dep-city" placeholder="Seoul" value="${esc(plan.depCity||'')}" style="margin-top:4px;font-weight:400;font-size:12px">
+      </div>
+      <div class="fl-qi-sep">→</div>
+      <div class="fl-qi-leg">
+        <div class="fl-qi-label">도착 ICAO</div>
+        <input class="fl-qi-inp" id="fl-qi-arr-icao" placeholder="RJTT" maxlength="4" value="${esc(plan.arrIcao||'')}" oninput="this.value=this.value.toUpperCase()">
+        <div class="fl-qi-sub">도시</div>
+        <input class="fl-qi-inp" id="fl-qi-arr-city" placeholder="Tokyo" value="${esc(plan.arrCity||'')}" style="margin-top:4px;font-weight:400;font-size:12px">
+      </div>
+    </div>
+    <div class="fl-qi-meta">
+      <div class="fg">
+        <div class="fl-qi-label">출발 일시 (현지)</div>
+        <input type="datetime-local" class="fl-qi-inp" id="fl-qi-dep-dt" value="${esc(plan.depLocalDateTime||'')}">
+      </div>
+      <div class="fg">
+        <div class="fl-qi-label">도착 일시 (현지)</div>
+        <input type="datetime-local" class="fl-qi-inp" id="fl-qi-arr-dt" value="${esc(plan.arrLocalDateTime||'')}">
+      </div>
+      <div class="fg">
+        <div class="fl-qi-label">출발 타임존</div>
+        <input class="fl-qi-inp" id="fl-qi-dep-tz" placeholder="Asia/Seoul" value="${esc(plan.depTimezone||'')}" style="font-size:11px">
+      </div>
+      <div class="fg">
+        <div class="fl-qi-label">도착 타임존</div>
+        <input class="fl-qi-inp" id="fl-qi-arr-tz" placeholder="Asia/Tokyo" value="${esc(plan.arrTimezone||'')}" style="font-size:11px">
+      </div>
+    </div>
+    <div class="fl-qi-save-row">
+      <button class="btn bgh sm" onclick="openFlightPlanModal('${plan.id}')">상세 편집</button>
+      <button class="btn bp sm" onclick="flQiSavePlan('${plan.id}')">💾 바로 저장</button>
+    </div>`;
+}
+
+/* FLIGHT - 빠른 계획 생성 */
+/* FLIGHT */
+function flQiCreatePlan(){
+  const g = id=>document.getElementById(id)?.value.trim()||'';
+  const depIcao = g('fl-qi-dep-icao');
+  const arrIcao = g('fl-qi-arr-icao');
+  const depCity = g('fl-qi-dep-city');
+  const arrCity = g('fl-qi-arr-city');
+  const depDt   = g('fl-qi-dep-dt');
+  const arrDt   = g('fl-qi-arr-dt');
+  const date    = g('fl-qi-date');
+  const fnum    = g('fl-qi-fnum');
+  if(!depIcao && !depCity){ toast('출발 공항 또는 도시를 입력하세요.','err'); return; }
+  if(!arrIcao && !arrCity){ toast('도착 공항 또는 도시를 입력하세요.','err'); return; }
+  const d = getFlight();
+  const s = d.settings;
+  const now = new Date().toISOString();
+  const planId = genId();
+  const plan = {
+    id:planId, createdAt:now, updatedAt:now,
+    tripDate: date||today(),
+    flightNumber: fnum,
+    depIcao, depIata:'', depCity, depCountry:'', depTimezone: s.homeTimezone||'Asia/Seoul',
+    arrIcao, arrIata:'', arrCity, arrCountry:'', arrTimezone:'',
+    depLocalDateTime: depDt, depUtcDateTime:'',
+    arrLocalDateTime: arrDt, arrUtcDateTime:'',
+    layoverNights: null, layoverNightsManualOverride: null,
+    hotelName:'', breakfastStartLocal:'', breakfastEndLocal:'',
+    memo:'', prepMemo:'', postMemo:'',
+  };
+  d.plans.push(plan);
+  d.activePlanId = planId;
+  setFlight(d);
+  renderFlightOverview();
+  toast('비행 계획이 생성됐습니다. 상세 편집으로 추가 정보를 채우세요.','ok');
+}
+
+/* FLIGHT - 빠른 입력 카드에서 active plan 즉시 저장 */
+/* FLIGHT */
+function flQiSavePlan(planId){
+  const g = id=>document.getElementById(id)?.value.trim()||'';
+  const d = getFlight();
+  const plan = d.plans.find(x=>x.id===planId);
+  if(!plan) return;
+  plan.depIcao          = g('fl-qi-dep-icao');
+  plan.depCity          = g('fl-qi-dep-city');
+  plan.arrIcao          = g('fl-qi-arr-icao');
+  plan.arrCity          = g('fl-qi-arr-city');
+  plan.depLocalDateTime = g('fl-qi-dep-dt');
+  plan.arrLocalDateTime = g('fl-qi-arr-dt');
+  plan.depTimezone      = g('fl-qi-dep-tz') || plan.depTimezone;
+  plan.arrTimezone      = g('fl-qi-arr-tz') || plan.arrTimezone;
+  plan.updatedAt        = new Date().toISOString();
+  // UTC 재계산
+  if(plan.depLocalDateTime && plan.depTimezone)
+    plan.depUtcDateTime = flLocalToUtc(plan.depLocalDateTime, plan.depTimezone)?.toISOString()||'';
+  if(plan.arrLocalDateTime && plan.arrTimezone)
+    plan.arrUtcDateTime = flLocalToUtc(plan.arrLocalDateTime, plan.arrTimezone)?.toISOString()||'';
+  setFlight(d);
+  renderFlightOverview();
+  toast('저장됐습니다.','ok');
+}
+
+/* FLIGHT - 개요 날씨 compact 렌더 */
+/* FLIGHT */
+function _renderFlOvWeather(plan, settings){
+  const wxCard = document.getElementById('flight-overview-wx-card');
+  const wxEl   = document.getElementById('flight-overview-wx');
+  const statEl = document.getElementById('fl-ov-wx-status');
+  if(!wxCard||!wxEl) return;
+
+  // cache 없고 plan도 없으면 숨김
+  const hasPlan = plan && (plan.arrIcao || plan.arrCity || plan.depIcao || plan.depCity);
+  if(!hasPlan && !Object.keys(_wxCache).length){ wxCard.style.display='none'; return; }
+  wxCard.style.display='';
+
+  const arrData = _wxCache['arr']||null;
+  const kstData = _wxCache['kst']||null;
+  const depData = _wxCache['dep']||null;
+
+  if(!arrData && !kstData){
+    wxEl.innerHTML=`<div style="font-size:13px;color:var(--txt3);padding:6px 0">
+      🔄 날씨 새로고침 버튼을 눌러 현재 날씨를 불러오세요.
+    </div>`;
+    if(statEl) statEl.textContent='(미조회)';
+    return;
+  }
+
+  const fetchedAt = (arrData||kstData)?.fetchedAt;
+  if(statEl&&fetchedAt) statEl.textContent = fetchedAt.slice(11,16)+' UTC 기준';
+
+  function compactNowCard(label, data){
+    if(!data?.current) return '';
+    const cur = data.current;
+    const {emoji} = _wxCode(cur.weather_code);
+    return `<div class="fl-ov-wx-card">
+      <div class="fl-ov-wx-lbl">${esc(label)}</div>
+      <div class="fl-ov-wx-main">
+        <span style="font-size:24px">${emoji}</span>
+        <span class="fl-ov-wx-temp">${Math.round(cur.temperature_2m)}°</span>
+        <div class="fl-ov-wx-detail">
+          <div>체감 ${Math.round(cur.apparent_temperature)}°</div>
+          <div>💧${cur.relative_humidity_2m}% 🌬${Math.round(cur.wind_speed_10m)}km/h</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function compactForecast(data){
+    if(!data?.forecast?.daily) return '';
+    const daily = data.forecast.daily;
+    const rows = (daily.time||[]).slice(0,3).map((dt,i)=>{
+      const mx = daily.temperature_2m_max?.[i];
+      const mn = daily.temperature_2m_min?.[i];
+      const pcp= daily.precipitation_probability_max?.[i];
+      const {emoji} = _wxCode(daily.weather_code?.[i]);
+      return `<div class="fl-ov-fc-row">
+        <div class="fl-ov-fc-day">${_dayLabel(dt).slice(0,8)}</div>
+        <div class="fl-ov-fc-emoji">${emoji}</div>
+        <div class="fl-ov-fc-temp">${mx!=null?Math.round(mx)+'°':'-'}/${mn!=null?Math.round(mn)+'°':'-'}</div>
+        ${pcp!=null?`<div class="fl-ov-fc-rain">💧${pcp}%</div>`:''}
+      </div>`;
+    }).join('');
+    return `<div class="fl-ov-wx-card" style="grid-column:1/-1">
+      <div class="fl-ov-wx-lbl">3일 예보 (도착지)</div>
+      ${rows}
+    </div>`;
+  }
+
+  const depLabel = plan ? `출발지 ${plan.depCity||plan.depIcao||''}` : '출발지';
+  const arrLabel = plan ? `도착지 ${plan.arrCity||plan.arrIcao||''}` : '도착지';
+
+  wxEl.innerHTML = `<div class="fl-ov-wx-grid">
+    ${compactNowCard(depLabel, depData||arrData)}
+    ${compactNowCard(arrLabel, arrData)}
+    ${compactNowCard('서울 (한국)', kstData)}
+    ${compactForecast(arrData)}
+  </div>`;
+}
+
+/* FLIGHT - 개요에서 날씨 fetch 트리거 */
+/* FLIGHT */
+async function flOvFetchWx(){
+  const d = getFlight();
+  const plan = d.plans.find(p=>p.id===d.activePlanId)||d.plans[0]||null;
+  if(!plan){ toast('활성 비행 계획이 없습니다.','warn'); return; }
+
+  const statEl = document.getElementById('fl-ov-wx-status');
+  if(statEl) statEl.textContent='불러오는 중…';
+
+  // 기존 fetchAllWeather 로직 재사용
+  if(_wxFetching){ toast('날씨를 불러오는 중입니다.','warn'); return; }
+  _wxFetching = true;
+  try{
+    // dep 좌표
+    let depGeo = null;
+    if(plan.depCity) depGeo = await _flGeocode(plan.depCity);
+    let arrGeo = null;
+    if(plan.arrCity) arrGeo = await _flGeocode(plan.arrCity);
+    const kstGeo = {lat:37.5665, lon:126.9780, name:'Seoul'};
+
+    const promises = [];
+    if(depGeo) promises.push(_flFetchOpenMeteo(depGeo.lat, depGeo.lon).then(j=>({key:'dep',j,geo:depGeo})).catch(e=>({key:'dep',err:e})));
+    if(arrGeo) promises.push(_flFetchOpenMeteo(arrGeo.lat, arrGeo.lon).then(j=>({key:'arr',j,geo:arrGeo})).catch(e=>({key:'arr',err:e})));
+    promises.push(_flFetchOpenMeteo(kstGeo.lat,kstGeo.lon).then(j=>({key:'kst',j,geo:kstGeo})).catch(e=>({key:'kst',err:e})));
+
+    const now2 = new Date().toISOString();
+    const results = await Promise.all(promises);
+    results.forEach(res=>{
+      if(res.err){ _wxCache[res.key]=null; return; }
+      _wxCache[res.key]={current:res.j.current,forecast:res.j,fetchedAt:now2,geo:res.geo};
+    });
+    _renderFlOvWeather(plan, d.settings);
+    toast('날씨 업데이트 완료','ok');
+  }catch(e){
+    toast('날씨 오류: '+e.message,'err');
+    if(statEl) statEl.textContent='오류';
+  }finally{ _wxFetching=false; }
+}
+
+/* FLIGHT - 개요 노트 요약 렌더 */
+/* FLIGHT */
+function _renderFlOvNotes(plan, d){
+  const card = document.getElementById('flight-overview-notes-card');
+  const el   = document.getElementById('flight-overview-notes');
+  if(!card||!el) return;
+
+  if(!plan){ card.style.display='none'; return; }
+
+  const relevant = [];
+  const push = (type, key) => {
+    const store = type==='airport' ? d.airportNotes : (d.cityNotes||{});
+    const data  = store[key];
+    if(data) relevant.push({type, key, data});
+  };
+  if(plan.depIcao) push('airport', plan.depIcao);
+  if(plan.arrIcao) push('airport', plan.arrIcao);
+  if(plan.depCity) push('city', plan.depCity);
+  if(plan.arrCity) push('city', plan.arrCity);
+
+  if(!relevant.length){ card.style.display='none'; return; }
+  card.style.display='';
+
+  el.innerHTML = relevant.map(({type,key,data})=>{
+    const icon = type==='airport'?'🛬':'🏙';
+    const sid  = data.sid||'';
+    const star = data.star||'';
+    const sidPills = sid ? sid.split(/[\s,]+/).filter(Boolean).map(s=>`<span class="fl-sid-pill">${esc(s)}</span>`).join('') : '';
+    const starPills= star? star.split(/[\s,]+/).filter(Boolean).map(s=>`<span class="fl-star-pill">${esc(s)}</span>`).join('') : '';
+
+    const sections = [
+      ['preflight','출발 전'],['postflight','비행 후'],
+      ['food','먹거리'],['market','마트'],['shopping','쇼핑'],['general','메모'],
+    ].filter(([k])=>data[k]&&data[k].trim())
+     .map(([k,lbl])=>`<div class="fl-ov-note-section">
+       <span class="fl-ov-note-sect-lbl">${lbl}</span>
+       <span class="fl-ov-note-sect-val">${esc(data[k].slice(0,60)+(data[k].length>60?'…':''))}</span>
+     </div>`).join('');
+
+    return `<div class="fl-ov-note-card">
+      <div class="fl-ov-note-hd">
+        <span style="font-size:11px;color:var(--txt3)">${icon}</span>
+        <span class="fl-ov-note-key">${esc(key)}</span>
+        <div style="margin-left:auto;display:flex;gap:4px;flex-wrap:wrap">
+          ${sidPills}${starPills}
+        </div>
+        <button class="btn bgh xs" onclick="openFlNoteModal('${type}','${esc(key)}')">편집</button>
+      </div>
+      ${sections||'<div style="font-size:12px;color:var(--txt3)">내용 없음</div>'}
+    </div>`;
+  }).join('');
+}
+
+/* FLIGHT - 로그북 연동 상태 렌더 */
+/* FLIGHT */
+function _renderFlOvLogbookStatus(plan, d){
+  const card   = document.getElementById('flight-overview-lb-card');
+  const badge  = document.getElementById('fl-ov-lb-badge');
+  const infoEl = document.getElementById('flight-overview-lb-info');
+  if(!card) return;
+  if(!plan){ card.style.display='none'; return; }
+  card.style.display='';
+
+  const linked = d.logbook.filter(e=>
+    e.linkedPlanId===plan.id ||
+    (e.flightDate===plan.tripDate && (e.flightNumber===plan.flightNumber||(!e.flightNumber&&!plan.flightNumber)))
+  );
+  const sameRoute = d.logbook.filter(e=>
+    e.flightDate===plan.tripDate &&
+    e.depIcao===plan.depIcao && e.arrIcao===plan.arrIcao && !linked.includes(e)
+  );
+
+  let cls='none', txt='미등록';
+  if(linked.length){ cls='linked'; txt=`${linked.length}건 연결됨`; }
+  else if(sameRoute.length){ cls='dup'; txt='중복 가능성 있음'; }
+
+  if(badge) badge.innerHTML=`<span class="fl-lb-link-badge ${cls}" style="margin-left:8px">${txt}</span>`;
+  if(infoEl){
+    if(linked.length){
+      infoEl.innerHTML = linked.map(e=>`
+        <div style="display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--bd);font-size:12px">
+          <span class="fl-lb-pill blue">${esc(e.flightDate||'-')}</span>
+          <span>${esc(e.flightNumber||'편명없음')}</span>
+          <span style="color:var(--txt3)">${_lbFmtMinLong(e.blockMinutes)||''}</span>
+        </div>`).join('');
+    } else {
+      infoEl.innerHTML='<div style="color:var(--txt3)">이 비행 계획과 연결된 로그 항목이 없습니다.</div>';
+    }
+  }
+}
+
+/* FLIGHT - 개요에서 로그북 추가 (plan 자동 채움) */
+/* FLIGHT */
+function flOvOpenLogbook(){
+  const d = getFlight();
+  const plan = d.plans.find(p=>p.id===d.activePlanId)||d.plans[0]||null;
+  if(!plan){ openFlLbModal(); return; }
+  openFlLbModal();
+  // plan 값 채우기 (setTimeout으로 modal DOM 로딩 대기)
+  setTimeout(()=>{
+    const s=(id,v)=>{ const el=document.getElementById('fllb-'+id); if(el&&v) el.value=v; };
+    s('flightDate',   plan.tripDate||plan.depLocalDateTime?.slice(0,10)||'');
+    s('flightNumber', plan.flightNumber||'');
+    s('depIcao',      plan.depIcao||'');
+    s('depIata',      plan.depIata||'');
+    s('depCity',      plan.depCity||'');
+    s('arrIcao',      plan.arrIcao||'');
+    s('arrIata',      plan.arrIata||'');
+    s('arrCity',      plan.arrCity||'');
+    if(plan.depLocalDateTime) s('outTime', plan.depLocalDateTime.slice(11,16));
+    // linkedPlanId는 saveFlLbEntry에서 자동 설정 못 하므로 hidden 필드로 관리
+    const hidEl = document.getElementById('fllb-linked-plan-id');
+    if(hidEl) hidEl.value = plan.id;
+    flLbUpdateTimeHints();
+  }, 80);
+}
+
+/* FLIGHT - 체크리스트 생성 후 sub-tab 이동 */
+/* FLIGHT */
+function flClCreateRunAndSwitch(){
+  swFlight('checklist');
+  setTimeout(()=>{ swClTab('run'); flClCreateRun(); }, 50);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -6462,6 +6954,10 @@ function openFlLbModal(id){
   document.getElementById('fl-lb-modal-title').textContent = id?'📖 비행 로그 수정':'📖 비행 로그 추가';
   swLbMode('simple');
 
+  // hidden 필드 초기화
+  const hidEl = document.getElementById('fllb-linked-plan-id');
+  if(hidEl) hidEl.value = '';
+
   const fields=['flightDate','flightNumber','depIcao','depIata','depCity','arrIcao','arrIata','arrCity',
     'aircraftFamily','aircraftRegistration','outTime','offTime','onTime','inTime',
     'blockMinutes','flightMinutes','dayMinutes','nightMinutes','pfMinutes','pmMinutes','remarks'];
@@ -6471,6 +6967,7 @@ function openFlLbModal(id){
     const e = d.logbook.find(x=>x.id===id);
     if(!e) return;
     fields.forEach(f=>{ const el=document.getElementById('fllb-'+f); if(el) el.value=e[f]??''; });
+    if(hidEl) hidEl.value = e.linkedPlanId||'';
     // variant
     const varSel = document.getElementById('fllb-aircraftVariant');
     const stdVariants = ['B777-200ER','B777-300','B777-300ER'];
@@ -6535,7 +7032,7 @@ function saveFlLbEntry(){
     pfMinutes:            gn('pfMinutes'),
     pmMinutes:            gn('pmMinutes'),
     remarks:              g('remarks'),
-    linkedPlanId:         '',
+    linkedPlanId:         document.getElementById('fllb-linked-plan-id')?.value||'',
   };
 
   if(_editLbId) d.logbook = d.logbook.map(x=>x.id===_editLbId?entry:x);
@@ -6678,28 +7175,27 @@ function _drawFlightMap(entries){
   const ctx = canvas.getContext('2d');
   if(!ctx) return;
 
-  // 배경
-  ctx.fillStyle = '#0d1b2a';
+  // 배경 (약간 밝은 해양색)
+  ctx.fillStyle = '#0f2238';
   ctx.fillRect(0,0,W,H);
 
-  // Equirectangular: lon -180..180 → x 0..W, lat 90..-90 → y 0..H
   const lonToX = lon => (lon+180)/360*W;
   const latToY = lat => (90-lat)/180*H;
 
-  // 위도선 / 경도선 (격자)
-  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  // 격자선
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
   ctx.lineWidth   = 0.5;
   for(let lat=-60;lat<=60;lat+=30){ ctx.beginPath(); ctx.moveTo(0,latToY(lat)); ctx.lineTo(W,latToY(lat)); ctx.stroke(); }
   for(let lon=-150;lon<=180;lon+=30){ ctx.beginPath(); ctx.moveTo(lonToX(lon),0); ctx.lineTo(lonToX(lon),H); ctx.stroke(); }
 
-  // 대륙 외곽선 (간략한 폴리라인 세트 — equirectangular)
+  // 대륙 외곽선
   _drawSimpleCoastlines(ctx, lonToX, latToY);
 
   // 적도선
-  ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=0.8;
   ctx.beginPath(); ctx.moveTo(0,latToY(0)); ctx.lineTo(W,latToY(0)); ctx.stroke();
 
-  // 루트 라인
+  // 루트 데이터 수집
   const routes = [];
   entries.forEach(e=>{
     const dep = _lbGetCoord(e.depIcao||'');
@@ -6708,38 +7204,76 @@ function _drawFlightMap(entries){
     routes.push({dep,arr,e});
   });
 
-  // 루트 라인 그리기 (대권항로 근사 — 10분할)
-  routes.forEach(({dep,arr})=>{
-    ctx.strokeStyle='rgba(99,179,237,0.55)'; ctx.lineWidth=1.5;
+  // 루트 라인 (그림자 먼저, 그 위에 선)
+  routes.forEach(({dep,arr},ri)=>{
+    const hue = (ri*47)%360;
+    const steps=16;
+    // 그림자
+    ctx.save();
+    ctx.strokeStyle=`hsla(${hue},80%,60%,0.18)`;
+    ctx.lineWidth=4;
+    ctx.shadowBlur=0;
     ctx.beginPath();
-    const steps=12;
     for(let i=0;i<=steps;i++){
       const t=i/steps;
       const lat=dep.lat+(arr.lat-dep.lat)*t;
-      let   lon=dep.lon+(arr.lon-dep.lon)*t;
-      // 날짜변경선 처리
+      let lon=dep.lon+(arr.lon-dep.lon)*t;
       if(Math.abs(arr.lon-dep.lon)>180){ lon=dep.lon+(arr.lon-dep.lon-360)*t; }
       const x=lonToX(lon), y=latToY(lat);
       if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     }
     ctx.stroke();
+    ctx.restore();
+    // 메인 선
+    ctx.save();
+    ctx.strokeStyle=`hsla(${hue},85%,68%,0.85)`;
+    ctx.lineWidth=1.8;
+    ctx.lineCap='round';
+    ctx.lineJoin='round';
+    ctx.beginPath();
+    for(let i=0;i<=steps;i++){
+      const t=i/steps;
+      const lat=dep.lat+(arr.lat-dep.lat)*t;
+      let lon=dep.lon+(arr.lon-dep.lon)*t;
+      if(Math.abs(arr.lon-dep.lon)>180){ lon=dep.lon+(arr.lon-dep.lon-360)*t; }
+      const x=lonToX(lon), y=latToY(lat);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.restore();
   });
 
-  // 공항 점
-  const drawnCoords = new Set();
-  routes.forEach(({dep,arr})=>{
-    [dep,arr].forEach(pt=>{
-      const key=`${pt.lat},${pt.lon}`;
-      if(drawnCoords.has(key)) return;
-      drawnCoords.add(key);
+  // 공항 점 + 라벨
+  const drawnIcao = {};
+  routes.forEach(({dep,arr,e})=>{
+    [[dep, e.depIcao||e.depIata||''], [arr, e.arrIcao||e.arrIata||'']].forEach(([pt,code])=>{
+      if(drawnIcao[code]) return;
+      drawnIcao[code]=true;
       const x=lonToX(pt.lon), y=latToY(pt.lat);
-      ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
+      // 외곽 후광
+      ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.fill();
+      // 점
+      ctx.beginPath(); ctx.arc(x,y,4.5,0,Math.PI*2);
       ctx.fillStyle='#63b3ed'; ctx.fill();
       ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+      // 라벨 배경 pill
+      if(code && W>400){
+        const lbl = code.slice(0,4);
+        ctx.font='bold 9px sans-serif';
+        const tw = ctx.measureText(lbl).width;
+        const px=x+8, py=y-7;
+        ctx.fillStyle='rgba(15,34,56,0.82)';
+        ctx.beginPath();
+        ctx.roundRect?ctx.roundRect(px-2,py-9,tw+6,13,3):ctx.rect(px-2,py-9,tw+6,13);
+        ctx.fill();
+        ctx.fillStyle='#e2e8f0';
+        ctx.fillText(lbl, px+1, py);
+      }
     });
   });
 
-  // Tooltip (mousemove)
+  // 툴팁 이벤트 재설정
   _setupMapTooltip(canvas, routes, lonToX, latToY);
 }
 
@@ -6807,10 +7341,18 @@ function _setupMapTooltip(canvas, routes, lonToX, latToY){
     });
     if(best){
       tooltip.style.display='block';
-      tooltip.style.left=Math.min(clientX-rect.left+10, rect.width-210)+'px';
-      tooltip.style.top=Math.max(clientY-rect.top-50,5)+'px';
+      tooltip.style.left=Math.min(clientX-rect.left+14, rect.width-230)+'px';
+      tooltip.style.top=Math.max(clientY-rect.top-60,8)+'px';
       const e=best.e;
-      tooltip.innerHTML=`<b>${esc(e.depIata||e.depIcao||'?')} → ${esc(e.arrIata||e.arrIcao||'?')}</b><br>${esc(e.flightDate||'')} ${esc(e.flightNumber||'')}<br>${e.blockMinutes?_lbFmtMinLong(e.blockMinutes)+' BLK':''}`;
+      const route = `${e.depIata||e.depIcao||'?'} → ${e.arrIata||e.arrIcao||'?'}`;
+      const depCity = e.depCity ? esc(e.depCity) : '';
+      const arrCity = e.arrCity ? esc(e.arrCity) : '';
+      tooltip.innerHTML=`
+        <div style="font-weight:800;font-size:14px;color:#1d4ed8;margin-bottom:4px">${esc(route)}</div>
+        ${depCity||arrCity?`<div style="font-size:11px;color:#475569;margin-bottom:3px">${depCity}${depCity&&arrCity?' → ':''}${arrCity}</div>`:''}
+        <div style="font-size:12px;color:#1c2636">${esc(e.flightNumber||'')} ${esc(e.flightDate||'')}</div>
+        ${e.blockMinutes?`<div style="font-size:12px;font-weight:700;color:#047857;margin-top:3px">⏱ ${_lbFmtMinLong(e.blockMinutes)} BLK</div>`:''}
+        ${e.aircraftVariant?`<div style="font-size:11px;color:#64748b">${esc(e.aircraftVariant)}</div>`:''}`;
     } else { tooltip.style.display='none'; }
   }
   newCanvas.addEventListener('mousemove', onMove);
@@ -6887,6 +7429,12 @@ function _noteCardHtml(e){
   const icon = type==='airport'?'🛬':'🏙';
   const label= type==='airport'?'공항 ICAO':'도시';
 
+  // SID / STAR pills
+  const sid  = data.sid||'';
+  const star = data.star||'';
+  const sidPills  = sid  ? sid.split(/[\s,]+/).filter(Boolean).map(s=>`<span class="fl-sid-pill">${esc(s)}</span>`).join('') : '';
+  const starPills = star ? star.split(/[\s,]+/).filter(Boolean).map(s=>`<span class="fl-star-pill">${esc(s)}</span>`).join('') : '';
+
   // 섹션 프리뷰
   const sectionMap = [
     ['preflight','✈️ 비행 전'], ['postflight','🏠 비행 후'],
@@ -6908,6 +7456,7 @@ function _noteCardHtml(e){
         <button class="btn bd-btn xs" onclick="flDeleteNote('${type}','${esc(key)}')">삭제</button>
       </div>
     </div>
+    ${(sidPills||starPills)?`<div style="margin-bottom:7px;display:flex;gap:4px;flex-wrap:wrap">${sidPills}${starPills}</div>`:''}
     ${previews||'<div style="font-size:12px;color:var(--txt3)">내용 없음</div>'}
   </div>`;
 }
@@ -6940,7 +7489,7 @@ function openFlNoteModal(type, key){
 
   const typeEl = document.getElementById('fln-type');
   const keyEl  = document.getElementById('fln-key');
-  const fields = ['preflight','postflight','food','market','shopping','general'];
+  const fields = ['preflight','postflight','food','market','shopping','general','sid','star'];
 
   if(_editNoteKey){
     if(typeEl) typeEl.value = type;
@@ -6974,7 +7523,7 @@ function saveFlNote(){
   const key    = (keyEl?.value||'').trim();
   if(!key){ toast('키(ICAO 또는 도시명)를 입력하세요.','err'); return; }
 
-  const fields = ['preflight','postflight','food','market','shopping','general'];
+  const fields = ['preflight','postflight','food','market','shopping','general','sid','star'];
   const data   = {updatedAt: new Date().toISOString()};
   fields.forEach(f=>{ const el=document.getElementById('fln-'+f); data[f]=el?el.value.trim():''; });
 
@@ -6990,6 +7539,8 @@ function saveFlNote(){
   if(typeEl) typeEl.disabled=false;
   cm('mo-fl-note');
   renderFlightNotes();
+  // 개요가 열려 있으면 노트 요약도 갱신
+  if(curFlightSub==='overview') renderFlightOverview();
   toast(_editNoteKey?'노트가 수정됐습니다.':'노트가 추가됐습니다.','ok');
 }
 
