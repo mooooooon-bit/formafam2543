@@ -547,6 +547,92 @@ tr:hover td{background:#f8fafc}
   .fl-map-kpi{grid-template-columns:repeat(2,1fr)}
 }
 
+/* FLIGHT airport autocomplete */
+.fl-ap-hint{font-size:11px;color:var(--acc);margin-top:2px;min-height:14px;font-weight:600}
+.fl-ap-hint.err{color:var(--r)}
+/* FLIGHT quick turn badge */
+.fl-qt-badge{display:inline-flex;align-items:center;gap:4px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:12px;padding:2px 10px;font-size:11px;font-weight:700}
+/* FLIGHT clock display */
+.fl-clock-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.fl-clock-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center}
+.fl-clock-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:3px}
+.fl-clock-time{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt);line-height:1.1}
+.fl-clock-date{font-size:10px;color:var(--txt3);margin-top:2px}
+.fl-clock-card.hl{background:var(--acc-l);border-color:var(--acc)}
+.fl-clock-card.hl .fl-clock-time{color:var(--acc)}
+
+/* FLIGHT horizontal timeline */
+.fl-htl{display:flex;align-items:flex-start;gap:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:6px 0 2px}
+.fl-htl::-webkit-scrollbar{display:none}
+.fl-htl-item{display:flex;flex-direction:column;align-items:center;position:relative;min-width:70px;flex-shrink:0}
+.fl-htl-item:not(:last-child)::after{content:'';position:absolute;top:13px;left:calc(50% + 13px);right:calc(-50% + 13px);height:2px;background:var(--bd);z-index:0}
+.fl-htl-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;z-index:1;border:2px solid var(--bd);background:var(--surface);flex-shrink:0}
+.fl-htl-dot.wake{background:#fef3c7;border-color:#fcd34d}
+.fl-htl-dot.subway{background:var(--acc-l);border-color:var(--acc)}
+.fl-htl-dot.leave{background:#d1fae5;border-color:#6ee7b7}
+.fl-htl-dot.report{background:var(--r-bg);border-color:var(--r-bd)}
+.fl-htl-dot.dep{background:var(--acc);border-color:var(--acc-d);color:#fff}
+.fl-htl-lbl{font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.3px;margin-top:3px;text-align:center}
+.fl-htl-time{font-size:12px;font-weight:800;color:var(--txt);text-align:center;font-variant-numeric:tabular-nums}
+.fl-htl-kst{font-size:9px;color:var(--txt3);text-align:center}
+
+/* FLIGHT NOTAM overview */
+.fl-notam-ov{display:flex;flex-direction:column;gap:7px}
+.fl-notam-ov-item{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:9px 12px}
+.fl-notam-ov-hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fl-notam-ov-icao{font-size:16px;font-weight:800;font-family:monospace;color:var(--txt)}
+.fl-notam-ov-label{font-size:11px;color:var(--txt3);flex:1}
+.fl-notam-ov-btns{display:flex;gap:5px;flex-wrap:wrap}
+.fl-notam-ov-memo{margin-top:6px;display:flex;gap:6px;align-items:center}
+.fl-notam-ov-memo-inp{flex:1;font-size:11px;border:1px solid var(--bd2);border-radius:var(--r3);padding:4px 8px;background:var(--surface);font-family:var(--f);color:var(--txt)}
+
+/* FLIGHT checklist overview compact */
+.fl-cl-ov-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.fl-cl-ov-row:last-child{border-bottom:none}
+.fl-cl-ov-row.done .fl-cl-ov-name{color:var(--txt3);text-decoration:line-through}
+.fl-cl-ov-name{flex:1;color:var(--txt)}
+.fl-cl-ov-qty{font-size:11px;color:var(--txt3);background:var(--s2);padding:1px 7px;border-radius:10px}
+
+/* FLIGHT weather overview */
+.fl-ov-wx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:8px}
+.fl-ov-wx-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px}
+.fl-ov-wx-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:4px}
+.fl-ov-wx-main{display:flex;align-items:center;gap:7px}
+.fl-ov-wx-temp{font-size:22px;font-weight:800;color:var(--txt)}
+.fl-ov-wx-detail{font-size:11px;color:var(--txt2);line-height:1.5}
+.fl-ov-fc-row{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid var(--bd);font-size:11px}
+.fl-ov-fc-row:last-child{border-bottom:none}
+.fl-ov-fc-day{min-width:50px;color:var(--txt3);font-weight:600;flex-shrink:0}
+.fl-ov-fc-emoji{width:18px;text-align:center;flex-shrink:0}
+.fl-ov-fc-temp{font-weight:700;color:var(--txt);flex:1}
+.fl-ov-fc-rain{color:var(--acc);font-size:10px}
+.fl-ov-wx-toggle{display:flex;gap:4px;margin-bottom:8px}
+.fl-ov-wx-toggle button{font-size:11px;padding:3px 10px;border-radius:12px;border:1px solid var(--bd);background:var(--surface);color:var(--txt2);cursor:pointer;font-family:var(--f)}
+.fl-ov-wx-toggle button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+/* FLIGHT sid/star pill */
+.fl-sid-pill{display:inline-block;background:#0f172a;color:#7dd3fc;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;font-family:monospace;margin:1px 2px}
+.fl-star-pill{display:inline-block;background:#1c1917;color:#fcd34d;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;font-family:monospace;margin:1px 2px}
+
+/* FLIGHT V26.40 additions */
+.fl-lb-badge-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.fl-lb-ap-badge{background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:1px 7px;border-radius:5px;font-family:monospace}
+.fl-lb-plan-badge{background:#f0fdf4;color:#15803d;font-size:10px;font-weight:700;padding:1px 7px;border-radius:5px}
+.fl-lb-edit-btn{background:var(--acc-l);color:var(--acc);border:1px solid var(--acc);border-radius:var(--r3);padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f);white-space:nowrap}
+.fl-lb-entry{position:relative}
+/* note favorite */
+.fl-note-fav{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;cursor:pointer;font-size:16px;flex-shrink:0}
+/* checklist category */
+.fl-cl-cat-hd{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--s2);border-top:1px solid var(--bd);cursor:pointer;user-select:none;font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px}
+.fl-cl-cat-hd:first-child{border-top:none}
+.fl-cl-cat-toggle{margin-left:auto;font-size:12px;color:var(--txt3)}
+.fl-cl-cat-body{overflow:hidden;transition:max-height .2s ease}
+/* logbook stat extended */
+.fl-lb-stat-grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-bottom:10px}
+/* map legend */
+.fl-map-legend{display:flex;gap:10px;flex-wrap:wrap;padding:8px 12px;background:rgba(255,255,255,.92);border-radius:var(--r2);margin-bottom:8px;font-size:11px;align-items:center}
+.fl-map-legend-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
+
 /* ─ ETF 추종 탭 전용 ─ */
 .etf-ops-item{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600}
 .etf-ops-sep{color:var(--bd);font-size:16px}
@@ -579,7 +665,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.38</span>
+      <span class="ver-badge">V26.40</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
@@ -1524,6 +1610,8 @@ tr:hover td{background:#f8fafc}
 
   <!-- sub: 개요 (메인 허브) -->
   <div class="flight-sub on" id="fsub-overview">
+    <!-- 현재 시각 카드 -->
+    <div class="fl-clock-grid" id="fl-ov-clock-grid" style="display:none"></div>
     <!-- 빠른 비행 입력 카드 -->
     <div class="fl-qi-card" id="fl-qi-card">
       <div id="fl-qi-body">
@@ -1542,21 +1630,31 @@ tr:hover td{background:#f8fafc}
     </div>
 
     <!-- KPI 그리드 -->
-    <div class="kpi-grid" id="flight-overview-kpi" style="margin-bottom:12px"></div>
+    <div class="kpi-grid" id="flight-overview-kpi" style="margin-bottom:10px"></div>
 
-    <!-- 날씨 요약 -->
+    <!-- 한 줄 타임라인 -->
+    <div class="card" id="flight-overview-htl-card" style="display:none">
+      <div class="sec-hd" style="margin-bottom:4px">
+        <div class="sec-hl"><span class="sec-t">🕐 출발 준비 타임라인</span></div>
+      </div>
+      <div class="fl-htl" id="flight-overview-htl"></div>
+    </div>
+
+    <!-- 날씨 섹션 -->
     <div class="card mt" id="flight-overview-wx-card" style="display:none">
-      <div class="sec-hd" style="margin-bottom:8px">
-        <div class="sec-hl"><span class="sec-t">⛅ 날씨 요약</span><span id="fl-ov-wx-status" style="font-size:11px;color:var(--txt3);margin-left:8px"></span></div>
-        <button class="btn bgh xs" onclick="swFlight('weather')">상세 →</button>
+      <div class="sec-hd" style="margin-bottom:6px">
+        <div class="sec-hl"><span class="sec-t">⛅ 날씨</span><span id="fl-ov-wx-status" style="font-size:11px;color:var(--txt3);margin-left:8px"></span></div>
+        <button class="btn bgh xs" onclick="swFlight('weather')">METAR/TAF →</button>
       </div>
       <div id="flight-overview-wx"></div>
     </div>
 
-    <!-- 출발 타임라인 -->
-    <div class="card mt" id="flight-overview-timeline-card" style="display:none">
-      <div class="sec-hd"><div class="sec-hl"><span class="sec-t">🕐 출발 타임라인</span></div></div>
-      <div id="flight-overview-timeline"></div>
+    <!-- NOTAM 섹션 -->
+    <div class="card mt" id="flight-overview-notam-card" style="display:none">
+      <div class="sec-hd" style="margin-bottom:6px">
+        <div class="sec-hl"><span class="sec-t">📋 NOTAM</span></div>
+      </div>
+      <div class="fl-notam-ov" id="flight-overview-notam"></div>
     </div>
 
     <!-- 시간대 비교 -->
@@ -1565,9 +1663,21 @@ tr:hover td{background:#f8fafc}
       <div id="flight-overview-tz"></div>
     </div>
 
+    <!-- 준비물 체크리스트 요약 -->
+    <div class="card mt" id="flight-overview-cl-card" style="display:none">
+      <div class="sec-hd" style="margin-bottom:6px">
+        <div class="sec-hl"><span class="sec-t">✅ 준비물</span><span id="fl-ov-cl-prog" style="font-size:11px;color:var(--txt3);margin-left:8px"></span></div>
+        <div style="display:flex;gap:4px">
+          <button class="btn bgh xs" onclick="flClCreateRunAndSwitch()">생성</button>
+          <button class="btn bgh xs" onclick="swFlight('checklist')">전체 →</button>
+        </div>
+      </div>
+      <div id="flight-overview-cl"></div>
+    </div>
+
     <!-- 관련 노트 요약 -->
     <div class="card mt" id="flight-overview-notes-card" style="display:none">
-      <div class="sec-hd" style="margin-bottom:8px">
+      <div class="sec-hd" style="margin-bottom:6px">
         <div class="sec-hl"><span class="sec-t">📝 관련 노트</span></div>
         <button class="btn bgh xs" onclick="swFlight('notes')">전체 →</button>
       </div>
@@ -1576,7 +1686,7 @@ tr:hover td{background:#f8fafc}
 
     <!-- 로그북 연동 상태 -->
     <div class="card mt" id="flight-overview-lb-card" style="display:none">
-      <div class="sec-hd" style="margin-bottom:8px">
+      <div class="sec-hd" style="margin-bottom:6px">
         <div class="sec-hl"><span class="sec-t">📖 로그북 연동</span><span id="fl-ov-lb-badge"></span></div>
         <button class="btn bp xs" onclick="flOvOpenLogbook()">＋ 로그 추가</button>
       </div>
@@ -1796,7 +1906,9 @@ tr:hover td{background:#f8fafc}
     </div>
     <!-- KPI -->
     <div class="fl-map-kpi" id="fl-map-kpi" style="margin-bottom:10px"></div>
-    <!-- 지도 -->
+    <!-- 지도 범례 -->
+    <div class="fl-map-legend" id="fl-map-legend" style="margin-bottom:8px"></div>
+    <!-- 지도 Canvas -->
     <div class="fl-map-wrap" id="fl-map-container">
       <canvas id="fl-map-canvas" style="width:100%;display:block"></canvas>
       <div class="fl-map-tooltip" id="fl-map-tooltip"></div>
@@ -1980,6 +2092,36 @@ tr:hover td{background:#f8fafc}
       </div>
       <div id="fllb-time-hints" style="font-size:11px;color:var(--acc);margin-top:4px;padding:4px 0"></div>
 
+      <div class="fl-sect-title">접근 / 활주로</div>
+      <div class="fl-mo-grid">
+        <div class="fg">
+          <label class="fl">접근 방식 (Approach Type)</label>
+          <select class="fsl" id="fllb-approachType">
+            <option value="">선택 안 함</option>
+            <option value="ILS">ILS</option>
+            <option value="LOC">LOC</option>
+            <option value="RNAV">RNAV (GNSS)</option>
+            <option value="RNP AR">RNP AR</option>
+            <option value="VOR">VOR</option>
+            <option value="NDB">NDB</option>
+            <option value="VISUAL">VISUAL</option>
+            <option value="OTHER">OTHER</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">접근 활주로</label>
+          <input type="text" class="fi" id="fllb-approachRunway" placeholder="예: 34L">
+        </div>
+        <div class="fg" id="fllb-detail-fields5">
+          <label class="fl">출발 활주로</label>
+          <input type="text" class="fi" id="fllb-depRunway" placeholder="예: 34L">
+        </div>
+        <div class="fg" id="fllb-detail-fields6">
+          <label class="fl">도착 활주로</label>
+          <input type="text" class="fi" id="fllb-arrRunway" placeholder="예: 10R">
+        </div>
+      </div>
+
       <div class="fl-sect-title">메모</div>
       <div class="fg">
         <textarea class="fl-note-ta" id="fllb-remarks" placeholder="비행 메모, 특이사항…"></textarea>
@@ -2117,63 +2259,52 @@ tr:hover td{background:#f8fafc}
           <label class="fl">편명 (예: KE001)</label>
           <input type="text" class="fi" id="flp-flightNumber" placeholder="KE001">
         </div>
+        <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:18px">
+          <input type="checkbox" id="flp-quickTurn" style="width:18px;height:18px;cursor:pointer" onchange="flpQuickTurnChange()">
+          <label for="flp-quickTurn" style="font-size:13px;font-weight:600;color:var(--txt2);cursor:pointer">⚡ Quick Turn (당일 왕복/당일치기)</label>
+        </div>
       </div>
 
-      <div class="fl-sect-title">출발지</div>
+      <div class="fl-sect-title">출발지 <span style="font-size:10px;font-weight:400;color:var(--txt3)">— ICAO 또는 IATA 입력 시 자동 보완</span></div>
       <div class="fl-mo-grid">
         <div class="fg">
-          <label class="fl">출발 공항 ICAO</label>
-          <input type="text" class="fi" id="flp-depIcao" placeholder="RKSI" maxlength="4" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+          <label class="fl">출발 공항 코드 <span class="req">*</span></label>
+          <input type="text" class="fi" id="flp-depCode" placeholder="RKSI 또는 ICN" maxlength="4"
+            style="text-transform:uppercase"
+            oninput="this.value=this.value.toUpperCase();flpResolve('dep')">
+          <div class="fl-ap-hint" id="flp-dep-hint"></div>
         </div>
         <div class="fg">
-          <label class="fl">출발 공항 IATA</label>
-          <input type="text" class="fi" id="flp-depIata" placeholder="ICN" maxlength="3" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
-        </div>
-        <div class="fg">
-          <label class="fl">출발 도시</label>
-          <input type="text" class="fi" id="flp-depCity" placeholder="Seoul">
-        </div>
-        <div class="fg">
-          <label class="fl">출발 국가</label>
-          <input type="text" class="fi" id="flp-depCountry" placeholder="KR">
-        </div>
-        <div class="fg sp2" style="grid-column:1/-1">
-          <label class="fl">출발지 타임존 <span class="req">*</span></label>
-          <input type="text" class="fi" id="flp-depTimezone" placeholder="Asia/Seoul">
-          <div class="fhint">IANA 타임존 ID (예: Asia/Seoul, Asia/Tokyo, Europe/Paris)</div>
-        </div>
-        <div class="fg sp2" style="grid-column:1/-1">
           <label class="fl">출발 현지 일시 <span class="req">*</span></label>
           <input type="datetime-local" class="fi" id="flp-depLocalDateTime">
         </div>
+        <!-- resolved hidden fields -->
+        <input type="hidden" id="flp-depIcao">
+        <input type="hidden" id="flp-depIata">
+        <input type="hidden" id="flp-depCity">
+        <input type="hidden" id="flp-depCountry">
+        <input type="hidden" id="flp-depTimezone">
       </div>
 
-      <div class="fl-sect-title">도착지</div>
+      <div class="fl-sect-title">도착지 <span style="font-size:10px;font-weight:400;color:var(--txt3)">— ICAO 또는 IATA 입력 시 자동 보완</span></div>
       <div class="fl-mo-grid">
         <div class="fg">
-          <label class="fl">도착 공항 ICAO</label>
-          <input type="text" class="fi" id="flp-arrIcao" placeholder="RJTT" maxlength="4" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+          <label class="fl">도착 공항 코드 <span class="req">*</span></label>
+          <input type="text" class="fi" id="flp-arrCode" placeholder="RJTT 또는 HND" maxlength="4"
+            style="text-transform:uppercase"
+            oninput="this.value=this.value.toUpperCase();flpResolve('arr')">
+          <div class="fl-ap-hint" id="flp-arr-hint"></div>
         </div>
         <div class="fg">
-          <label class="fl">도착 공항 IATA</label>
-          <input type="text" class="fi" id="flp-arrIata" placeholder="HND" maxlength="3" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
-        </div>
-        <div class="fg">
-          <label class="fl">도착 도시</label>
-          <input type="text" class="fi" id="flp-arrCity" placeholder="Tokyo">
-        </div>
-        <div class="fg">
-          <label class="fl">도착 국가</label>
-          <input type="text" class="fi" id="flp-arrCountry" placeholder="JP">
-        </div>
-        <div class="fg sp2" style="grid-column:1/-1">
-          <label class="fl">도착지 타임존 <span class="req">*</span></label>
-          <input type="text" class="fi" id="flp-arrTimezone" placeholder="Asia/Tokyo">
-        </div>
-        <div class="fg sp2" style="grid-column:1/-1">
           <label class="fl">도착 현지 일시</label>
           <input type="datetime-local" class="fi" id="flp-arrLocalDateTime">
         </div>
+        <!-- resolved hidden fields -->
+        <input type="hidden" id="flp-arrIcao">
+        <input type="hidden" id="flp-arrIata">
+        <input type="hidden" id="flp-arrCity">
+        <input type="hidden" id="flp-arrCountry">
+        <input type="hidden" id="flp-arrTimezone">
       </div>
 
       <div class="fl-sect-title">체류 정보</div>
@@ -2333,8 +2464,8 @@ tr:hover td{background:#f8fafc}
 
 <script>
 /* =============================================================
-   ELS Manager V26.38
-   §F  FLIGHT (V26.38: 개요 메인허브 / SID-STAR / 지도가독성)
+   ELS Manager V26.40
+   §F  FLIGHT (V26.40: 로그북확장·체크리스트·노트·지도마감)
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -2345,7 +2476,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.38';
+const VER = 'V26.40';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -3986,6 +4117,7 @@ function renderBackup(){
   const fd=getFlight();
   const flPlanCnt=fd.plans.length;
   const flTplCnt=fd.checklistTemplates.length;
+  const flRunCnt=(fd.checklistRuns||[]).length;
   const flLogCnt=fd.logbook.length;
   const flNoteCnt=Object.keys(fd.airportNotes||{}).length+Object.keys(fd.cityNotes||{}).length;
   const flCoordCnt=Object.keys(fd.airportCoords||{}).length;
@@ -4006,6 +4138,7 @@ function renderBackup(){
         ['GitHub Owner',gs.owner||'미설정'],
         ['✈️ 비행 계획',flPlanCnt+'개'],
         ['✈️ 체크리스트 템플릿',flTplCnt+'개'],
+        ['✈️ 체크리스트 run',flRunCnt+'개'],
         ['✈️ 로그북 항목',flLogCnt+'개'],
         ['✈️ 공항·도시 노트',flNoteCnt+'개'],
         flCoordCnt?['✈️ 사용자 공항 좌표',flCoordCnt+'개']:null,
@@ -5567,12 +5700,57 @@ function renderFlightSub(sub){
    FLIGHT §F5  개요 메인 허브 렌더
    ═══════════════════════════════════════════════════════ */
 
+/* FLIGHT - 개요 시각 카드 렌더 */
+/* FLIGHT */
+function _renderFlOvClocks(plan){
+  const el = document.getElementById('fl-ov-clock-grid');
+  if(!el) return;
+  if(!plan){ el.style.display='none'; return; }
+
+  const now = new Date();
+
+  function clockCard(lbl, tz, highlight, overrideStr){
+    let timeStr, dateStr;
+    try{
+      if(overrideStr){
+        const parts = overrideStr.split('T');
+        timeStr = parts[1] ? parts[1].slice(0,5) : '--:--';
+        dateStr = parts[0] ? parts[0].slice(5) : '';
+      } else {
+        timeStr = new Intl.DateTimeFormat('ko-KR',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(now);
+        dateStr = new Intl.DateTimeFormat('ko-KR',{timeZone:tz,month:'2-digit',day:'2-digit',weekday:'short'}).format(now);
+      }
+    }catch{ timeStr='--:--'; dateStr=''; }
+    return `<div class="fl-clock-card${highlight?' hl':''}">
+      <div class="fl-clock-lbl">${esc(lbl)}</div>
+      <div class="fl-clock-time">${timeStr}</div>
+      <div class="fl-clock-date">${dateStr}</div>
+    </div>`;
+  }
+
+  const kstTz = 'Asia/Seoul';
+  const depTz = plan.depTimezone||kstTz;
+  const arrTz = plan.arrTimezone||null;
+
+  const cards = [];
+  cards.push(clockCard('한국 (KST)', kstTz, false));
+  if(depTz && depTz !== kstTz) cards.push(clockCard(`출발지 ${plan.depCity||''}`.trim(), depTz, false));
+  if(arrTz && arrTz !== kstTz && arrTz !== depTz) cards.push(clockCard(`도착지 ${plan.arrCity||''}`.trim(), arrTz, true));
+  if(plan.depLocalDateTime) cards.push(clockCard('출발 예정', null, false, plan.depLocalDateTime));
+  if(plan.arrLocalDateTime) cards.push(clockCard('도착 예정', null, false, plan.arrLocalDateTime));
+
+  el.style.display = '';
+  el.innerHTML = cards.join('');
+}
+
 /* FLIGHT - 개요 메인 */
 /* FLIGHT */
 function renderFlightOverview(){
   const d = getFlight();
   const activePlan = d.plans.find(p=>p.id===d.activePlanId) || d.plans[0] || null;
-  const hasAnyData = d.plans.length||d.logbook.length||d.checklistTemplates.length;
+
+  // 현재 시각 카드
+  _renderFlOvClocks(activePlan);
 
   // 빠른 입력 카드
   _renderFlQiCard(activePlan, d);
@@ -5585,34 +5763,195 @@ function renderFlightOverview(){
   const kpiEl = document.getElementById('flight-overview-kpi');
   if(kpiEl){
     kpiEl.innerHTML = [
-      {lbl:'비행 계획', val:d.plans.length+'개', cls:'blue'},
-      {lbl:'로그북 항목', val:d.logbook.length+'개', cls:d.logbook.length?'green':''},
-      {lbl:'이번 달 Block', val:d.logbook.length?(_lbFmtMinLong(monthBlock)||'-'):'-', cls:''},
+      {lbl:'비행 계획',      val:d.plans.length+'개',              cls:'blue'},
+      {lbl:'로그북 항목',    val:d.logbook.length+'개',            cls:d.logbook.length?'green':''},
+      {lbl:'이번 달 Block',  val:d.logbook.length?(_lbFmtMinLong(monthBlock)||'-'):'-', cls:''},
       {lbl:'공항·도시 노트', val:(Object.keys(d.airportNotes).length+Object.keys(d.cityNotes||{}).length)+'개', cls:''},
     ].map(i=>`<div class="kpi-card"><div class="kpi-lbl">${i.lbl}</div><div class="kpi-val ${i.cls}" style="font-size:20px">${i.val}</div></div>`).join('');
   }
 
-  // 날씨 요약
+  // 한 줄 타임라인
+  _renderFlOvHtl(activePlan, d.settings);
+
+  // 날씨
   _renderFlOvWeather(activePlan, d.settings);
 
-  // 타임라인 / TZ 비교
-  const tlCard = document.getElementById('flight-overview-timeline-card');
+  // NOTAM
+  _renderFlOvNotam(activePlan, d.settings);
+
+  // TZ 비교
   const tzCard = document.getElementById('flight-overview-tz-card');
   if(activePlan && activePlan.depLocalDateTime){
     try{
-      if(tlCard){ tlCard.style.display=''; document.getElementById('flight-overview-timeline').innerHTML = flBuildTimeline(activePlan, d.settings); }
       if(tzCard){ tzCard.style.display=''; document.getElementById('flight-overview-tz').innerHTML = flBuildTzComparison(activePlan, d.settings); }
-    }catch(e){ if(tlCard) tlCard.style.display='none'; if(tzCard) tzCard.style.display='none'; }
+    }catch(e){ if(tzCard) tzCard.style.display='none'; }
   } else {
-    if(tlCard) tlCard.style.display='none';
     if(tzCard) tzCard.style.display='none';
   }
 
-  // 관련 노트 요약
+  // 준비물 요약
+  _renderFlOvChecklist(activePlan, d);
+
+  // 노트 요약
   _renderFlOvNotes(activePlan, d);
 
   // 로그북 연동 상태
   _renderFlOvLogbookStatus(activePlan, d);
+}
+
+
+/* FLIGHT - 한 줄 수평 타임라인 */
+/* FLIGHT */
+function _renderFlOvHtl(plan, settings){
+  const card = document.getElementById('flight-overview-htl-card');
+  const el   = document.getElementById('flight-overview-htl');
+  if(!card||!el) return;
+  if(!plan||!plan.depLocalDateTime||!plan.depTimezone){ card.style.display='none'; return; }
+  card.style.display='';
+
+  const s   = settings||{};
+  const tz  = plan.depTimezone;
+  const kstTz = 'Asia/Seoul';
+  const depUtc = flLocalToUtc(plan.depLocalDateTime, tz);
+  if(!depUtc){ el.innerHTML='<div style="font-size:12px;color:var(--r)">타임존 오류</div>'; return; }
+
+  const reportMin  = Number(s.reportOffsetMin)||150;
+  const leaveMin   = Number(s.leaveHomeOffsetMin)||80;
+  const wakeMin    = Number(s.wakeOffsetMin)||40;
+  const subwayLead = Number(s.subwayLeadOffsetMin)||20;
+  const subwayDur  = s.defaultSubwayDurationMin!=null ? Number(s.defaultSubwayDurationMin) : null;
+
+  const reportUtc = flAddMin(depUtc, -reportMin);
+  let items = [];
+
+  if(subwayDur!=null && subwayDur>0){
+    const subwayDepUtc = flAddMin(reportUtc, -subwayDur);
+    const leaveUtc     = flAddMin(subwayDepUtc, -subwayLead);
+    const wakeUtc      = flAddMin(leaveUtc, -wakeMin);
+    items = [
+      {cls:'wake',  em:'⏰', lbl:'기상',   utc:wakeUtc},
+      {cls:'leave', em:'🚶', lbl:'집출발', utc:leaveUtc},
+      {cls:'subway',em:'🚇', lbl:'지하철', utc:subwayDepUtc},
+      {cls:'report',em:'🛂', lbl:'보고',   utc:reportUtc},
+      {cls:'dep',   em:'✈️', lbl:'출발',   utc:depUtc},
+    ];
+  } else {
+    const leaveUtc = flAddMin(reportUtc, -leaveMin);
+    const wakeUtc  = flAddMin(leaveUtc, -wakeMin);
+    items = [
+      {cls:'wake',  em:'⏰', lbl:'기상',   utc:wakeUtc},
+      {cls:'leave', em:'🚗', lbl:'집출발', utc:leaveUtc},
+      {cls:'report',em:'🛂', lbl:'보고',   utc:reportUtc},
+      {cls:'dep',   em:'✈️', lbl:'출발',   utc:depUtc},
+    ];
+  }
+
+  try{
+    el.innerHTML = items.map(item=>{
+      const local = flTzFormat(item.utc, tz);
+      const kst   = tz===kstTz ? '' : flTzFormat(item.utc, kstTz);
+      return `<div class="fl-htl-item">
+        <div class="fl-htl-dot ${item.cls}">${item.em}</div>
+        <div class="fl-htl-lbl">${item.lbl}</div>
+        <div class="fl-htl-time">${local}</div>
+        ${kst?`<div class="fl-htl-kst">KST ${kst}</div>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){ el.innerHTML='<div style="font-size:12px;color:var(--r)">타임라인 오류</div>'; }
+}
+
+/* FLIGHT - NOTAM 개요 섹션 */
+/* FLIGHT */
+function _renderFlOvNotam(plan, settings){
+  const card = document.getElementById('flight-overview-notam-card');
+  const el   = document.getElementById('flight-overview-notam');
+  if(!card||!el) return;
+  if(!plan){ card.style.display='none'; return; }
+
+  const icaos=[];
+  if(plan.depIcao) icaos.push({icao:plan.depIcao, leg:'dep', label:'출발 '+plan.depIcao});
+  if(plan.arrIcao && plan.arrIcao!==plan.depIcao) icaos.push({icao:plan.arrIcao, leg:'arr', label:'도착 '+plan.arrIcao});
+  if(!icaos.length){ card.style.display='none'; return; }
+  card.style.display='';
+
+  const tmpl = (settings&&settings.customNotamSearchTemplate)||'';
+  const d    = getFlight();
+  const notamMemos = d.notamMemos||{};
+
+  el.innerHTML = icaos.map(({icao, leg, label})=>{
+    const isUS = /^K|^PA|^PH/.test(icao);
+    let linkUrl='';
+    if(isUS){
+      linkUrl=`https://notams.aim.faa.gov/notamSearch/nsapp.html#/?searchType=0&designatorsForLocation=${encodeURIComponent(icao)}`;
+    } else if(tmpl){
+      linkUrl=tmpl.replace('{ICAO}',icao).replace('{icao}',icao.toLowerCase());
+    } else {
+      linkUrl=`https://ourairports.com/airports/${encodeURIComponent(icao)}/notams.html`;
+    }
+    const memo = notamMemos[icao]||'';
+    return `<div class="fl-notam-ov-item">
+      <div class="fl-notam-ov-hd">
+        <span class="fl-notam-ov-icao">${esc(icao)}</span>
+        <span class="fl-notam-ov-label">${esc(label)}</span>
+        <div class="fl-notam-ov-btns">
+          <button class="btn bgh xs" onclick="flCopyIcao('${esc(icao)}')">📋 복사</button>
+          <a href="${esc(linkUrl)}" target="_blank" rel="noopener" class="btn bp xs" style="text-decoration:none">${isUS?'🔗 FAA':'🔗 NOTAM'}</a>
+        </div>
+      </div>
+      <div class="fl-notam-ov-memo">
+        <span style="font-size:10px;color:var(--txt3);flex-shrink:0">확인 메모:</span>
+        <input class="fl-notam-ov-memo-inp" id="fl-notam-memo-${esc(icao)}" value="${esc(memo)}"
+          placeholder="NOTAM 확인 내용 기록…"
+          onchange="flSaveNotamMemo('${esc(icao)}',this.value)">
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* FLIGHT - NOTAM 확인 메모 저장 */
+/* FLIGHT */
+function flSaveNotamMemo(icao, val){
+  const d = getFlight();
+  if(!d.notamMemos) d.notamMemos={};
+  d.notamMemos[icao] = val;
+  setFlight(d);
+}
+
+/* FLIGHT - 준비물 체크리스트 요약 (개요용) */
+/* FLIGHT */
+function _renderFlOvChecklist(plan, d){
+  const card   = document.getElementById('flight-overview-cl-card');
+  const el     = document.getElementById('flight-overview-cl');
+  const progEl = document.getElementById('fl-ov-cl-prog');
+  if(!card||!el) return;
+  if(!plan){ card.style.display='none'; return; }
+
+  const run = (d.checklistRuns||[]).find(r=>r.planId===plan.id);
+  if(!run||!run.items||!run.items.length){
+    card.style.display='';
+    el.innerHTML=`<div style="font-size:13px;color:var(--txt3)">Trip 체크리스트가 없습니다. '생성' 버튼을 눌러 시작하세요.</div>`;
+    if(progEl) progEl.textContent='';
+    return;
+  }
+  card.style.display='';
+
+  const total = run.items.length;
+  const chk   = run.items.filter(x=>x.checked).length;
+  const pct   = total ? Math.round(chk/total*100) : 0;
+  if(progEl) progEl.textContent=`${chk}/${total} (${pct}%)`;
+
+  // 미체크 항목 우선 + 최대 8개
+  const unchecked = run.items.filter(x=>!x.checked);
+  const show = [...unchecked, ...run.items.filter(x=>x.checked)].slice(0,8);
+
+  el.innerHTML=`
+    <div class="fl-cl-progress-wrap" style="margin-bottom:6px"><div class="fl-cl-progress-bar" style="width:${pct}%"></div></div>
+    ${show.map(it=>`<div class="fl-cl-ov-row ${it.checked?'done':''}">
+      <span>${it.checked?'✅':'⬜'}</span>
+      <span class="fl-cl-ov-name">${esc(it.name)}</span>
+      ${(it.recQty&&it.recQty>1)?`<span class="fl-cl-ov-qty">${it.qty||it.recQty}개</span>`:''}
+    </div>`).join('')}
+    ${run.items.length>8?`<div style="font-size:11px;color:var(--txt3);padding:4px 0 2px">… 외 ${run.items.length-8}개 더</div>`:''}`;
 }
 
 /* FLIGHT - 빠른 입력 카드 렌더 */
@@ -5627,17 +5966,17 @@ function _renderFlQiCard(plan, d){
       <div style="font-size:14px;font-weight:700;color:var(--acc);margin-bottom:10px">✈️ 빠른 비행 입력</div>
       <div class="fl-qi-route">
         <div class="fl-qi-leg">
-          <div class="fl-qi-label">출발 ICAO</div>
-          <input class="fl-qi-inp" id="fl-qi-dep-icao" placeholder="RKSI" maxlength="4" oninput="this.value=this.value.toUpperCase()">
-          <div class="fl-qi-sub">도시</div>
-          <input class="fl-qi-inp" id="fl-qi-dep-city" placeholder="Seoul" style="margin-top:4px;font-weight:400;font-size:12px">
+          <div class="fl-qi-label">출발 공항 (ICAO/IATA)</div>
+          <input class="fl-qi-inp" id="fl-qi-dep-icao" placeholder="RKSI 또는 ICN" maxlength="4"
+            oninput="this.value=this.value.toUpperCase();flQiResolve('dep')">
+          <div class="fl-ap-hint" id="fl-qi-dep-hint"></div>
         </div>
         <div class="fl-qi-sep">→</div>
         <div class="fl-qi-leg">
-          <div class="fl-qi-label">도착 ICAO</div>
-          <input class="fl-qi-inp" id="fl-qi-arr-icao" placeholder="RJTT" maxlength="4" oninput="this.value=this.value.toUpperCase()">
-          <div class="fl-qi-sub">도시</div>
-          <input class="fl-qi-inp" id="fl-qi-arr-city" placeholder="Tokyo" style="margin-top:4px;font-weight:400;font-size:12px">
+          <div class="fl-qi-label">도착 공항 (ICAO/IATA)</div>
+          <input class="fl-qi-inp" id="fl-qi-arr-icao" placeholder="RJTT 또는 HND" maxlength="4"
+            oninput="this.value=this.value.toUpperCase();flQiResolve('arr')">
+          <div class="fl-ap-hint" id="fl-qi-arr-hint"></div>
         </div>
       </div>
       <div class="fl-qi-meta">
@@ -5657,6 +5996,10 @@ function _renderFlQiCard(plan, d){
           <div class="fl-qi-label">도착 일시 (현지)</div>
           <input type="datetime-local" class="fl-qi-inp" id="fl-qi-arr-dt">
         </div>
+        <div class="fg" style="display:flex;align-items:center;gap:6px;padding-top:14px">
+          <input type="checkbox" id="fl-qi-quick-turn" style="width:16px;height:16px">
+          <label for="fl-qi-quick-turn" style="font-size:12px;color:var(--txt2);cursor:pointer">⚡ Quick Turn</label>
+        </div>
       </div>
       <div class="fl-qi-save-row">
         <button class="btn bgh sm" onclick="swFlight('plan')">전체 계획 탭 →</button>
@@ -5666,26 +6009,30 @@ function _renderFlQiCard(plan, d){
   }
 
   // 계획 있음 → 편집 모드
+  const qtBadge = plan.quickTurn ? `<span class="fl-qt-badge">⚡ Quick Turn</span>` : '';
   el.innerHTML=`
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
       <span style="font-size:14px;font-weight:700;color:var(--acc)">✈️ 활성 비행</span>
       <span class="badge bbl">${esc(plan.flightNumber||'편명없음')}</span>
+      ${qtBadge}
       <span style="font-size:12px;color:var(--txt3)">${esc(plan.tripDate||'')}</span>
       <button class="btn bgh xs" onclick="swFlight('plan')" style="margin-left:auto">전체 계획 →</button>
     </div>
     <div class="fl-qi-route">
       <div class="fl-qi-leg">
-        <div class="fl-qi-label">출발 ICAO</div>
-        <input class="fl-qi-inp" id="fl-qi-dep-icao" placeholder="RKSI" maxlength="4" value="${esc(plan.depIcao||'')}" oninput="this.value=this.value.toUpperCase()">
-        <div class="fl-qi-sub">도시</div>
-        <input class="fl-qi-inp" id="fl-qi-dep-city" placeholder="Seoul" value="${esc(plan.depCity||'')}" style="margin-top:4px;font-weight:400;font-size:12px">
+        <div class="fl-qi-label">출발 공항 (ICAO/IATA)</div>
+        <input class="fl-qi-inp" id="fl-qi-dep-icao" placeholder="RKSI 또는 ICN" maxlength="4"
+          value="${esc(plan.depIcao||plan.depIata||'')}"
+          oninput="this.value=this.value.toUpperCase();flQiResolve('dep')">
+        <div class="fl-ap-hint" id="fl-qi-dep-hint">${plan.depCity?'✓ '+esc(plan.depCity)+(plan.depTimezone?' · '+esc(plan.depTimezone):''):''}</div>
       </div>
       <div class="fl-qi-sep">→</div>
       <div class="fl-qi-leg">
-        <div class="fl-qi-label">도착 ICAO</div>
-        <input class="fl-qi-inp" id="fl-qi-arr-icao" placeholder="RJTT" maxlength="4" value="${esc(plan.arrIcao||'')}" oninput="this.value=this.value.toUpperCase()">
-        <div class="fl-qi-sub">도시</div>
-        <input class="fl-qi-inp" id="fl-qi-arr-city" placeholder="Tokyo" value="${esc(plan.arrCity||'')}" style="margin-top:4px;font-weight:400;font-size:12px">
+        <div class="fl-qi-label">도착 공항 (ICAO/IATA)</div>
+        <input class="fl-qi-inp" id="fl-qi-arr-icao" placeholder="RJTT 또는 HND" maxlength="4"
+          value="${esc(plan.arrIcao||plan.arrIata||'')}"
+          oninput="this.value=this.value.toUpperCase();flQiResolve('arr')">
+        <div class="fl-ap-hint" id="fl-qi-arr-hint">${plan.arrCity?'✓ '+esc(plan.arrCity)+(plan.arrTimezone?' · '+esc(plan.arrTimezone):''):''}</div>
       </div>
     </div>
     <div class="fl-qi-meta">
@@ -5697,13 +6044,9 @@ function _renderFlQiCard(plan, d){
         <div class="fl-qi-label">도착 일시 (현지)</div>
         <input type="datetime-local" class="fl-qi-inp" id="fl-qi-arr-dt" value="${esc(plan.arrLocalDateTime||'')}">
       </div>
-      <div class="fg">
-        <div class="fl-qi-label">출발 타임존</div>
-        <input class="fl-qi-inp" id="fl-qi-dep-tz" placeholder="Asia/Seoul" value="${esc(plan.depTimezone||'')}" style="font-size:11px">
-      </div>
-      <div class="fg">
-        <div class="fl-qi-label">도착 타임존</div>
-        <input class="fl-qi-inp" id="fl-qi-arr-tz" placeholder="Asia/Tokyo" value="${esc(plan.arrTimezone||'')}" style="font-size:11px">
+      <div class="fg" style="display:flex;align-items:center;gap:6px;padding-top:14px">
+        <input type="checkbox" id="fl-qi-quick-turn" ${plan.quickTurn?'checked':''} style="width:16px;height:16px">
+        <label for="fl-qi-quick-turn" style="font-size:12px;color:var(--txt2);cursor:pointer">⚡ Quick Turn</label>
       </div>
     </div>
     <div class="fl-qi-save-row">
@@ -5712,20 +6055,38 @@ function _renderFlQiCard(plan, d){
     </div>`;
 }
 
+/* FLIGHT - QI 카드에서 공항 코드 resolve + hint 표시 */
+/* FLIGHT */
+function flQiResolve(leg){
+  const codeEl = document.getElementById('fl-qi-'+(leg==='dep'?'dep':'arr')+'-icao');
+  const hintEl = document.getElementById('fl-qi-'+(leg==='dep'?'dep':'arr')+'-hint');
+  const code   = codeEl ? codeEl.value.trim() : '';
+  const ap     = flLookupAirport(code);
+  if(!ap){
+    if(hintEl){ hintEl.textContent = code.length>=3 ? '알 수 없는 공항' : ''; hintEl.className='fl-ap-hint err'; }
+    return;
+  }
+  if(hintEl){ hintEl.textContent = `✓ ${ap.name}  (${ap.city} · ${ap.timezone})`; hintEl.className='fl-ap-hint'; }
+}
+
+
 /* FLIGHT - 빠른 계획 생성 */
 /* FLIGHT */
 function flQiCreatePlan(){
   const g = id=>document.getElementById(id)?.value.trim()||'';
-  const depIcao = g('fl-qi-dep-icao');
-  const arrIcao = g('fl-qi-arr-icao');
-  const depCity = g('fl-qi-dep-city');
-  const arrCity = g('fl-qi-arr-city');
-  const depDt   = g('fl-qi-dep-dt');
-  const arrDt   = g('fl-qi-arr-dt');
-  const date    = g('fl-qi-date');
-  const fnum    = g('fl-qi-fnum');
-  if(!depIcao && !depCity){ toast('출발 공항 또는 도시를 입력하세요.','err'); return; }
-  if(!arrIcao && !arrCity){ toast('도착 공항 또는 도시를 입력하세요.','err'); return; }
+  const depCode = g('fl-qi-dep-icao');
+  const arrCode = g('fl-qi-arr-icao');
+  if(!depCode){ toast('출발 공항을 입력하세요.','err'); return; }
+  if(!arrCode){ toast('도착 공항을 입력하세요.','err'); return; }
+
+  const depAp = flLookupAirport(depCode) || {};
+  const arrAp = flLookupAirport(arrCode) || {};
+  const quickTurn = document.getElementById('fl-qi-quick-turn')?.checked||false;
+  const date   = g('fl-qi-date');
+  const fnum   = g('fl-qi-fnum');
+  const depDt  = g('fl-qi-dep-dt');
+  const arrDt  = g('fl-qi-arr-dt');
+
   const d = getFlight();
   const s = d.settings;
   const now = new Date().toISOString();
@@ -5734,19 +6095,27 @@ function flQiCreatePlan(){
     id:planId, createdAt:now, updatedAt:now,
     tripDate: date||today(),
     flightNumber: fnum,
-    depIcao, depIata:'', depCity, depCountry:'', depTimezone: s.homeTimezone||'Asia/Seoul',
-    arrIcao, arrIata:'', arrCity, arrCountry:'', arrTimezone:'',
+    quickTurn,
+    depIcao:     depAp.icao||depCode, depIata: depAp.iata||'',
+    depCity:     depAp.city||'',      depCountry: depAp.country||'',
+    depTimezone: depAp.timezone||s.homeTimezone||'Asia/Seoul',
+    arrIcao:     arrAp.icao||arrCode, arrIata: arrAp.iata||'',
+    arrCity:     arrAp.city||'',      arrCountry: arrAp.country||'',
+    arrTimezone: arrAp.timezone||'',
     depLocalDateTime: depDt, depUtcDateTime:'',
     arrLocalDateTime: arrDt, arrUtcDateTime:'',
-    layoverNights: null, layoverNightsManualOverride: null,
+    layoverNights: quickTurn?0:null, layoverNightsManualOverride: null,
     hotelName:'', breakfastStartLocal:'', breakfastEndLocal:'',
     memo:'', prepMemo:'', postMemo:'',
   };
+  if(depDt && depAp.timezone) try{ plan.depUtcDateTime=flLocalToUtc(depDt,depAp.timezone)?.toISOString()||''; }catch{}
+  if(arrDt && arrAp.timezone) try{ plan.arrUtcDateTime=flLocalToUtc(arrDt,arrAp.timezone)?.toISOString()||''; }catch{}
+
   d.plans.push(plan);
   d.activePlanId = planId;
   setFlight(d);
   renderFlightOverview();
-  toast('비행 계획이 생성됐습니다. 상세 편집으로 추가 정보를 채우세요.','ok');
+  toast('비행 계획이 생성됐습니다.','ok');
 }
 
 /* FLIGHT - 빠른 입력 카드에서 active plan 즉시 저장 */
@@ -5756,24 +6125,40 @@ function flQiSavePlan(planId){
   const d = getFlight();
   const plan = d.plans.find(x=>x.id===planId);
   if(!plan) return;
-  plan.depIcao          = g('fl-qi-dep-icao');
-  plan.depCity          = g('fl-qi-dep-city');
-  plan.arrIcao          = g('fl-qi-arr-icao');
-  plan.arrCity          = g('fl-qi-arr-city');
-  plan.depLocalDateTime = g('fl-qi-dep-dt');
-  plan.arrLocalDateTime = g('fl-qi-arr-dt');
-  plan.depTimezone      = g('fl-qi-dep-tz') || plan.depTimezone;
-  plan.arrTimezone      = g('fl-qi-arr-tz') || plan.arrTimezone;
-  plan.updatedAt        = new Date().toISOString();
-  // UTC 재계산
+
+  const depCode = g('fl-qi-dep-icao');
+  const arrCode = g('fl-qi-arr-icao');
+  const depAp   = depCode ? (flLookupAirport(depCode)||{}) : null;
+  const arrAp   = arrCode ? (flLookupAirport(arrCode)||{}) : null;
+
+  if(depAp && depAp.icao){
+    plan.depIcao=depAp.icao; plan.depIata=depAp.iata||'';
+    plan.depCity=depAp.city||''; plan.depCountry=depAp.country||'';
+    plan.depTimezone=depAp.timezone||plan.depTimezone;
+  } else if(depCode){ plan.depIcao=depCode; }
+
+  if(arrAp && arrAp.icao){
+    plan.arrIcao=arrAp.icao; plan.arrIata=arrAp.iata||'';
+    plan.arrCity=arrAp.city||''; plan.arrCountry=arrAp.country||'';
+    plan.arrTimezone=arrAp.timezone||plan.arrTimezone;
+  } else if(arrCode){ plan.arrIcao=arrCode; }
+
+  plan.depLocalDateTime = g('fl-qi-dep-dt')||plan.depLocalDateTime;
+  plan.arrLocalDateTime = g('fl-qi-arr-dt')||plan.arrLocalDateTime;
+  plan.quickTurn        = document.getElementById('fl-qi-quick-turn')?.checked||false;
+  if(plan.quickTurn) plan.layoverNights=0;
+  plan.updatedAt = new Date().toISOString();
+
   if(plan.depLocalDateTime && plan.depTimezone)
-    plan.depUtcDateTime = flLocalToUtc(plan.depLocalDateTime, plan.depTimezone)?.toISOString()||'';
+    try{ plan.depUtcDateTime=flLocalToUtc(plan.depLocalDateTime,plan.depTimezone)?.toISOString()||''; }catch{}
   if(plan.arrLocalDateTime && plan.arrTimezone)
-    plan.arrUtcDateTime = flLocalToUtc(plan.arrLocalDateTime, plan.arrTimezone)?.toISOString()||'';
+    try{ plan.arrUtcDateTime=flLocalToUtc(plan.arrLocalDateTime,plan.arrTimezone)?.toISOString()||''; }catch{}
+
   setFlight(d);
   renderFlightOverview();
   toast('저장됐습니다.','ok');
 }
+
 
 /* FLIGHT - 개요 날씨 compact 렌더 */
 /* FLIGHT */
@@ -5783,34 +6168,36 @@ function _renderFlOvWeather(plan, settings){
   const statEl = document.getElementById('fl-ov-wx-status');
   if(!wxCard||!wxEl) return;
 
-  // cache 없고 plan도 없으면 숨김
-  const hasPlan = plan && (plan.arrIcao || plan.arrCity || plan.depIcao || plan.depCity);
-  if(!hasPlan && !Object.keys(_wxCache).length){ wxCard.style.display='none'; return; }
+  const hasPlan = plan && (plan.arrIcao||plan.arrIata||plan.arrCity||plan.depIcao||plan.depIata||plan.depCity);
+  const cacheKeys = Object.keys(_wxCache);
+  if(!hasPlan && !cacheKeys.length){ wxCard.style.display='none'; return; }
   wxCard.style.display='';
 
+  const depData = _wxCache['dep']||null;
   const arrData = _wxCache['arr']||null;
   const kstData = _wxCache['kst']||null;
-  const depData = _wxCache['dep']||null;
 
-  if(!arrData && !kstData){
-    wxEl.innerHTML=`<div style="font-size:13px;color:var(--txt3);padding:6px 0">
-      🔄 날씨 새로고침 버튼을 눌러 현재 날씨를 불러오세요.
-    </div>`;
+  if(!depData && !arrData && !kstData){
+    wxEl.innerHTML=`<div style="font-size:13px;color:var(--txt3);padding:6px 0">🔄 날씨 새로고침 버튼을 눌러 현재 날씨를 불러오세요.</div>`;
     if(statEl) statEl.textContent='(미조회)';
     return;
   }
 
-  const fetchedAt = (arrData||kstData)?.fetchedAt;
+  // 최신 fetch 시각
+  const fetchedAt = (arrData||depData||kstData)?.fetchedAt;
   if(statEl&&fetchedAt) statEl.textContent = fetchedAt.slice(11,16)+' UTC 기준';
 
-  function compactNowCard(label, data){
-    if(!data?.current) return '';
+  // 현재 날씨 compact 카드
+  function nowCard(lbl, data){
+    if(!data) return '';
+    if(data.err) return `<div class="fl-ov-wx-card"><div class="fl-ov-wx-lbl">${esc(lbl)}</div><div style="font-size:11px;color:var(--r)">${esc(data.err)}</div></div>`;
+    if(!data.current) return '';
     const cur = data.current;
     const {emoji} = _wxCode(cur.weather_code);
     return `<div class="fl-ov-wx-card">
-      <div class="fl-ov-wx-lbl">${esc(label)}</div>
+      <div class="fl-ov-wx-lbl">${esc(lbl)}</div>
       <div class="fl-ov-wx-main">
-        <span style="font-size:24px">${emoji}</span>
+        <span style="font-size:22px">${emoji}</span>
         <span class="fl-ov-wx-temp">${Math.round(cur.temperature_2m)}°</span>
         <div class="fl-ov-wx-detail">
           <div>체감 ${Math.round(cur.apparent_temperature)}°</div>
@@ -5820,76 +6207,139 @@ function _renderFlOvWeather(plan, settings){
     </div>`;
   }
 
-  function compactForecast(data){
+  // 예보 compact (일수 제한)
+  function fcCard(lbl, data, days){
     if(!data?.forecast?.daily) return '';
     const daily = data.forecast.daily;
-    const rows = (daily.time||[]).slice(0,3).map((dt,i)=>{
-      const mx = daily.temperature_2m_max?.[i];
-      const mn = daily.temperature_2m_min?.[i];
-      const pcp= daily.precipitation_probability_max?.[i];
+    const rows = (daily.time||[]).slice(0, days||3).map((dt,i)=>{
+      const mx  = daily.temperature_2m_max?.[i];
+      const mn  = daily.temperature_2m_min?.[i];
+      const pcp = daily.precipitation_probability_max?.[i];
       const {emoji} = _wxCode(daily.weather_code?.[i]);
       return `<div class="fl-ov-fc-row">
         <div class="fl-ov-fc-day">${_dayLabel(dt).slice(0,8)}</div>
         <div class="fl-ov-fc-emoji">${emoji}</div>
-        <div class="fl-ov-fc-temp">${mx!=null?Math.round(mx)+'°':'-'}/${mn!=null?Math.round(mn)+'°':'-'}</div>
+        <div class="fl-ov-fc-temp">${mx!=null?Math.round(mx)+'°':'-'}/${mn!=null?Math.round(mn)+'°':'-'}${_clothingBadge(mx)}</div>
         ${pcp!=null?`<div class="fl-ov-fc-rain">💧${pcp}%</div>`:''}
       </div>`;
     }).join('');
     return `<div class="fl-ov-wx-card" style="grid-column:1/-1">
-      <div class="fl-ov-wx-lbl">3일 예보 (도착지)</div>
-      ${rows}
+      <div class="fl-ov-wx-lbl">${esc(lbl)} 예보</div>${rows}
     </div>`;
   }
 
-  const depLabel = plan ? `출발지 ${plan.depCity||plan.depIcao||''}` : '출발지';
-  const arrLabel = plan ? `도착지 ${plan.arrCity||plan.arrIcao||''}` : '도착지';
+  // 기온 차이
+  const deltaStr = (arrData?.current&&kstData?.current)
+    ? (()=>{const d=Math.round(arrData.current.temperature_2m - kstData.current.temperature_2m); return (d>0?'+':'')+d+'°C';})()+' vs 서울'
+    : '';
 
-  wxEl.innerHTML = `<div class="fl-ov-wx-grid">
-    ${compactNowCard(depLabel, depData||arrData)}
-    ${compactNowCard(arrLabel, arrData)}
-    ${compactNowCard('서울 (한국)', kstData)}
-    ${compactForecast(arrData)}
+  const depLabel = plan ? `출발지 ${plan.depCity||plan.depIcao||''}`.trim() : '출발지';
+  const arrLabel = plan ? `도착지 ${plan.arrCity||plan.arrIcao||''}`.trim() : '도착지';
+
+  // 토글 상태 (wx-days: 1=오늘, 3=3일, 5=5일)
+  const days = window._flWxDays || 3;
+  const toggleHtml = `<div class="fl-ov-wx-toggle">
+    <button class="${days===1?'on':''}" onclick="flOvWxSetDays(1)">오늘</button>
+    <button class="${days===3?'on':''}" onclick="flOvWxSetDays(3)">3일</button>
+    <button class="${days===5?'on':''}" onclick="flOvWxSetDays(5)">5일</button>
+    ${deltaStr?`<span style="margin-left:auto;font-size:11px;color:var(--txt3)">${esc(deltaStr)}</span>`:''}
+  </div>`;
+
+  wxEl.innerHTML = toggleHtml + `<div class="fl-ov-wx-grid">
+    ${nowCard(depLabel, depData)}
+    ${nowCard(arrLabel, arrData)}
+    ${nowCard('서울 (KST)', kstData)}
+    ${fcCard(arrLabel, arrData, days)}
   </div>`;
 }
 
-/* FLIGHT - 개요에서 날씨 fetch 트리거 */
+/* FLIGHT - 날씨 토글 일수 변경 */
+/* FLIGHT */
+function flOvWxSetDays(n){
+  window._flWxDays = n;
+  const d = getFlight();
+  const plan = d.plans.find(p=>p.id===d.activePlanId)||d.plans[0]||null;
+  _renderFlOvWeather(plan, d.settings);
+}
+
 /* FLIGHT */
 async function flOvFetchWx(){
   const d = getFlight();
   const plan = d.plans.find(p=>p.id===d.activePlanId)||d.plans[0]||null;
   if(!plan){ toast('활성 비행 계획이 없습니다.','warn'); return; }
-
-  const statEl = document.getElementById('fl-ov-wx-status');
-  if(statEl) statEl.textContent='불러오는 중…';
-
-  // 기존 fetchAllWeather 로직 재사용
   if(_wxFetching){ toast('날씨를 불러오는 중입니다.','warn'); return; }
   _wxFetching = true;
+
+  const statEl = document.getElementById('fl-ov-wx-status');
+  if(statEl) statEl.textContent = '불러오는 중…';
+
   try{
-    // dep 좌표
-    let depGeo = null;
-    if(plan.depCity) depGeo = await _flGeocode(plan.depCity);
-    let arrGeo = null;
-    if(plan.arrCity) arrGeo = await _flGeocode(plan.arrCity);
     const kstGeo = {lat:37.5665, lon:126.9780, name:'Seoul'};
 
+    // 공항 registry 우선 → IATA fallback → city geocoding
+    async function resolveGeo(icao, iata, city, label){
+      let ap = flLookupAirport(icao) || flLookupAirport(iata) || null;
+      if(ap) return {lat:ap.lat, lon:ap.lon, name:ap.city||ap.name, src:'registry'};
+      if(city){
+        try{
+          const g = await _flGeocode(city);
+          if(g) return {...g, src:'geocode'};
+        }catch{}
+      }
+      return null;
+    }
+
+    const [depGeo, arrGeo] = await Promise.all([
+      resolveGeo(plan.depIcao, plan.depIata, plan.depCity, '출발지'),
+      resolveGeo(plan.arrIcao, plan.arrIata, plan.arrCity, '도착지'),
+    ]);
+
     const promises = [];
-    if(depGeo) promises.push(_flFetchOpenMeteo(depGeo.lat, depGeo.lon).then(j=>({key:'dep',j,geo:depGeo})).catch(e=>({key:'dep',err:e})));
-    if(arrGeo) promises.push(_flFetchOpenMeteo(arrGeo.lat, arrGeo.lon).then(j=>({key:'arr',j,geo:arrGeo})).catch(e=>({key:'arr',err:e})));
-    promises.push(_flFetchOpenMeteo(kstGeo.lat,kstGeo.lon).then(j=>({key:'kst',j,geo:kstGeo})).catch(e=>({key:'kst',err:e})));
+    if(depGeo) promises.push(
+      _flFetchOpenMeteo(depGeo.lat, depGeo.lon)
+        .then(j=>({key:'dep',j,geo:depGeo}))
+        .catch(e=>({key:'dep',err:'fetch:'+e.message}))
+    );
+    if(arrGeo) promises.push(
+      _flFetchOpenMeteo(arrGeo.lat, arrGeo.lon)
+        .then(j=>({key:'arr',j,geo:arrGeo}))
+        .catch(e=>({key:'arr',err:'fetch:'+e.message}))
+    );
+    promises.push(
+      _flFetchOpenMeteo(kstGeo.lat, kstGeo.lon)
+        .then(j=>({key:'kst',j,geo:kstGeo}))
+        .catch(e=>({key:'kst',err:'fetch:'+e.message}))
+    );
 
     const now2 = new Date().toISOString();
     const results = await Promise.all(promises);
     results.forEach(res=>{
-      if(res.err){ _wxCache[res.key]=null; return; }
-      _wxCache[res.key]={current:res.j.current,forecast:res.j,fetchedAt:now2,geo:res.geo};
+      if(res.err){ _wxCache[res.key]={err:res.err, fetchedAt:now2}; return; }
+      _wxCache[res.key] = {current:res.j.current, forecast:res.j, fetchedAt:now2, geo:res.geo};
     });
+
     _renderFlOvWeather(plan, d.settings);
+    if(curFlightSub==='weather') renderFlightWeather();
     toast('날씨 업데이트 완료','ok');
   }catch(e){
     toast('날씨 오류: '+e.message,'err');
-    if(statEl) statEl.textContent='오류';
-  }finally{ _wxFetching=false; }
+    if(statEl) statEl.textContent = '오류: '+e.message;
+  }finally{ _wxFetching = false; }
+}
+
+
+
+/* FLIGHT - 노트 즐겨찾기 토글 */
+/* FLIGHT */
+function flToggleNoteFav(type, key){
+  const d = getFlight();
+  const store = type==='airport' ? d.airportNotes : (d.cityNotes||{});
+  if(!store[key]) return;
+  store[key].starred = !store[key].starred;
+  if(type==='airport') d.airportNotes=store; else d.cityNotes=store;
+  setFlight(d);
+  renderFlightNotes();
+  if(curFlightSub==='overview') _renderFlOvNotes(d.plans.find(p=>p.id===d.activePlanId)||null, d);
 }
 
 /* FLIGHT - 개요 노트 요약 렌더 */
@@ -5914,6 +6364,8 @@ function _renderFlOvNotes(plan, d){
 
   if(!relevant.length){ card.style.display='none'; return; }
   card.style.display='';
+  // starred 우선
+  relevant.sort((a,b)=>(b.data.starred?1:0)-(a.data.starred?1:0));
 
   el.innerHTML = relevant.map(({type,key,data})=>{
     const icon = type==='airport'?'🛬':'🏙';
@@ -6232,107 +6684,157 @@ function openFlightPlanModal(id){
   const title = document.getElementById('fl-plan-modal-title');
   if(title) title.textContent = id ? '✈️ 비행 계획 수정' : '✈️ 비행 계획 추가';
 
-  const fields = ['tripDate','flightNumber','depIcao','depIata','depCity','depCountry','depTimezone',
-                  'depLocalDateTime','arrIcao','arrIata','arrCity','arrCountry','arrTimezone',
-                  'arrLocalDateTime','hotelName','breakfastStartLocal','breakfastEndLocal',
-                  'memo','prepMemo','postMemo'];
+  const g = (fid, val) => { const el=document.getElementById(fid); if(el) el.value = val!=null ? val : ''; };
+  const resetHints = () => {
+    ['dep','arr'].forEach(leg=>{
+      const h=document.getElementById(`flp-${leg}-hint`); if(h){h.textContent='';h.className='fl-ap-hint';}
+    });
+  };
 
   if(id){
     const d = getFlight();
     const p = d.plans.find(x=>x.id===id);
     if(!p) return;
-    fields.forEach(f=>{
-      const el=document.getElementById('flp-'+f);
-      if(el) el.value = p[f]!=null ? p[f] : '';
-    });
-    // layoverNights: 수동 override 값
-    const lnEl = document.getElementById('flp-layoverNights');
-    if(lnEl) lnEl.value = p.layoverNightsManualOverride!=null ? p.layoverNightsManualOverride : '';
+    g('flp-tripDate',           p.tripDate||'');
+    g('flp-flightNumber',       p.flightNumber||'');
+    g('flp-depLocalDateTime',   p.depLocalDateTime||'');
+    g('flp-arrLocalDateTime',   p.arrLocalDateTime||'');
+    g('flp-layoverNights',      p.layoverNightsManualOverride!=null ? p.layoverNightsManualOverride : '');
+    g('flp-hotelName',          p.hotelName||'');
+    g('flp-breakfastStartLocal',p.breakfastStartLocal||'');
+    g('flp-breakfastEndLocal',  p.breakfastEndLocal||'');
+    g('flp-memo',               p.memo||'');
+    g('flp-prepMemo',           p.prepMemo||'');
+    g('flp-postMemo',           p.postMemo||'');
+
+    // quickTurn
+    const qtEl = document.getElementById('flp-quickTurn');
+    if(qtEl) qtEl.checked = p.quickTurn||false;
+
+    // dep 코드 칸에 ICAO 기본으로 표시, hidden 채우기
+    const depCode = p.depIcao || p.depIata || '';
+    g('flp-depCode', depCode);
+    g('flp-depIcao', p.depIcao||''); g('flp-depIata', p.depIata||'');
+    g('flp-depCity', p.depCity||''); g('flp-depCountry', p.depCountry||'');
+    g('flp-depTimezone', p.depTimezone||'');
+    if(depCode){
+      const ap = flLookupAirport(depCode);
+      const dh = document.getElementById('flp-dep-hint');
+      if(dh){ dh.textContent = ap ? `✓ ${ap.name}  (${ap.city} · ${ap.timezone})` : `${depCode} — 직접 입력됨`; dh.className='fl-ap-hint'; }
+    }
+
+    const arrCode = p.arrIcao || p.arrIata || '';
+    g('flp-arrCode', arrCode);
+    g('flp-arrIcao', p.arrIcao||''); g('flp-arrIata', p.arrIata||'');
+    g('flp-arrCity', p.arrCity||''); g('flp-arrCountry', p.arrCountry||'');
+    g('flp-arrTimezone', p.arrTimezone||'');
+    if(arrCode){
+      const ap = flLookupAirport(arrCode);
+      const ah = document.getElementById('flp-arr-hint');
+      if(ah){ ah.textContent = ap ? `✓ ${ap.name}  (${ap.city} · ${ap.timezone})` : `${arrCode} — 직접 입력됨`; ah.className='fl-ap-hint'; }
+    }
   } else {
-    fields.forEach(f=>{ const el=document.getElementById('flp-'+f); if(el) el.value=''; });
-    // 기본값: 홈 타임존
+    // 새 계획 — 기본값
+    ['flp-tripDate','flp-flightNumber','flp-depCode','flp-arrCode',
+     'flp-depLocalDateTime','flp-arrLocalDateTime','flp-layoverNights',
+     'flp-hotelName','flp-breakfastStartLocal','flp-breakfastEndLocal',
+     'flp-memo','flp-prepMemo','flp-postMemo',
+     'flp-depIcao','flp-depIata','flp-depCity','flp-depCountry','flp-depTimezone',
+     'flp-arrIcao','flp-arrIata','flp-arrCity','flp-arrCountry','flp-arrTimezone',
+    ].forEach(fid=>{ const el=document.getElementById(fid); if(el) el.value=''; });
+    const qtEl = document.getElementById('flp-quickTurn');
+    if(qtEl) qtEl.checked = false;
+    resetHints();
+    // 홈 공항 기본값
     const d = getFlight();
-    const tzEl = document.getElementById('flp-depTimezone');
-    if(tzEl) tzEl.value = d.settings.homeTimezone||'Asia/Seoul';
-    const lnEl = document.getElementById('flp-layoverNights');
-    if(lnEl) lnEl.value = '';
+    const homeIcao = d.settings.homeAirportIcao || 'RKSI';
+    g('flp-depCode', homeIcao);
+    flpResolve('dep');
   }
   om('mo-flight-plan');
 }
 
+
 /* FLIGHT */
 function saveFlightPlan(){
-  const g = id => { const el=document.getElementById('flp-'+id); return el?el.value.trim():''; };
+  const g  = id => { const el=document.getElementById(id); return el?(el.value||'').trim():''; };
   const gn = id => { const v=Number(g(id)); return (g(id)===''||isNaN(v))?null:v; };
 
-  const tripDate = g('tripDate');
-  const depTz    = g('depTimezone');
-  const depLoc   = g('depLocalDateTime');
+  // 코드 resolve (입력 중이었을 수 있으니 한 번 더)
+  if(g('flp-depCode')) flpResolve('dep');
+  if(g('flp-arrCode')) flpResolve('arr');
+
+  const depLoc = g('flp-depLocalDateTime');
   if(!depLoc){ toast('출발 현지 일시를 입력하세요.','err'); return; }
-  if(!depTz){  toast('출발지 타임존을 입력하세요.','err');  return; }
 
-  const arrLoc = g('arrLocalDateTime');
-  const arrTz  = g('arrTimezone');
+  // hidden 에서 읽기
+  const depIcao    = g('flp-depIcao')    || g('flp-depCode');
+  const depIata    = g('flp-depIata');
+  const depCity    = g('flp-depCity');
+  const depCountry = g('flp-depCountry');
+  const depTz      = g('flp-depTimezone');
+  const arrIcao    = g('flp-arrIcao')    || g('flp-arrCode');
+  const arrIata    = g('flp-arrIata');
+  const arrCity    = g('flp-arrCity');
+  const arrCountry = g('flp-arrCountry');
+  const arrTz      = g('flp-arrTimezone');
+  const arrLoc     = g('flp-arrLocalDateTime');
 
-  // layoverNights 자동 계산
+  if(!depIcao && !depCity){ toast('출발 공항을 입력하세요.','err'); return; }
+
+  const quickTurn = document.getElementById('flp-quickTurn')?.checked || false;
+
+  // layoverNights
   let layoverNights = null;
-  let layoverNightsManualOverride = gn('layoverNights');
-  if(layoverNightsManualOverride==null && arrLoc && arrTz){
+  let layoverNightsManualOverride = gn('flp-layoverNights');
+  if(quickTurn){ layoverNights = 0; layoverNightsManualOverride = 0; }
+  else if(layoverNightsManualOverride == null && arrLoc){
     try{
-      // 도착 현지 날짜 - 출발 현지 날짜
-      const depDate = depLoc.slice(0,10);
-      const arrDate = arrLoc.slice(0,10);
-      const diff = Math.round((new Date(arrDate)-new Date(depDate))/86400000);
-      if(diff>=0) layoverNights = diff;
+      const diff = Math.round((new Date(arrLoc.slice(0,10)) - new Date(depLoc.slice(0,10))) / 86400000);
+      if(diff >= 0) layoverNights = diff;
     }catch{}
   }
 
   const now = new Date().toISOString();
-  const d = getFlight();
+  const d   = getFlight();
   const existing = editFlightPlanId ? d.plans.find(x=>x.id===editFlightPlanId) : null;
 
   const plan = {
     id:                       editFlightPlanId || genId(),
     createdAt:                existing ? existing.createdAt : now,
     updatedAt:                now,
-    tripDate:                 tripDate || depLoc.slice(0,10),
-    flightNumber:             g('flightNumber'),
-    depIcao:                  g('depIcao'),
-    depIata:                  g('depIata'),
-    depCity:                  g('depCity'),
-    depCountry:               g('depCountry'),
-    depTimezone:              depTz,
-    arrIcao:                  g('arrIcao'),
-    arrIata:                  g('arrIata'),
-    arrCity:                  g('arrCity'),
-    arrCountry:               g('arrCountry'),
-    arrTimezone:              arrTz,
+    tripDate:                 g('flp-tripDate') || depLoc.slice(0,10),
+    flightNumber:             g('flp-flightNumber'),
+    quickTurn,
+    depIcao,  depIata,  depCity,  depCountry,  depTimezone: depTz,
+    arrIcao,  arrIata,  arrCity,  arrCountry,  arrTimezone: arrTz,
     depLocalDateTime:         depLoc,
-    depUtcDateTime:           flLocalToUtc(depLoc, depTz)?.toISOString()||'',
+    depUtcDateTime:           depTz ? (flLocalToUtc(depLoc, depTz)?.toISOString()||'') : '',
     arrLocalDateTime:         arrLoc,
     arrUtcDateTime:           (arrLoc&&arrTz) ? (flLocalToUtc(arrLoc,arrTz)?.toISOString()||'') : '',
-    layoverNights:            layoverNights,
-    layoverNightsManualOverride: layoverNightsManualOverride,
-    hotelName:                g('hotelName'),
-    breakfastStartLocal:      g('breakfastStartLocal'),
-    breakfastEndLocal:        g('breakfastEndLocal'),
-    memo:                     g('memo'),
-    prepMemo:                 g('prepMemo'),
-    postMemo:                 g('postMemo'),
+    layoverNights,
+    layoverNightsManualOverride,
+    hotelName:                g('flp-hotelName'),
+    breakfastStartLocal:      g('flp-breakfastStartLocal'),
+    breakfastEndLocal:        g('flp-breakfastEndLocal'),
+    memo:                     g('flp-memo'),
+    prepMemo:                 g('flp-prepMemo'),
+    postMemo:                 g('flp-postMemo'),
   };
 
   if(editFlightPlanId){
     d.plans = d.plans.map(x=>x.id===editFlightPlanId?plan:x);
   } else {
     d.plans.push(plan);
-    // 첫 번째 계획이면 자동 활성화
     if(d.plans.length===1) d.activePlanId = plan.id;
   }
   setFlight(d);
   cm('mo-flight-plan');
   renderFlightPlan();
+  if(curFlightSub==='overview') renderFlightOverview();
   toast(editFlightPlanId?'비행 계획이 수정됐습니다.':'비행 계획이 추가됐습니다.','ok');
 }
+
 
 /* FLIGHT */
 function flSetActivePlan(id){
@@ -6519,7 +7021,8 @@ function flClCreateRun(){
   if(!plan){ toast('활성 비행 계획이 없습니다.','err'); return; }
   if(!d.checklistTemplates.length){ toast('템플릿이 없습니다. 먼저 템플릿을 추가하거나 기본 템플릿을 불러오세요.','warn'); return; }
 
-  const nights = plan.layoverNightsManualOverride??plan.layoverNights??1;
+  const quickTurnPlan = plan.quickTurn||false;
+  const nights = quickTurnPlan ? 0 : (plan.layoverNightsManualOverride??plan.layoverNights??1);
   const legs   = 1; // 단일 레그 기본값
 
   const items = [...d.checklistTemplates]
@@ -6747,8 +7250,10 @@ function _lbFilterEntries(entries, period){
 function _lbSearchFilter(entries, q){
   if(!q) return entries;
   const ql = q.toLowerCase();
-  return entries.filter(e=>[e.flightNumber,e.depIcao,e.depIata,e.depCity,e.arrIcao,e.arrIata,e.arrCity,e.aircraftVariant]
-    .filter(Boolean).some(v=>v.toLowerCase().includes(ql)));
+  return entries.filter(e=>[
+    e.flightNumber,e.depIcao,e.depIata,e.depCity,e.arrIcao,e.arrIata,e.arrCity,
+    e.aircraftVariant,e.aircraftFamily,e.aircraftRegistration,e.crewRole,e.operationRole,e.remarks
+  ].filter(Boolean).some(v=>String(v).toLowerCase().includes(ql)));
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -6807,12 +7312,20 @@ function _renderLbStats(filtered, period, allEntries){
   const totalFlight = filtered.reduce((s,e)=>s+(Number(e.flightMinutes)||0),0);
   const sectors     = filtered.length;
 
-  // 이번 달 / 올해 (전체 데이터 기준)
-  const now=new Date(), y=now.getFullYear(), mo=now.getMonth()+1;
-  const thisMonth = (allEntries||[]).filter(e=>e.flightDate?.startsWith(`${y}-${String(mo).padStart(2,'0')}`));
-  const thisYear  = (allEntries||[]).filter(e=>e.flightDate?.startsWith(String(y)));
-  const monthBlock = thisMonth.reduce((s,e)=>s+(Number(e.blockMinutes)||0),0);
-  const yearBlock  = thisYear.reduce((s,e)=>s+(Number(e.blockMinutes)||0),0);
+  // 기간별 집계
+  const now=new Date();
+  const y=now.getFullYear(), mo=now.getMonth()+1;
+  const d30ago = new Date(now); d30ago.setDate(d30ago.getDate()-30);
+  const d30Str = d30ago.toISOString().slice(0,10);
+
+  const allLb = allEntries||[];
+  const thisYear  = allLb.filter(e=>e.flightDate?.startsWith(String(y)));
+  const last30    = allLb.filter(e=>(e.flightDate||'')>=d30Str);
+
+  const yBlock  = thisYear.reduce((s,e)=>s+(Number(e.blockMinutes)||0),0);
+  const yFlight = thisYear.reduce((s,e)=>s+(Number(e.flightMinutes)||0),0);
+  const d30Block  = last30.reduce((s,e)=>s+(Number(e.blockMinutes)||0),0);
+  const d30Flight = last30.reduce((s,e)=>s+(Number(e.flightMinutes)||0),0);
 
   // 기종별
   const acMap = {};
@@ -6820,36 +7333,52 @@ function _renderLbStats(filtered, period, allEntries){
   const acEntries = Object.entries(acMap).sort((a,b)=>b[1]-a[1]);
   const maxAc = acEntries[0]?.[1]||1;
 
-  // 노선별 top 5
+  // 역할별 횟수
+  const roleMap = {};
+  filtered.forEach(e=>{ const r=e.crewRole||'(미지정)'; roleMap[r]=(roleMap[r]||0)+1; });
+
+  // 노선별 top5
   const routeMap = {};
-  filtered.forEach(e=>{ const r=`${e.depIata||e.depIcao||'?'}→${e.arrIata||e.arrIcao||'?'}`; routeMap[r]=(routeMap[r]||0)+1; });
+  filtered.forEach(e=>{
+    const r=`${e.depIata||e.depIcao||'?'}→${e.arrIata||e.arrIcao||'?'}`;
+    routeMap[r]=(routeMap[r]||0)+1;
+  });
   const topRoutes = Object.entries(routeMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
 
-  // 도시
+  // 방문 도시
   const cities = new Set([...filtered.map(e=>e.depCity),...filtered.map(e=>e.arrCity)].filter(Boolean));
 
   const kpis = [
-    {lbl:'전체 Block', val:_lbFmtMinLong(totalBlock), sub:sectors+'개 섹터', cls:'blue'},
-    {lbl:'전체 Flight', val:_lbFmtMinLong(totalFlight), sub:'', cls:''},
-    {lbl:'Sectors', val:sectors+'개', sub:'', cls:''},
-    {lbl:'방문 도시', val:cities.size+'개', sub:'', cls:''},
-    {lbl:'이번 달 Block', val:_lbFmtMinLong(monthBlock), sub:thisMonth.length+'개 섹터', cls:'green'},
-    {lbl:'올해 Block', val:_lbFmtMinLong(yearBlock), sub:thisYear.length+'개 섹터', cls:''},
+    {lbl:'전체 Block',     val:_lbFmtMinLong(totalBlock), sub:sectors+'개 섹터'},
+    {lbl:'전체 Flight',    val:_lbFmtMinLong(totalFlight), sub:''},
+    {lbl:'방문 도시',      val:cities.size+'개', sub:''},
+    {lbl:'최근 30일 BLK',  val:_lbFmtMinLong(d30Block), sub:last30.length+'개 섹터'},
+    {lbl:'최근 30일 FLT',  val:_lbFmtMinLong(d30Flight), sub:''},
+    {lbl:'올해 Block',     val:_lbFmtMinLong(yBlock), sub:thisYear.length+'개 섹터'},
+    {lbl:'올해 Flight',    val:_lbFmtMinLong(yFlight), sub:''},
   ];
 
-  statsEl.innerHTML = `<div class="fl-lb-stat-grid">${kpis.map(k=>`<div class="fl-lb-stat">
+  // 역할별
+  const roleHtml = Object.entries(roleMap).length
+    ? '<div class="card" style="margin-bottom:8px;padding:10px 14px"><div class="fl-lb-stat-lbl" style="margin-bottom:6px">역할별 횟수</div>'+
+      Object.entries(roleMap).sort((a,b)=>b[1]-a[1]).map(([r,c])=>
+        `<div class="fl-ac-row"><div class="fl-ac-lbl">${esc(r)}</div><div class="fl-ac-track"><div class="fl-ac-fill" style="width:${Math.round(c/filtered.length*100)}%"></div></div><div class="fl-ac-val">${c}회</div></div>`
+      ).join('')+'</div>' : '';
+
+  statsEl.innerHTML = `<div class="fl-lb-stat-grid2">${kpis.map(k=>`<div class="fl-lb-stat">
     <div class="fl-lb-stat-lbl">${k.lbl}</div>
-    <div class="fl-lb-stat-val ${k.cls||''}">${k.val}</div>
+    <div class="fl-lb-stat-val">${k.val}</div>
     ${k.sub?`<div class="fl-lb-stat-sub">${k.sub}</div>`:''}
   </div>`).join('')}</div>
-  ${topRoutes.length?`<div class="card" style="margin-bottom:10px;padding:12px 14px">
-    <div class="fl-lb-stat-lbl" style="margin-bottom:8px">노선별 횟수 (Top5)</div>
-    ${topRoutes.map(([r,cnt])=>`<div class="fl-ac-row">
+  ${topRoutes.length?`<div class="card" style="margin-bottom:8px;padding:10px 14px">
+    <div class="fl-lb-stat-lbl" style="margin-bottom:6px">노선별 횟수 (Top5)</div>
+    ${topRoutes.map(([r,c])=>`<div class="fl-ac-row">
       <div class="fl-ac-lbl">${esc(r)}</div>
-      <div class="fl-ac-track"><div class="fl-ac-fill" style="width:${Math.round(cnt/(topRoutes[0][1]||1)*100)}%"></div></div>
-      <div class="fl-ac-val">${cnt}회</div>
+      <div class="fl-ac-track"><div class="fl-ac-fill" style="width:${Math.round(c/(topRoutes[0][1]||1)*100)}%"></div></div>
+      <div class="fl-ac-val">${c}회</div>
     </div>`).join('')}
-  </div>`:''}`;
+  </div>`:''}
+  ${roleHtml}`;
 
   // 기종별 차트
   if(acCard && acChartEl){
@@ -6863,18 +7392,24 @@ function _renderLbStats(filtered, period, allEntries){
     } else { acCard.style.display='none'; }
   }
 }
-
 /* FLIGHT - 엔트리 카드 HTML */
 function _lbEntryHtml(e){
   const route = `${e.depIata||e.depIcao||'?'} → ${e.arrIata||e.arrIcao||'?'}`;
   const block  = e.blockMinutes  ? _lbFmtMin(e.blockMinutes)  : '-';
   const flight = e.flightMinutes ? _lbFmtMin(e.flightMinutes) : '-';
-  return `<div class="fl-lb-entry" onclick="openFlLbModal('${e.id}')">
+  const apBadge = [
+    e.approachType?`<span class="fl-lb-ap-badge">${esc(e.approachType)}</span>`:'',
+    e.approachRunway?`<span class="fl-lb-ap-badge">RWY${esc(e.approachRunway)}</span>`:'',
+    e.depRunway?`<span class="fl-lb-ap-badge">DEP${esc(e.depRunway)}</span>`:'',
+  ].filter(Boolean).join('');
+  const linkedBadge = e.linkedPlanId?`<span class="fl-lb-plan-badge">📋 plan연결</span>`:'';
+  return `<div class="fl-lb-entry">
     <div class="fl-lb-entry-hd">
       <div class="fl-lb-date">${e.flightDate||'-'}</div>
       <div class="fl-lb-route">${esc(route)}</div>
       ${e.flightNumber?`<span class="fl-lb-fnum">${esc(e.flightNumber)}</span>`:''}
       ${e.aircraftVariant?`<span class="fl-lb-pill">${esc(e.aircraftVariant)}</span>`:''}
+      <button class="fl-lb-edit-btn" onclick="openFlLbModal('${e.id}')">✏️ 수정</button>
     </div>
     <div class="fl-lb-row">
       ${e.depCity?`<span>🛫 ${esc(e.depCity)}</span>`:''}
@@ -6883,6 +7418,7 @@ function _lbEntryHtml(e){
       <span class="fl-lb-pill">FLT ${flight}</span>
       ${e.crewRole?`<span class="fl-lb-pill green">${esc(e.crewRole)}</span>`:''}
     </div>
+    ${(apBadge||linkedBadge)?`<div class="fl-lb-badge-row">${apBadge}${linkedBadge}</div>`:''}
     ${e.remarks?`<div style="font-size:11px;color:var(--txt3);margin-top:5px">${esc(e.remarks.slice(0,80))}${e.remarks.length>80?'…':''}</div>`:''}
   </div>`;
 }
@@ -6895,7 +7431,7 @@ function _lbEntryHtml(e){
 function swLbMode(mode){
   _lbMode = mode;
   document.querySelectorAll('[data-lbmode]').forEach(b=>b.classList.toggle('on',b.dataset.lbmode===mode));
-  const detailIds = ['fllb-detail-fields','fllb-detail-fields2','fllb-detail-fields3','fllb-detail-fields4'];
+  const detailIds = ['fllb-detail-fields','fllb-detail-fields2','fllb-detail-fields3','fllb-detail-fields4','fllb-detail-fields5','fllb-detail-fields6'];
   detailIds.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=mode==='detail'?'':'none'; });
 }
 
@@ -6960,7 +7496,8 @@ function openFlLbModal(id){
 
   const fields=['flightDate','flightNumber','depIcao','depIata','depCity','arrIcao','arrIata','arrCity',
     'aircraftFamily','aircraftRegistration','outTime','offTime','onTime','inTime',
-    'blockMinutes','flightMinutes','dayMinutes','nightMinutes','pfMinutes','pmMinutes','remarks'];
+    'blockMinutes','flightMinutes','dayMinutes','nightMinutes','pfMinutes','pmMinutes',
+    'approachType','approachRunway','depRunway','arrRunway','remarks'];
 
   if(id){
     const d = getFlight();
@@ -7031,6 +7568,10 @@ function saveFlLbEntry(){
     nightMinutes:         gn('nightMinutes'),
     pfMinutes:            gn('pfMinutes'),
     pmMinutes:            gn('pmMinutes'),
+    approachType:         g('approachType'),
+    approachRunway:       g('approachRunway'),
+    depRunway:            g('depRunway'),
+    arrRunway:            g('arrRunway'),
     remarks:              g('remarks'),
     linkedPlanId:         document.getElementById('fllb-linked-plan-id')?.value||'',
   };
@@ -7047,10 +7588,12 @@ function saveFlLbEntry(){
 function flLbExportCSV(){
   const d = getFlight();
   if(!d.logbook.length){ toast('로그북이 비어 있습니다.','warn'); return; }
-  const cols = ['flightDate','flightNumber','depIcao','depIata','depCity','arrIcao','arrIata','arrCity',
-    'aircraftVariant','aircraftRegistration','crewRole','operationRole',
+  const cols = ['flightDate','flightNumber',
+    'depIcao','depIata','depCity','arrIcao','arrIata','arrCity',
+    'aircraftFamily','aircraftVariant','aircraftRegistration','crewRole','operationRole',
     'outTime','offTime','onTime','inTime','blockMinutes','flightMinutes',
-    'dayMinutes','nightMinutes','pfMinutes','pmMinutes','remarks'];
+    'dayMinutes','nightMinutes','pfMinutes','pmMinutes',
+    'approachType','approachRunway','depRunway','arrRunway','remarks','linkedPlanId'];
   const csv = [cols.join(','), ...d.logbook.map(e=>cols.map(c=>{
     const v = e[c]??''; return String(v).includes(',')?`"${v}"`:v;
   }).join(','))].join('\n');
@@ -7076,46 +7619,165 @@ function flLbExportJSON(){
 
 /* FLIGHT - 주요 공항 좌표 레지스트리 */
 /* FLIGHT */
-const FL_AIRPORT_COORDS = {
-  RKSI:{lat:37.4602,lon:126.4407,name:'인천'},  RKSS:{lat:37.5583,lon:126.7906,name:'김포'},
-  RJTT:{lat:35.5494,lon:139.7798,name:'하네다'}, RJAA:{lat:35.7647,lon:140.3864,name:'나리타'},
-  RJBB:{lat:34.4273,lon:135.2440,name:'간사이'}, ROAH:{lat:26.1958,lon:127.6461,name:'나하'},
-  VHHH:{lat:22.3080,lon:113.9185,name:'홍콩'},   RCTP:{lat:25.0777,lon:121.2326,name:'타이완'},
-  RCSS:{lat:25.0694,lon:121.5522,name:'쑹산'},
-  WSSS:{lat:1.3644,lon:103.9915,name:'싱가포르'},VTBS:{lat:13.6811,lon:100.7475,name:'수완나품'},
-  WMKK:{lat:2.7456,lon:101.7099,name:'쿠알라룸푸르'},WADD:{lat:-8.7481,lon:115.1670,name:'덴파사르'},
-  VABB:{lat:19.0887,lon:72.8679,name:'뭄바이'},  VIDP:{lat:28.5562,lon:77.1000,name:'델리'},
-  OMDB:{lat:25.2532,lon:55.3657,name:'두바이'},  OERK:{lat:24.9576,lon:46.6988,name:'리야드'},
-  LLBG:{lat:32.0114,lon:34.8867,name:'텔아비브'},LTBA:{lat:40.9769,lon:28.8146,name:'이스탄불'},
-  EDDF:{lat:50.0333,lon:8.5706,name:'프랑크푸르트'},EGLL:{lat:51.4775,lon:-0.4614,name:'런던'},
-  LFPG:{lat:49.0097,lon:2.5478,name:'파리'},     LEMD:{lat:40.4936,lon:-3.5668,name:'마드리드'},
-  LIRF:{lat:41.8003,lon:12.2389,name:'로마'},    LSZH:{lat:47.4647,lon:8.5492,name:'취리히'},
-  EHAM:{lat:52.3086,lon:4.7639,name:'암스테르담'},EDDM:{lat:48.3537,lon:11.7750,name:'뮌헨'},
-  KLAX:{lat:33.9425,lon:-118.4081,name:'LA'},    KJFK:{lat:40.6398,lon:-73.7789,name:'뉴욕'},
-  KORD:{lat:41.9742,lon:-87.9073,name:'시카고'}, KSFO:{lat:37.6189,lon:-122.3750,name:'샌프란시스코'},
-  CYYZ:{lat:43.6772,lon:-79.6306,name:'토론토'}, SBGR:{lat:-23.4356,lon:-46.4731,name:'상파울루'},
-  YSSY:{lat:-33.9461,lon:151.1772,name:'시드니'},YMML:{lat:-37.6733,lon:144.8430,name:'멜버른'},
-  NZAA:{lat:-37.0082,lon:174.7921,name:'오클랜드'},FAOR:{lat:-26.1392,lon:28.2460,name:'요하네스버그'},
-  ZBAA:{lat:40.0799,lon:116.5853,name:'베이징'}, ZSPD:{lat:31.1443,lon:121.8083,name:'상하이'},
-  ZGGG:{lat:23.3924,lon:113.2988,name:'광저우'}, ZPPP:{lat:24.9924,lon:102.7434,name:'쿤밍'},
-};
+/* FLIGHT - 공항 레지스트리 (ICAO/IATA/city/country/timezone/lat/lon) */
+/* FLIGHT */
+const FL_AIRPORT_DB = [
+  // 한국
+  {icao:'RKSI',iata:'ICN',name:'인천국제공항',city:'Seoul',country:'KR',timezone:'Asia/Seoul',lat:37.4602,lon:126.4407},
+  {icao:'RKSS',iata:'GMP',name:'김포국제공항',city:'Seoul',country:'KR',timezone:'Asia/Seoul',lat:37.5583,lon:126.7906},
+  {icao:'RKPK',iata:'PUS',name:'김해국제공항',city:'Busan',country:'KR',timezone:'Asia/Seoul',lat:35.1795,lon:128.9383},
+  {icao:'RKPC',iata:'CJU',name:'제주국제공항',city:'Jeju',country:'KR',timezone:'Asia/Seoul',lat:33.5113,lon:126.4929},
+  {icao:'RKTN',iata:'TAE',name:'대구국제공항',city:'Daegu',country:'KR',timezone:'Asia/Seoul',lat:35.8941,lon:128.6589},
+  {icao:'RKTU',iata:'CJJ',name:'청주국제공항',city:'Cheongju',country:'KR',timezone:'Asia/Seoul',lat:36.7166,lon:127.4991},
+  // 일본
+  {icao:'RJTT',iata:'HND',name:'하네다공항',city:'Tokyo',country:'JP',timezone:'Asia/Tokyo',lat:35.5494,lon:139.7798},
+  {icao:'RJAA',iata:'NRT',name:'나리타국제공항',city:'Tokyo',country:'JP',timezone:'Asia/Tokyo',lat:35.7647,lon:140.3864},
+  {icao:'RJBB',iata:'KIX',name:'간사이국제공항',city:'Osaka',country:'JP',timezone:'Asia/Tokyo',lat:34.4273,lon:135.2440},
+  {icao:'RJOO',iata:'ITM',name:'이타미공항',city:'Osaka',country:'JP',timezone:'Asia/Tokyo',lat:34.7855,lon:135.4382},
+  {icao:'RJFF',iata:'FUK',name:'후쿠오카공항',city:'Fukuoka',country:'JP',timezone:'Asia/Tokyo',lat:33.5851,lon:130.4511},
+  {icao:'ROAH',iata:'OKA',name:'나하공항',city:'Naha',country:'JP',timezone:'Asia/Tokyo',lat:26.1958,lon:127.6461},
+  {icao:'RJCC',iata:'CTS',name:'신치토세공항',city:'Sapporo',country:'JP',timezone:'Asia/Tokyo',lat:42.7752,lon:141.6922},
+  {icao:'RJOO',iata:'ITM',name:'이타미공항',city:'Osaka',country:'JP',timezone:'Asia/Tokyo',lat:34.7855,lon:135.4382},
+  // 중국/대만/홍콩
+  {icao:'ZBAA',iata:'PEK',name:'베이징수도국제공항',city:'Beijing',country:'CN',timezone:'Asia/Shanghai',lat:40.0799,lon:116.5853},
+  {icao:'ZBAD',iata:'PKX',name:'베이징다싱공항',city:'Beijing',country:'CN',timezone:'Asia/Shanghai',lat:39.5097,lon:116.4105},
+  {icao:'ZSPD',iata:'PVG',name:'상하이푸동국제공항',city:'Shanghai',country:'CN',timezone:'Asia/Shanghai',lat:31.1443,lon:121.8083},
+  {icao:'ZSSS',iata:'SHA',name:'상하이훙차오공항',city:'Shanghai',country:'CN',timezone:'Asia/Shanghai',lat:31.1979,lon:121.3362},
+  {icao:'ZGGG',iata:'CAN',name:'광저우바이윈공항',city:'Guangzhou',country:'CN',timezone:'Asia/Shanghai',lat:23.3924,lon:113.2988},
+  {icao:'ZGSZ',iata:'SZX',name:'선전보안공항',city:'Shenzhen',country:'CN',timezone:'Asia/Shanghai',lat:22.6393,lon:113.8107},
+  {icao:'ZPPP',iata:'KMG',name:'쿤밍창수이공항',city:'Kunming',country:'CN',timezone:'Asia/Shanghai',lat:24.9924,lon:102.7434},
+  {icao:'ZUUU',iata:'CTU',name:'청두솽류공항',city:'Chengdu',country:'CN',timezone:'Asia/Shanghai',lat:30.5785,lon:103.9471},
+  {icao:'RCTP',iata:'TPE',name:'타이완타오위안국제공항',city:'Taipei',country:'TW',timezone:'Asia/Taipei',lat:25.0777,lon:121.2326},
+  {icao:'RCSS',iata:'TSA',name:'쑹산공항',city:'Taipei',country:'TW',timezone:'Asia/Taipei',lat:25.0694,lon:121.5522},
+  {icao:'VHHH',iata:'HKG',name:'홍콩국제공항',city:'Hong Kong',country:'HK',timezone:'Asia/Hong_Kong',lat:22.3080,lon:113.9185},
+  // 동남아
+  {icao:'WSSS',iata:'SIN',name:'창이국제공항',city:'Singapore',country:'SG',timezone:'Asia/Singapore',lat:1.3644,lon:103.9915},
+  {icao:'VTBS',iata:'BKK',name:'수완나품국제공항',city:'Bangkok',country:'TH',timezone:'Asia/Bangkok',lat:13.6811,lon:100.7475},
+  {icao:'VTBD',iata:'DMK',name:'돈므앙공항',city:'Bangkok',country:'TH',timezone:'Asia/Bangkok',lat:13.9126,lon:100.6070},
+  {icao:'WMKK',iata:'KUL',name:'쿠알라룸푸르국제공항',city:'Kuala Lumpur',country:'MY',timezone:'Asia/Kuala_Lumpur',lat:2.7456,lon:101.7099},
+  {icao:'WADD',iata:'DPS',name:'응우라라이국제공항',city:'Denpasar',country:'ID',timezone:'Asia/Makassar',lat:-8.7481,lon:115.1670},
+  {icao:'WIII',iata:'CGK',name:'수카르노하타국제공항',city:'Jakarta',country:'ID',timezone:'Asia/Jakarta',lat:-6.1256,lon:106.6558},
+  {icao:'RPLL',iata:'MNL',name:'니노이아키노국제공항',city:'Manila',country:'PH',timezone:'Asia/Manila',lat:14.5086,lon:121.0197},
+  {icao:'VVNB',iata:'HAN',name:'노이바이국제공항',city:'Hanoi',country:'VN',timezone:'Asia/Ho_Chi_Minh',lat:21.2212,lon:105.8072},
+  {icao:'VVTS',iata:'SGN',name:'딴선녓국제공항',city:'Ho Chi Minh City',country:'VN',timezone:'Asia/Ho_Chi_Minh',lat:10.8188,lon:106.6520},
+  // 남아시아/중동
+  {icao:'VABB',iata:'BOM',name:'차트라파티시바지국제공항',city:'Mumbai',country:'IN',timezone:'Asia/Kolkata',lat:19.0887,lon:72.8679},
+  {icao:'VIDP',iata:'DEL',name:'인디라간디국제공항',city:'Delhi',country:'IN',timezone:'Asia/Kolkata',lat:28.5562,lon:77.1000},
+  {icao:'OMDB',iata:'DXB',name:'두바이국제공항',city:'Dubai',country:'AE',timezone:'Asia/Dubai',lat:25.2532,lon:55.3657},
+  {icao:'OMAA',iata:'AUH',name:'아부다비국제공항',city:'Abu Dhabi',country:'AE',timezone:'Asia/Dubai',lat:24.4330,lon:54.6511},
+  {icao:'OERK',iata:'RUH',name:'킹칼리드국제공항',city:'Riyadh',country:'SA',timezone:'Asia/Riyadh',lat:24.9576,lon:46.6988},
+  {icao:'OTBD',iata:'DOH',name:'하마드국제공항',city:'Doha',country:'QA',timezone:'Asia/Qatar',lat:25.2731,lon:51.6083},
+  {icao:'LLBG',iata:'TLV',name:'벤구리온국제공항',city:'Tel Aviv',country:'IL',timezone:'Asia/Jerusalem',lat:32.0114,lon:34.8867},
+  // 유럽
+  {icao:'LTBA',iata:'IST',name:'이스탄불공항',city:'Istanbul',country:'TR',timezone:'Europe/Istanbul',lat:41.2753,lon:28.7519},
+  {icao:'EDDF',iata:'FRA',name:'프랑크푸르트공항',city:'Frankfurt',country:'DE',timezone:'Europe/Berlin',lat:50.0333,lon:8.5706},
+  {icao:'EDDM',iata:'MUC',name:'뮌헨공항',city:'Munich',country:'DE',timezone:'Europe/Berlin',lat:48.3537,lon:11.7750},
+  {icao:'EGLL',iata:'LHR',name:'히드로공항',city:'London',country:'GB',timezone:'Europe/London',lat:51.4775,lon:-0.4614},
+  {icao:'EGKK',iata:'LGW',name:'개트윅공항',city:'London',country:'GB',timezone:'Europe/London',lat:51.1537,lon:-0.1821},
+  {icao:'LFPG',iata:'CDG',name:'샤를드골공항',city:'Paris',country:'FR',timezone:'Europe/Paris',lat:49.0097,lon:2.5478},
+  {icao:'LEMD',iata:'MAD',name:'마드리드바라하스공항',city:'Madrid',country:'ES',timezone:'Europe/Madrid',lat:40.4936,lon:-3.5668},
+  {icao:'LIRF',iata:'FCO',name:'로마레오나르도다빈치공항',city:'Rome',country:'IT',timezone:'Europe/Rome',lat:41.8003,lon:12.2389},
+  {icao:'LSZH',iata:'ZRH',name:'취리히공항',city:'Zurich',country:'CH',timezone:'Europe/Zurich',lat:47.4647,lon:8.5492},
+  {icao:'EHAM',iata:'AMS',name:'스키폴공항',city:'Amsterdam',country:'NL',timezone:'Europe/Amsterdam',lat:52.3086,lon:4.7639},
+  {icao:'LOWW',iata:'VIE',name:'비엔나국제공항',city:'Vienna',country:'AT',timezone:'Europe/Vienna',lat:48.1103,lon:16.5697},
+  {icao:'EKCH',iata:'CPH',name:'코펜하겐공항',city:'Copenhagen',country:'DK',timezone:'Europe/Copenhagen',lat:55.6180,lon:12.6561},
+  {icao:'ESSA',iata:'ARN',name:'스톡홀름아를란다공항',city:'Stockholm',country:'SE',timezone:'Europe/Stockholm',lat:59.6519,lon:17.9186},
+  {icao:'EFHK',iata:'HEL',name:'헬싱키반타공항',city:'Helsinki',country:'FI',timezone:'Europe/Helsinki',lat:60.3172,lon:24.9633},
+  {icao:'UUEE',iata:'SVO',name:'셰레메티예보공항',city:'Moscow',country:'RU',timezone:'Europe/Moscow',lat:55.9726,lon:37.4146},
+  // 북미
+  {icao:'KLAX',iata:'LAX',name:'로스앤젤레스국제공항',city:'Los Angeles',country:'US',timezone:'America/Los_Angeles',lat:33.9425,lon:-118.4081},
+  {icao:'KSFO',iata:'SFO',name:'샌프란시스코국제공항',city:'San Francisco',country:'US',timezone:'America/Los_Angeles',lat:37.6189,lon:-122.3750},
+  {icao:'KSEA',iata:'SEA',name:'시애틀터코마국제공항',city:'Seattle',country:'US',timezone:'America/Los_Angeles',lat:47.4502,lon:-122.3088},
+  {icao:'KJFK',iata:'JFK',name:'존F케네디국제공항',city:'New York',country:'US',timezone:'America/New_York',lat:40.6398,lon:-73.7789},
+  {icao:'KEWR',iata:'EWR',name:'뉴어크리버티국제공항',city:'New York',country:'US',timezone:'America/New_York',lat:40.6925,lon:-74.1687},
+  {icao:'KORD',iata:'ORD',name:'오헤어국제공항',city:'Chicago',country:'US',timezone:'America/Chicago',lat:41.9742,lon:-87.9073},
+  {icao:'KATL',iata:'ATL',name:'하츠필드잭슨공항',city:'Atlanta',country:'US',timezone:'America/New_York',lat:33.6407,lon:-84.4277},
+  {icao:'KDFW',iata:'DFW',name:'댈러스포트워스국제공항',city:'Dallas',country:'US',timezone:'America/Chicago',lat:32.8998,lon:-97.0403},
+  {icao:'KDEN',iata:'DEN',name:'덴버국제공항',city:'Denver',country:'US',timezone:'America/Denver',lat:39.8561,lon:-104.6737},
+  {icao:'KMIA',iata:'MIA',name:'마이애미국제공항',city:'Miami',country:'US',timezone:'America/New_York',lat:25.7959,lon:-80.2870},
+  {icao:'KIAH',iata:'IAH',name:'조지부시인터컨티넨털공항',city:'Houston',country:'US',timezone:'America/Chicago',lat:29.9902,lon:-95.3368},
+  {icao:'PHNL',iata:'HNL',name:'다니엘K이노우에국제공항',city:'Honolulu',country:'US',timezone:'Pacific/Honolulu',lat:21.3245,lon:-157.9251},
+  {icao:'PANC',iata:'ANC',name:'앵커리지국제공항',city:'Anchorage',country:'US',timezone:'America/Anchorage',lat:61.1744,lon:-149.9964},
+  {icao:'CYYZ',iata:'YYZ',name:'토론토피어슨국제공항',city:'Toronto',country:'CA',timezone:'America/Toronto',lat:43.6772,lon:-79.6306},
+  {icao:'CYVR',iata:'YVR',name:'밴쿠버국제공항',city:'Vancouver',country:'CA',timezone:'America/Vancouver',lat:49.1939,lon:-123.1844},
+  // 오세아니아/남미/아프리카
+  {icao:'YSSY',iata:'SYD',name:'킹스포드스미스공항',city:'Sydney',country:'AU',timezone:'Australia/Sydney',lat:-33.9461,lon:151.1772},
+  {icao:'YMML',iata:'MEL',name:'멜버른국제공항',city:'Melbourne',country:'AU',timezone:'Australia/Melbourne',lat:-37.6733,lon:144.8430},
+  {icao:'YBBN',iata:'BNE',name:'브리즈번공항',city:'Brisbane',country:'AU',timezone:'Australia/Brisbane',lat:-27.3842,lon:153.1175},
+  {icao:'NZAA',iata:'AKL',name:'오클랜드국제공항',city:'Auckland',country:'NZ',timezone:'Pacific/Auckland',lat:-37.0082,lon:174.7921},
+  {icao:'SBGR',iata:'GRU',name:'상파울루과룰류스공항',city:'Sao Paulo',country:'BR',timezone:'America/Sao_Paulo',lat:-23.4356,lon:-46.4731},
+  {icao:'FAOR',iata:'JNB',name:'OR탐보국제공항',city:'Johannesburg',country:'ZA',timezone:'Africa/Johannesburg',lat:-26.1392,lon:28.2460},
+  {icao:'HECA',iata:'CAI',name:'카이로국제공항',city:'Cairo',country:'EG',timezone:'Africa/Cairo',lat:30.1219,lon:31.4056},
+];
+/* FLIGHT - 인덱스 생성 */
+/* FLIGHT */
+const _flApByIcao = {}, _flApByIata = {};
+FL_AIRPORT_DB.forEach(a => {
+  _flApByIcao[a.icao] = a;
+  if(a.iata) _flApByIata[a.iata] = a;
+});
 
-/* FLIGHT - 공항 좌표 조회 (우선순위: registry → 사용자 저장) */
+/* FLIGHT - 코드로 공항 lookup (ICAO 우선, IATA fallback) */
+/* FLIGHT */
+function flLookupAirport(code){
+  if(!code) return null;
+  const c = code.toUpperCase().trim();
+  return _flApByIcao[c] || _flApByIata[c] || null;
+}
+
+/* FLIGHT - 공항 좌표 조회 (FL_AIRPORT_DB → 사용자 저장) */
 /* FLIGHT */
 function _lbGetCoord(icao){
   if(!icao) return null;
-  const reg = FL_AIRPORT_COORDS[icao.toUpperCase()];
-  if(reg) return reg;
-  // 사용자 저장 좌표
+  const ap = flLookupAirport(icao);
+  if(ap) return {lat:ap.lat, lon:ap.lon, name:ap.city||ap.name};
   const d = getFlight();
   return (d.airportCoords||{})[icao.toUpperCase()]||null;
 }
 
+/* FLIGHT - 비행 계획 모달: dep/arr 코드 resolve + hint 표시 */
+/* FLIGHT */
+function flpResolve(leg){
+  const codeEl  = document.getElementById('flp-'+leg+'Code');
+  const hintEl  = document.getElementById('flp-'+leg+'-hint');
+  const code    = codeEl ? codeEl.value.toUpperCase().trim() : '';
+  const ap      = flLookupAirport(code);
+
+  const setH = (id, v) => { const el=document.getElementById('flp-'+leg+id); if(el) el.value = v||''; };
+
+  if(!ap){
+    if(hintEl){ hintEl.textContent = code.length >= 3 ? '알 수 없는 공항 — 자동 완성 불가' : ''; hintEl.className='fl-ap-hint err'; }
+    setH('Icao',''); setH('Iata',''); setH('City',''); setH('Country',''); setH('Timezone','');
+    return;
+  }
+  if(hintEl){ hintEl.textContent = `✓ ${ap.name}  (${ap.city} · ${ap.country} · ${ap.timezone})`; hintEl.className='fl-ap-hint'; }
+  setH('Icao',     ap.icao);
+  setH('Iata',     ap.iata||'');
+  setH('City',     ap.city||'');
+  setH('Country',  ap.country||'');
+  setH('Timezone', ap.timezone||'');
+}
+
+/* FLIGHT - quickTurn 체크 시 layoverNights=0 표시 */
+/* FLIGHT */
+function flpQuickTurnChange(){
+  const qt = document.getElementById('flp-quickTurn')?.checked;
+  const lnEl = document.getElementById('flp-layoverNights');
+  if(lnEl && qt) lnEl.value = '0';
+}
+
+/* FLIGHT - 공항 좌표 조회 compat alias */
+/* FLIGHT */
+const FL_AIRPORT_COORDS = new Proxy({}, {
+  get(_, key){ const ap = flLookupAirport(key); return ap ? {lat:ap.lat,lon:ap.lon,name:ap.city||ap.name} : undefined; }
+});
+
+
 /* FLIGHT - 세계지도 렌더 (Canvas equirectangular) */
 /* FLIGHT */
 function renderFlightMap(){
-  const d       = getFlight();
-  const period  = document.getElementById('fl-map-filter')?.value||'all';
+  const d      = getFlight();
+  const period = document.getElementById('fl-map-filter')?.value||'all';
   const entries = _lbFilterEntries(d.logbook||[], period);
 
   // KPI
@@ -7124,18 +7786,22 @@ function renderFlightMap(){
     const totalBlock  = entries.reduce((s,e)=>s+(Number(e.blockMinutes)||0),0);
     const totalFlight = entries.reduce((s,e)=>s+(Number(e.flightMinutes)||0),0);
     const cities = new Set([...entries.map(e=>e.depCity),...entries.map(e=>e.arrCity)].filter(Boolean));
+    const routeMap = {};
+    entries.forEach(e=>{ const r=`${e.depIata||e.depIcao||'?'}→${e.arrIata||e.arrIcao||'?'}`; routeMap[r]=(routeMap[r]||0)+1; });
+    const topRoute = Object.entries(routeMap).sort((a,b)=>b[1]-a[1])[0];
     kpiEl.innerHTML = [
-      {lbl:'Sectors',      val:entries.length},
-      {lbl:'Block',        val:_lbFmtMinLong(totalBlock)},
-      {lbl:'Flight',       val:_lbFmtMinLong(totalFlight)},
-      {lbl:'방문 도시',    val:cities.size+'개'},
+      {lbl:'Sectors', val:entries.length},
+      {lbl:'Block',   val:_lbFmtMinLong(totalBlock)},
+      {lbl:'Flight',  val:_lbFmtMinLong(totalFlight)},
+      {lbl:'방문 도시', val:cities.size+'개'},
+      {lbl:'TOP 노선', val:topRoute?`${topRoute[0]}(${topRoute[1]})`:'-'},
     ].map(k=>`<div class="fl-map-kpi-card">
       <div class="fl-map-kpi-lbl">${k.lbl}</div>
       <div class="fl-map-kpi-val">${k.val}</div>
     </div>`).join('');
   }
 
-  // 좌표 없는 공항 수집
+  // 좌표 없는 공항
   const missing = new Set();
   entries.forEach(e=>{
     if(e.depIcao && !_lbGetCoord(e.depIcao)) missing.add(e.depIcao);
@@ -7147,7 +7813,7 @@ function renderFlightMap(){
     if(missing.size){
       missingCard.style.display='';
       missingList.innerHTML = [...missing].map(icao=>`
-        <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px">
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:13px">
           <code style="font-weight:700">${esc(icao)}</code>
           <span style="color:var(--txt3)">좌표 없음</span>
           <button class="btn bgh xs" onclick="openFlCoordModal('${esc(icao)}')">📍 좌표 입력</button>
@@ -7155,12 +7821,10 @@ function renderFlightMap(){
     } else { missingCard.style.display='none'; }
   }
 
-  // Canvas 그리기
   _drawFlightMap(entries);
 }
 
-/* FLIGHT - Canvas 세계지도 드로우 */
-/* FLIGHT */
+
 function _drawFlightMap(entries){
   const container = document.getElementById('fl-map-container');
   const canvas    = document.getElementById('fl-map-canvas');
@@ -7175,107 +7839,97 @@ function _drawFlightMap(entries){
   const ctx = canvas.getContext('2d');
   if(!ctx) return;
 
-  // 배경 (약간 밝은 해양색)
   ctx.fillStyle = '#0f2238';
   ctx.fillRect(0,0,W,H);
 
   const lonToX = lon => (lon+180)/360*W;
   const latToY = lat => (90-lat)/180*H;
 
-  // 격자선
-  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-  ctx.lineWidth   = 0.5;
-  for(let lat=-60;lat<=60;lat+=30){ ctx.beginPath(); ctx.moveTo(0,latToY(lat)); ctx.lineTo(W,latToY(lat)); ctx.stroke(); }
-  for(let lon=-150;lon<=180;lon+=30){ ctx.beginPath(); ctx.moveTo(lonToX(lon),0); ctx.lineTo(lonToX(lon),H); ctx.stroke(); }
+  // 격자
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=0.5;
+  for(let lat=-60;lat<=60;lat+=30){ ctx.beginPath();ctx.moveTo(0,latToY(lat));ctx.lineTo(W,latToY(lat));ctx.stroke(); }
+  for(let lon=-150;lon<=180;lon+=30){ ctx.beginPath();ctx.moveTo(lonToX(lon),0);ctx.lineTo(lonToX(lon),H);ctx.stroke(); }
 
-  // 대륙 외곽선
   _drawSimpleCoastlines(ctx, lonToX, latToY);
 
-  // 적도선
   ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=0.8;
-  ctx.beginPath(); ctx.moveTo(0,latToY(0)); ctx.lineTo(W,latToY(0)); ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,latToY(0));ctx.lineTo(W,latToY(0));ctx.stroke();
 
-  // 루트 데이터 수집
+  // 날짜 기반 불투명도 계산
+  const now = new Date();
   const routes = [];
   entries.forEach(e=>{
     const dep = _lbGetCoord(e.depIcao||'');
     const arr = _lbGetCoord(e.arrIcao||'');
     if(!dep||!arr) return;
-    routes.push({dep,arr,e});
+    const dayOld = e.flightDate ? Math.max(0,(now-new Date(e.flightDate))/86400000) : 365;
+    const opacity = Math.max(0.25, 1 - dayOld/730); // 0~2년 사이 선형
+    routes.push({dep,arr,e,opacity});
   });
 
-  // 루트 라인 (그림자 먼저, 그 위에 선)
-  routes.forEach(({dep,arr},ri)=>{
+  // 루트 그리기
+  routes.forEach(({dep,arr,opacity},ri)=>{
     const hue = (ri*47)%360;
     const steps=16;
     // 그림자
-    ctx.save();
-    ctx.strokeStyle=`hsla(${hue},80%,60%,0.18)`;
-    ctx.lineWidth=4;
-    ctx.shadowBlur=0;
+    ctx.save(); ctx.strokeStyle=`hsla(${hue},70%,55%,${opacity*0.2})`; ctx.lineWidth=5;
     ctx.beginPath();
     for(let i=0;i<=steps;i++){
-      const t=i/steps;
-      const lat=dep.lat+(arr.lat-dep.lat)*t;
+      const t=i/steps, lat=dep.lat+(arr.lat-dep.lat)*t;
       let lon=dep.lon+(arr.lon-dep.lon)*t;
-      if(Math.abs(arr.lon-dep.lon)>180){ lon=dep.lon+(arr.lon-dep.lon-360)*t; }
-      const x=lonToX(lon), y=latToY(lat);
-      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      if(Math.abs(arr.lon-dep.lon)>180) lon=dep.lon+(arr.lon-dep.lon-360)*t;
+      i===0?ctx.moveTo(lonToX(lon),latToY(lat)):ctx.lineTo(lonToX(lon),latToY(lat));
     }
-    ctx.stroke();
-    ctx.restore();
+    ctx.stroke(); ctx.restore();
     // 메인 선
-    ctx.save();
-    ctx.strokeStyle=`hsla(${hue},85%,68%,0.85)`;
-    ctx.lineWidth=1.8;
-    ctx.lineCap='round';
-    ctx.lineJoin='round';
-    ctx.beginPath();
+    ctx.save(); ctx.strokeStyle=`hsla(${hue},85%,65%,${opacity})`; ctx.lineWidth=1.8;
+    ctx.lineCap='round'; ctx.lineJoin='round'; ctx.beginPath();
     for(let i=0;i<=steps;i++){
-      const t=i/steps;
-      const lat=dep.lat+(arr.lat-dep.lat)*t;
+      const t=i/steps, lat=dep.lat+(arr.lat-dep.lat)*t;
       let lon=dep.lon+(arr.lon-dep.lon)*t;
-      if(Math.abs(arr.lon-dep.lon)>180){ lon=dep.lon+(arr.lon-dep.lon-360)*t; }
-      const x=lonToX(lon), y=latToY(lat);
-      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      if(Math.abs(arr.lon-dep.lon)>180) lon=dep.lon+(arr.lon-dep.lon-360)*t;
+      i===0?ctx.moveTo(lonToX(lon),latToY(lat)):ctx.lineTo(lonToX(lon),latToY(lat));
     }
-    ctx.stroke();
-    ctx.restore();
+    ctx.stroke(); ctx.restore();
   });
 
   // 공항 점 + 라벨
   const drawnIcao = {};
   routes.forEach(({dep,arr,e})=>{
-    [[dep, e.depIcao||e.depIata||''], [arr, e.arrIcao||e.arrIata||'']].forEach(([pt,code])=>{
-      if(drawnIcao[code]) return;
-      drawnIcao[code]=true;
+    [[dep,e.depIcao||e.depIata||''],[arr,e.arrIcao||e.arrIata||'']].forEach(([pt,code])=>{
+      if(drawnIcao[code]) return; drawnIcao[code]=true;
       const x=lonToX(pt.lon), y=latToY(pt.lat);
-      // 외곽 후광
-      ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2);
+      ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2);
       ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.fill();
-      // 점
-      ctx.beginPath(); ctx.arc(x,y,4.5,0,Math.PI*2);
+      ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
       ctx.fillStyle='#63b3ed'; ctx.fill();
       ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
-      // 라벨 배경 pill
       if(code && W>400){
-        const lbl = code.slice(0,4);
+        const lbl=code.slice(0,4);
         ctx.font='bold 9px sans-serif';
-        const tw = ctx.measureText(lbl).width;
-        const px=x+8, py=y-7;
-        ctx.fillStyle='rgba(15,34,56,0.82)';
-        ctx.beginPath();
-        ctx.roundRect?ctx.roundRect(px-2,py-9,tw+6,13,3):ctx.rect(px-2,py-9,tw+6,13);
+        const tw=ctx.measureText(lbl).width;
+        const px=x+8, py=y-6;
+        ctx.fillStyle='rgba(15,34,56,0.85)';
+        if(ctx.roundRect) ctx.roundRect(px-2,py-9,tw+6,12,3); else ctx.rect(px-2,py-9,tw+6,12);
         ctx.fill();
-        ctx.fillStyle='#e2e8f0';
-        ctx.fillText(lbl, px+1, py);
+        ctx.fillStyle='#e2e8f0'; ctx.fillText(lbl,px+1,py);
       }
     });
   });
 
-  // 툴팁 이벤트 재설정
+  // 범례
+  const legendEl = document.getElementById('fl-map-legend');
+  if(legendEl){
+    legendEl.innerHTML = `
+      <span style="font-weight:700;font-size:11px">범례</span>
+      <span><span class="fl-map-legend-dot" style="background:hsla(0,85%,65%,.9)"></span>최근</span>
+      <span><span class="fl-map-legend-dot" style="background:hsla(200,85%,65%,.4)"></span>오래됨</span>
+      <span><span class="fl-map-legend-dot" style="background:#63b3ed"></span>공항</span>`;
+  }
+
   _setupMapTooltip(canvas, routes, lonToX, latToY);
 }
+
 
 /* FLIGHT - 간략 대륙선 (equirectangular) */
 /* FLIGHT */
@@ -7352,7 +8006,9 @@ function _setupMapTooltip(canvas, routes, lonToX, latToY){
         ${depCity||arrCity?`<div style="font-size:11px;color:#475569;margin-bottom:3px">${depCity}${depCity&&arrCity?' → ':''}${arrCity}</div>`:''}
         <div style="font-size:12px;color:#1c2636">${esc(e.flightNumber||'')} ${esc(e.flightDate||'')}</div>
         ${e.blockMinutes?`<div style="font-size:12px;font-weight:700;color:#047857;margin-top:3px">⏱ ${_lbFmtMinLong(e.blockMinutes)} BLK</div>`:''}
-        ${e.aircraftVariant?`<div style="font-size:11px;color:#64748b">${esc(e.aircraftVariant)}</div>`:''}`;
+        ${e.aircraftVariant?`<div style="font-size:11px;color:#64748b">${esc(e.aircraftVariant)}</div>`:''}
+        ${e.approachType||e.approachRunway?`<div style="font-size:11px;color:#64748b;margin-top:2px">Appr: ${esc(e.approachType||'')} ${esc(e.approachRunway||'')}</div>`:''}
+        ${e.crewRole?`<div style="font-size:11px;color:#64748b">${esc(e.crewRole)}</div>`:''}`;
     } else { tooltip.style.display='none'; }
   }
   newCanvas.addEventListener('mousemove', onMove);
@@ -7388,22 +8044,29 @@ function renderFlightNotes(){
   const listEl = document.getElementById('fl-note-list');
   if(!listEl) return;
 
-  // 전체 노트 수집 (airportNotes + cityNotes)
+  // 전체 노트 수집
   const airportEntries = Object.entries(d.airportNotes||{}).map(([k,v])=>({type:'airport',key:k,data:v}));
-  const cityEntries    = Object.entries(d.cityNotes||{}).map(([k,v])=>({type:'city',   key:k,data:v}));
+  const cityEntries    = Object.entries(d.cityNotes||{}).map(([k,v])=>({type:'city',key:k,data:v}));
   let all = [...airportEntries, ...cityEntries];
 
-  // 검색 필터
-  if(q) all = all.filter(e=>e.key.toLowerCase().includes(q));
+  // 검색 필터 (ICAO/IATA/도시/국가/내용)
+  if(q){
+    all = all.filter(e=>{
+      const ap = flLookupAirport(e.key)||null;
+      const fields = [
+        e.key, ap?.city||'', ap?.country||'', ap?.iata||'', ap?.icao||'',
+        e.data.preflight||'', e.data.postflight||'', e.data.food||'',
+        e.data.market||'', e.data.shopping||'', e.data.general||'',
+        e.data.sid||'', e.data.star||'',
+      ];
+      return fields.some(f=>f.toLowerCase().includes(q));
+    });
+  }
 
   // 탭 필터
   let entries = all;
-  if(_curNoteTab==='active' && plan){
-    const relevant = new Set([
-      plan.depIcao, plan.arrIcao,
-      plan.depCity, plan.arrCity,
-      plan.depCountry, plan.arrCountry,
-    ].filter(Boolean).map(s=>s.toUpperCase()));
+  if(_curNoteTab==='active'&&plan){
+    const relevant = new Set([plan.depIcao,plan.arrIcao,plan.depCity,plan.arrCity,plan.depCountry,plan.arrCountry].filter(Boolean).map(s=>s.toUpperCase()));
     entries = all.filter(e=>relevant.has(e.key.toUpperCase()));
   } else if(_curNoteTab==='airport'){
     entries = all.filter(e=>e.type==='airport');
@@ -7411,9 +8074,12 @@ function renderFlightNotes(){
     entries = all.filter(e=>e.type==='city');
   }
 
+  // starred 우선 정렬
+  entries.sort((a,b)=>(b.data.starred?1:0)-(a.data.starred?1:0));
+
   if(!entries.length){
     const msg = _curNoteTab==='active'&&!q
-      ? '현재 비행 계획 관련 노트가 없습니다.<br><span style="font-size:12px">＋ 새 노트 버튼으로 추가하세요.</span>'
+      ? '현재 비행 관련 노트가 없습니다.<br><span style="font-size:12px">＋ 새 노트 버튼으로 추가하세요.</span>'
       : '노트가 없습니다.';
     listEl.innerHTML=`<div class="empty"><div class="ei">📝</div><div class="em">${msg}</div></div>`;
     return;
@@ -7422,18 +8088,18 @@ function renderFlightNotes(){
   listEl.innerHTML = entries.map(e=>_noteCardHtml(e)).join('');
 }
 
-/* FLIGHT - 노트 카드 HTML */
-/* FLIGHT */
+
 function _noteCardHtml(e){
   const {type, key, data} = e;
   const icon = type==='airport'?'🛬':'🏙';
   const label= type==='airport'?'공항 ICAO':'도시';
+  const starred = data.starred||false;
 
-  // SID / STAR pills
+  // SID/STAR pills
   const sid  = data.sid||'';
   const star = data.star||'';
-  const sidPills  = sid  ? sid.split(/[\s,]+/).filter(Boolean).map(s=>`<span class="fl-sid-pill">${esc(s)}</span>`).join('') : '';
-  const starPills = star ? star.split(/[\s,]+/).filter(Boolean).map(s=>`<span class="fl-star-pill">${esc(s)}</span>`).join('') : '';
+  const sidPills  = sid ? sid.split(/[\s,]+/).filter(Boolean).map(s=>`<span class="fl-sid-pill">${esc(s)}</span>`).join('') : '';
+  const starPills = star? star.split(/[\s,]+/).filter(Boolean).map(s=>`<span class="fl-star-pill">${esc(s)}</span>`).join('') : '';
 
   // 섹션 프리뷰
   const sectionMap = [
@@ -7442,12 +8108,13 @@ function _noteCardHtml(e){
   ];
   const previews = sectionMap
     .filter(([k])=>data[k]&&data[k].trim())
-    .map(([k,lbl])=>`<div style="margin-bottom:6px"><span style="font-size:10px;font-weight:700;color:var(--txt3)">${lbl}</span><div class="fl-note-preview">${esc(data[k].slice(0,120)+(data[k].length>120?'…':''))}</div></div>`)
+    .map(([k,lbl])=>`<div style="margin-bottom:5px"><span style="font-size:10px;font-weight:700;color:var(--txt3)">${lbl} </span><span class="fl-note-preview">${esc(data[k].slice(0,100)+(data[k].length>100?'…':''))}</span></div>`)
     .join('');
 
-  const updAt = data.updatedAt ? data.updatedAt.slice(0,10) : '';
-  return `<div class="fl-note-card">
+  const updAt = data.updatedAt ? '수정: '+data.updatedAt.slice(0,10) : '';
+  return `<div class="fl-note-card" style="${starred?'border-color:var(--acc);':''}">
     <div class="fl-note-card-hd">
+      <span class="fl-note-fav" onclick="flToggleNoteFav('${type}','${esc(key)}')" title="즐겨찾기">${starred?'⭐':'☆'}</span>
       <span style="font-size:11px;color:var(--txt3)">${icon} ${label}</span>
       <span class="fl-note-key">${esc(key)}</span>
       <span class="fl-note-meta">${updAt}</span>
@@ -7456,11 +8123,10 @@ function _noteCardHtml(e){
         <button class="btn bd-btn xs" onclick="flDeleteNote('${type}','${esc(key)}')">삭제</button>
       </div>
     </div>
-    ${(sidPills||starPills)?`<div style="margin-bottom:7px;display:flex;gap:4px;flex-wrap:wrap">${sidPills}${starPills}</div>`:''}
+    ${(sidPills||starPills)?`<div style="margin-bottom:6px;display:flex;gap:3px;flex-wrap:wrap">${sidPills}${starPills}</div>`:''}
     ${previews||'<div style="font-size:12px;color:var(--txt3)">내용 없음</div>'}
   </div>`;
 }
-
 /* ═══════════════════════════════════════════════════════
    FLIGHT §F10e  노트 CRUD
    ═══════════════════════════════════════════════════════ */
@@ -7524,7 +8190,8 @@ function saveFlNote(){
   if(!key){ toast('키(ICAO 또는 도시명)를 입력하세요.','err'); return; }
 
   const fields = ['preflight','postflight','food','market','shopping','general','sid','star'];
-  const data   = {updatedAt: new Date().toISOString()};
+  const prevData = (() => { const d=getFlight(); const st=_editNoteKey?.type==='airport'?d.airportNotes:d.cityNotes||{}; return st[_editNoteKey?.key||'']||{}; })();
+  const data   = {updatedAt: new Date().toISOString(), starred: prevData.starred||false};
   fields.forEach(f=>{ const el=document.getElementById('fln-'+f); data[f]=el?el.value.trim():''; });
 
   const d     = getFlight();
