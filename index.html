@@ -614,7 +614,7 @@ tr:hover td{background:#f8fafc}
 .fl-sid-pill{display:inline-block;background:#0f172a;color:#7dd3fc;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;font-family:monospace;margin:1px 2px}
 .fl-star-pill{display:inline-block;background:#1c1917;color:#fcd34d;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;font-family:monospace;margin:1px 2px}
 
-/* FLIGHT V26.44 additions */
+/* FLIGHT V26.47 additions */
 .fl-lb-badge-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
 .fl-lb-ap-badge{background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:1px 7px;border-radius:5px;font-family:monospace}
 .fl-lb-plan-badge{background:#f0fdf4;color:#15803d;font-size:10px;font-weight:700;padding:1px 7px;border-radius:5px}
@@ -633,7 +633,7 @@ tr:hover td{background:#f8fafc}
 .fl-map-legend{display:flex;gap:10px;flex-wrap:wrap;padding:8px 12px;background:rgba(255,255,255,.92);border-radius:var(--r2);margin-bottom:8px;font-size:11px;align-items:center}
 .fl-map-legend-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
 
-/* FLIGHT V26.44 additions */
+/* FLIGHT V26.47 additions */
 .fl-time-basis-bar{display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;align-items:center}
 .fl-time-basis-bar label{font-size:11px;color:var(--txt3);font-weight:600;margin-right:2px}
 .fl-time-basis-btn{font-size:11px;padding:3px 10px;border-radius:12px;border:1px solid var(--bd);background:var(--surface);color:var(--txt2);cursor:pointer;font-family:var(--f);font-weight:600}
@@ -650,7 +650,7 @@ tr:hover td{background:#f8fafc}
 .fl-ov-metar-lbl{font-size:10px;font-weight:700;color:var(--txt3);margin-bottom:2px;margin-top:6px}
 .fl-ov-metar-box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:6px 10px;font-size:10px;font-family:monospace;color:var(--txt);white-space:pre-wrap;word-break:break-all}
 
-/* ─ ETF V26.44 ─ */
+/* ─ ETF V26.47 ─ */
 /* ops bar */
 .etf-ops-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);margin-top:8px;min-height:38px}
 .etf-ops-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
@@ -737,73 +737,24 @@ tr:hover td{background:#f8fafc}
 .etf-pos-filter{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
 .etf-pos-filter button.active{background:var(--acc);color:#fff;border-color:var(--acc)}
 .etf-runid{font-family:monospace;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;display:inline-block;vertical-align:middle}
-/* ─ ETF 추종 탭 전용 ─ */
-/* ops bar */
-.etf-ops-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);margin-top:8px;min-height:38px}
-.etf-ops-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
-.etf-ops-sep{color:var(--bd2);font-size:14px;margin:0 2px}
-.etf-dryrun{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:var(--r2);padding:3px 10px;font-size:12px;font-weight:700}
-.etf-live{background:var(--g-bg);color:var(--g);border:1px solid #86efac;border-radius:var(--r2);padding:3px 10px;font-size:12px;font-weight:700}
-.etf-err-pill{background:var(--r-bg);color:var(--r);border:1px solid var(--r-bd);border-radius:var(--r2);padding:3px 10px;font-size:12px;font-weight:700}
-/* block reasons */
-.etf-block-reasons{background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r2);padding:10px 13px;margin-top:8px}
-.etf-block-reasons .lbl{font-size:11px;font-weight:700;color:var(--am);margin-bottom:5px}
-.etf-block-tag{display:inline-block;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:4px;padding:2px 8px;font-size:11px;margin:2px 3px 2px 0}
-/* badges */
-.etf-src-badge{display:inline-block;background:var(--acc-l);color:var(--acc);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600}
-/* card / table toggle */
-.etf-card-view{display:none;flex-direction:column;gap:10px}
-.etf-table-view{display:block}
-.etf-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;box-shadow:var(--sh)}
-.etf-card-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
-.etf-card-nm{font-weight:700;font-size:14px;flex:1;min-width:0}
-.etf-card-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px solid var(--bd);color:var(--txt2)}
-.etf-card-row:last-of-type{border-bottom:none}
-.etf-card-row .v{font-weight:600;color:var(--txt);text-align:right}
-/* order filter */
-.etf-ord-filter{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
-.etf-ord-filter button.active{background:var(--acc);color:#fff;border-color:var(--acc)}
-/* portfolio summary */
-.etf-port-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:12px}
-.etf-port-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px}
-.etf-port-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:3px}
-.etf-port-val{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
-.etf-port-val.warn{color:var(--am)}
-.etf-port-val.ok{color:var(--g)}
-/* mini bar */
-.etf-bar-wrap{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;margin-top:3px}
-.etf-bar-fill{height:100%;border-radius:3px;transition:width .3s}
-/* compare section */
-.etf-cmp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:12px}
-.etf-cmp-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;box-shadow:var(--sh)}
-.etf-cmp-run{font-size:10px;font-family:monospace;color:var(--txt3);margin-bottom:4px}
-.etf-cmp-ts{font-size:11px;color:var(--txt3);margin-bottom:6px}
-.etf-cmp-kpi{font-size:13px;font-weight:700;margin-bottom:3px}
-.etf-cmp-tag{display:inline-block;font-size:10px;font-weight:700;border-radius:3px;padding:1px 6px;margin:1px 2px}
-.etf-cmp-tag.added{background:#f0fdf4;color:#15803d;border:1px solid #86efac}
-.etf-cmp-tag.removed{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
-.etf-cmp-tag.increased{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
-.etf-cmp-tag.decreased{background:#faf5ff;color:#7e22ce;border:1px solid #e9d5ff}
-.etf-cmp-badge-row{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
-/* watchlist extended table */
-.etf-wl-ext td,.etf-wl-ext th{white-space:nowrap}
-/* ETF status cards */
-.etf-status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:8px}
-.etf-status-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh)}
-.etf-status-card-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.etf-status-card-nm{font-weight:700;font-size:14px;flex:1}
-.etf-status-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--bd)}
-.etf-status-row:last-child{border-bottom:none}
-.etf-status-row .sv{font-weight:600;color:var(--txt)}
-/* change pill */
-.cp-add{color:var(--g);font-weight:700}
-.cp-rem{color:var(--r);font-weight:700}
-.cp-inc{color:var(--acc);font-weight:700}
-.cp-dec{color:#7e22ce;font-weight:700}
-@media(max-width:700px){
-  .etf-table-view{display:none}
-  .etf-card-view{display:flex}
-}
+
+/* ─ ETF V26.47 추가 CSS ─ */
+.etf-flow-box{background:var(--acc-l);border:1px solid #bfdbfe;border-radius:var(--r2);padding:9px 14px;font-size:12px;color:#1e40af;display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.etf-flow-box .step{font-weight:700;white-space:nowrap}
+.etf-flow-sep{color:#93c5fd;margin:0 1px}
+.etf-collapse-hd{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:2px 0}
+.etf-toggle-btn{font-size:11px;color:var(--acc);background:none;border:none;cursor:pointer;font-weight:700;padding:2px 8px;border-radius:4px;font-family:var(--f)}
+.etf-toggle-btn:hover{background:var(--s2)}
+.etf-gh-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.etf-gh-row label{font-size:11px;font-weight:700;color:var(--txt2);width:80px;flex-shrink:0}
+.etf-gh-row input{flex:1;min-width:160px;max-width:360px}
+.etf-acct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:6px}
+.etf-acct-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px}
+.etf-acct-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:3px}
+.etf-acct-val{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
+.etf-cmp-row{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:8px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;margin-bottom:6px}
+.etf-cmp-row.latest{border-color:var(--acc);background:var(--acc-l)}
+@media(max-width:700px){.etf-flow-box{gap:3px;flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
@@ -813,7 +764,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.44</span>
+      <span class="ver-badge">V26.47</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
@@ -853,7 +804,9 @@ tr:hover td{background:#f8fafc}
       <div class="asset-head-actions">
         <button class="btn bgh sm" id="btn-fetch-prices" onclick="fetchAllCurrentPrices()" style="font-size:11px">🔄 현재가 불러오기</button>
         <button class="btn bgh sm" onclick="openTickerMapModal()" style="font-size:11px">⚙️ 자산 매핑 관리</button>
-        <button class="btn bgh sm" onclick="applyAllAP()" style="font-size:11px">✅ 일괄 적용</button>
+        <button class="btn bs sm" onclick="exportAssetManagerBackup()" style="font-size:11px">💾 백업하기</button>
+        <button class="btn bgh sm" onclick="document.getElementById('am-backup-import-f').click()" style="font-size:11px">📂 백업 불러오기</button>
+        <input type="file" id="am-backup-import-f" accept=".json" style="display:none" onchange="importAssetManagerBackup(event)">
       </div>
       <div class="asset-head-fx">
         <label style="font-size:12px;font-weight:700;color:var(--txt2);white-space:nowrap">💱 USD/KRW 환율</label>
@@ -1328,76 +1281,102 @@ tr:hover td{background:#f8fafc}
 
 <!-- ====== 탭: ETF 추종 ====== -->
 <div class="page" id="tab-etftrack">
-  <div class="disclaimer">⚠️ 투자 보조 도구 — 실제 주문은 Python 엔진이 처리합니다. 프론트엔드에는 API키·계좌번호를 저장하지 않습니다.</div>
+
+  <!-- 운영 흐름 -->
+  <div class="etf-flow-box">
+    <span class="step">① Python→GitHub 업로드</span><span class="etf-flow-sep">›</span>
+    <span class="step">② 연동하기</span><span class="etf-flow-sep">›</span>
+    <span class="step">③ 주문안 확인</span><span class="etf-flow-sep">›</span>
+    <span class="step">④ 승인</span><span class="etf-flow-sep">›</span>
+    <span class="step">⑤ approved_execution.json 저장</span><span class="etf-flow-sep">›</span>
+    <span class="step">⑥ 예약 실행</span>
+  </div>
 
   <!-- 운영 상태 바 -->
-  <div id="etf-ops-bar" class="etf-ops-bar" style="margin-top:8px"></div>
-
-  <!-- A. 운영 요약 카드 -->
-  <div class="etf-summary-grid" id="etf-summary-grid"></div>
-
-  <!-- A'. block reasons -->
+  <div id="etf-ops-bar" class="etf-ops-bar" style="margin-top:6px"></div>
   <div id="etf-top-block-reasons" style="display:none" class="etf-block-reasons"></div>
 
-  <!-- F. 예산 / 실행 설정 카드 -->
-  <div class="card mt" id="etf-budget-section">
-    <div class="sec-hd" style="margin-bottom:10px">
-      <div class="sec-hl"><span class="sec-t">💰 예산 · 실행 설정</span></div>
-      <button class="btn bgh xs" onclick="toggleEtfBudgetEdit()">✏️ 편집</button>
+  <!-- 1. 운영 요약 카드 -->
+  <div class="etf-summary-grid" id="etf-summary-grid" style="margin-top:8px"></div>
+
+  <!-- 2. GitHub 연동 -->
+  <div class="card mt">
+    <div class="etf-collapse-hd" onclick="etfToggleSection('etf-gh-body','etf-gh-btn')">
+      <div class="sec-hl"><span class="sec-t">🔗 GitHub 연동</span><span id="etf-gh-last-sync" style="font-size:11px;color:var(--txt3);margin-left:8px"></span></div>
+      <button class="etf-toggle-btn" id="etf-gh-btn">▾ 펼치기</button>
     </div>
-    <div id="etf-budget-display"></div>
-    <div id="etf-budget-edit" style="display:none">
-      <div class="etf-budget-row">
-        <label>KRW 예산</label>
-        <input type="number" class="fi" id="etf-budget-krw" placeholder="예: 5000000" min="0" style="max-width:180px">
-        <span style="font-size:11px;color:var(--txt3)">원</span>
+    <div id="etf-gh-body" style="display:none;margin-top:10px">
+      <div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px">
+        <div class="etf-gh-row">
+          <label>Payload URL</label>
+          <input type="url" class="fi" id="etf-remote-url" placeholder="https://raw.githubusercontent.com/.../full_etf_payload_for_html.json">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <button class="btn bp sm" onclick="etfFetchFromRemoteUrl()">🔗 연동하기</button>
+          <button class="btn bgh sm" onclick="etfTestRemoteUrl()">🧪 연결 테스트</button>
+          <button class="btn bgh sm" onclick="saveEtfRemoteUrl()">💾 URL 저장</button>
+          <button class="btn bgh sm" onclick="rerunLastImportedEtfPayload()">🔁 최근 재반영</button>
+        </div>
+        <div id="etf-remote-status" class="etf-import-status"></div>
+        <div style="margin-top:8px;font-size:11px;color:var(--txt3)">보조:
+          <button class="btn bgh xs" onclick="refreshEtfFromEngineFile()">localhost fetch</button>
+          <button class="btn bgh xs" onclick="document.getElementById('etf-engine-file-input').click()">📂 파일 선택</button>
+          <input type="file" id="etf-engine-file-input" accept=".json" style="display:none" onchange="handleEtfEngineFileSelect(event)">
+        </div>
+        <div id="etf-file-import-status" class="etf-import-status" style="margin-top:4px"></div>
+        <div id="etf-fetch-import-status" class="etf-import-status" style="margin-top:4px"></div>
       </div>
-      <div class="etf-budget-row">
-        <label>USD 예산</label>
-        <input type="number" class="fi" id="etf-budget-usd" placeholder="예: 3000" min="0" style="max-width:180px">
-        <span style="font-size:11px;color:var(--txt3)">USD</span>
+    </div>
+  </div>
+
+  <!-- 3. 예산 + 승인 -->
+  <div class="card mt">
+    <div class="sec-hd" style="margin-bottom:8px">
+      <div class="sec-hl">
+        <span class="sec-t">✅ 승인 관리</span>
+        <span id="etf-approval-badge"></span>
       </div>
-      <div class="etf-budget-row">
-        <label>실행 날짜</label>
-        <input type="date" class="fi" id="etf-exec-date" style="max-width:160px">
+      <div class="fl-row">
+        <button class="btn bg sm" onclick="etfApproveCurrentRun()">✅ 승인</button>
+        <button class="btn bd-btn sm" onclick="etfCancelApproval()">❌ 취소</button>
+        <button class="btn bgh xs" onclick="toggleEtfBudgetEdit()">💰 예산 편집</button>
       </div>
-      <div class="etf-budget-row">
-        <label>실행 시각</label>
-        <input type="time" class="fi" id="etf-exec-time" value="10:30" style="max-width:120px">
-      </div>
+    </div>
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:8px">승인 후 approved_execution.json을 Python이 읽는 위치에 두면 예약 실행됩니다.</div>
+    <div id="etf-approval-body"></div>
+    <div id="etf-budget-display" style="margin-top:6px"></div>
+    <div id="etf-budget-edit" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">
+      <div class="etf-budget-row"><label>KRW 예산</label><input type="number" class="fi" id="etf-budget-krw" placeholder="5000000" min="0" style="max-width:180px"><span style="font-size:11px;color:var(--txt3)">원</span></div>
+      <div class="etf-budget-row"><label>USD 예산</label><input type="number" class="fi" id="etf-budget-usd" placeholder="3000" min="0" style="max-width:180px"><span style="font-size:11px;color:var(--txt3)">USD</span></div>
+      <div class="etf-budget-row"><label>실행 날짜</label><input type="date" class="fi" id="etf-exec-date" style="max-width:160px"></div>
+      <div class="etf-budget-row"><label>실행 시각</label><input type="time" class="fi" id="etf-exec-time" value="10:30" style="max-width:120px"></div>
       <div style="display:flex;gap:8px;margin-top:8px">
         <button class="btn bp sm" onclick="saveEtfBudget()">💾 저장</button>
         <button class="btn bgh sm" onclick="toggleEtfBudgetEdit()">취소</button>
       </div>
     </div>
-  </div>
-
-  <!-- E. 승인 카드 -->
-  <div class="card mt" id="etf-approval-section">
-    <div class="sec-hd" style="margin-bottom:8px">
-      <div class="sec-hl"><span class="sec-t">✅ 승인 관리</span></div>
-      <span id="etf-approval-badge"></span>
+    <div id="etf-approval-json-wrap" style="display:none;margin-top:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--am);margin-bottom:6px">⚠️ approved_execution.json을 Python output/ 폴더에 저장하세요.</div>
+      <textarea id="etf-approval-json-preview" class="fi" rows="5" style="font-size:10px;font-family:monospace" readonly></textarea>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+        <button class="btn bp sm" onclick="downloadEtfApprovalJson()">⬇ 다운로드</button>
+        <button class="btn bgh sm" onclick="copyEtfApprovalJson()">📋 복사</button>
+      </div>
     </div>
-    <div id="etf-approval-body"></div>
   </div>
 
-  <!-- D. 이번 승인 후보 주문안 -->
+  <!-- 4. 주문안 -->
   <div class="card mt">
     <div class="sec-hd">
-      <div class="sec-hl"><span class="sec-t">📝 이번 승인 후보 주문안</span><span class="cbadge" id="etf-ord-cnt">0건</span></div>
-      <div class="fl-row">
-        <button class="btn bg sm" onclick="etfApproveCurrentRun()">✅ 이번 run 승인</button>
-        <button class="btn bd-btn sm" onclick="etfCancelApproval()">❌ 승인 취소</button>
+      <div class="sec-hl"><span class="sec-t">📝 승인 후보 주문안</span><span class="cbadge" id="etf-ord-cnt">0건</span></div>
+      <div class="etf-ord-filter" style="margin-bottom:0">
+        <button class="btn bgh sm active" data-filter="all" onclick="setEtfOrdFilter('all',this)">전체</button>
+        <button class="btn bgh sm" data-filter="pending" onclick="setEtfOrdFilter('pending',this)">대기</button>
+        <button class="btn bgh sm" data-filter="approved" onclick="setEtfOrdFilter('approved',this)">승인</button>
+        <button class="btn bgh sm" data-filter="cancelled" onclick="setEtfOrdFilter('cancelled',this)">제외</button>
       </div>
     </div>
     <div id="etf-ord-subtotal" style="font-size:12px;color:var(--txt2);margin:6px 0;display:flex;gap:16px;flex-wrap:wrap"></div>
-    <div class="etf-ord-filter" id="etf-ord-filter">
-      <button class="btn bgh sm active" data-filter="all" onclick="setEtfOrdFilter('all',this)">전체</button>
-      <button class="btn bgh sm" data-filter="pending" onclick="setEtfOrdFilter('pending',this)">대기</button>
-      <button class="btn bgh sm" data-filter="approved" onclick="setEtfOrdFilter('approved',this)">승인</button>
-      <button class="btn bgh sm" data-filter="skipped" onclick="setEtfOrdFilter('skipped',this)">보류</button>
-      <button class="btn bgh sm" data-filter="cancelled" onclick="setEtfOrdFilter('cancelled',this)">제외</button>
-    </div>
     <div class="etf-table-view">
       <div class="tw"><table><thead><tr>
         <th>종목</th><th>방향</th><th class="nr">수량</th><th class="nr">기준가</th>
@@ -1406,42 +1385,30 @@ tr:hover td{background:#f8fafc}
       </tr></thead><tbody id="etf-ord-tb"></tbody></table></div>
     </div>
     <div class="etf-card-view" id="etf-ord-cards"></div>
-    <!-- 승인 JSON 미리보기 -->
-    <div id="etf-approval-json-wrap" style="display:none;margin-top:10px">
-      <div style="font-size:11px;font-weight:700;color:var(--am);margin-bottom:6px">⚠️ approved_execution.json 저장 필요 — 아래 JSON을 다운로드하거나 복사하여 output/ 폴더에 저장하세요.</div>
-      <textarea id="etf-approval-json-preview" class="fi" rows="6" style="font-size:10px;font-family:monospace" readonly></textarea>
-      <div style="display:flex;gap:8px;margin-top:6px">
-        <button class="btn bp sm" onclick="downloadEtfApprovalJson()">⬇ approved_execution.json 다운로드</button>
-        <button class="btn bgh sm" onclick="copyEtfApprovalJson()">📋 복사</button>
-      </div>
-    </div>
   </div>
 
-  <!-- C. 현재 추종 현황 -->
+  <!-- 5. 현재 추종 현황 -->
   <div class="card mt">
     <div class="sec-hd" style="margin-bottom:8px">
       <div class="sec-hl">
         <span class="sec-t">📊 현재 추종 현황</span>
-        <select class="fsl sm" id="etf-pos-sel" style="width:180px;min-height:32px" onchange="renderEtfFollowPortfolio()">
-          <option value="">전체 / ETF 선택</option>
-        </select>
+        <select class="fsl sm" id="etf-pos-sel" style="width:170px;min-height:32px" onchange="renderEtfFollowPortfolio()"><option value="">전체 / ETF 선택</option></select>
       </div>
       <span style="font-size:11px;color:var(--txt3)" id="etf-pos-updatedAt"></span>
     </div>
     <div class="etf-port-summary" id="etf-port-summary"></div>
     <div id="etf-cash-bar" style="display:none;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:8px 12px;margin-bottom:10px;font-size:12px"></div>
-    <!-- 필터 -->
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
       <div class="etf-pos-filter" id="etf-pos-market-filter">
-        <button class="btn bgh xs active" data-mkt="all" onclick="setEtfPosFilter('mkt','all',this)">전체</button>
-        <button class="btn bgh xs" data-mkt="KR" onclick="setEtfPosFilter('mkt','KR',this)">🇰🇷 KR</button>
-        <button class="btn bgh xs" data-mkt="US" onclick="setEtfPosFilter('mkt','US',this)">🇺🇸 US</button>
+        <button class="btn bgh xs active" onclick="setEtfPosFilter('mkt','all',this)">전체</button>
+        <button class="btn bgh xs" onclick="setEtfPosFilter('mkt','KR',this)">🇰🇷 KR</button>
+        <button class="btn bgh xs" onclick="setEtfPosFilter('mkt','US',this)">🇺🇸 US</button>
       </div>
       <div class="etf-pos-filter" id="etf-pos-status-filter">
-        <button class="btn bgh xs active" data-st="all" onclick="setEtfPosFilter('st','all',this)">전체</button>
-        <button class="btn bgh xs" data-st="buy_needed" onclick="setEtfPosFilter('st','buy_needed',this)">부족</button>
-        <button class="btn bgh xs" data-st="on_target" onclick="setEtfPosFilter('st','on_target',this)">일치</button>
-        <button class="btn bgh xs" data-st="overweight" onclick="setEtfPosFilter('st','overweight',this)">초과</button>
+        <button class="btn bgh xs active" onclick="setEtfPosFilter('st','all',this)">전체</button>
+        <button class="btn bgh xs" onclick="setEtfPosFilter('st','buy_needed',this)">부족</button>
+        <button class="btn bgh xs" onclick="setEtfPosFilter('st','on_target',this)">일치</button>
+        <button class="btn bgh xs" onclick="setEtfPosFilter('st','overweight',this)">초과</button>
       </div>
     </div>
     <div class="etf-table-view">
@@ -1456,163 +1423,135 @@ tr:hover td{background:#f8fafc}
     <div class="etf-card-view" id="etf-pos-cards"></div>
   </div>
 
-  <!-- B. 최근 변화 5회 비교 -->
-  <div class="card mt" id="etf-cmp-card">
+  <!-- 6. 계좌현황 + 성과 -->
+  <div class="card mt">
+    <div class="sec-t" style="margin-bottom:8px">🏦 계좌 현황 / 성과</div>
+    <div id="etf-acct-summary" class="etf-acct-grid"></div>
+    <div id="etf-perf-kpi" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
+    <div class="svgwrap" style="margin-top:8px"><svg id="etf-perf-svg" viewBox="0 0 780 160" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  </div>
+
+  <!-- 7. 최근 변화 5회 -->
+  <div class="card mt">
     <div class="sec-hd" style="margin-bottom:8px">
       <div class="sec-hl">
-        <span class="sec-t">🔄 최근 변화 비교</span>
+        <span class="sec-t">🔄 최근 변화</span>
         <div class="etf-ord-filter" style="margin-bottom:0">
           <button class="btn bgh sm active" data-cmp="3" onclick="setEtfCmpN(3,this)">3회</button>
           <button class="btn bgh sm" data-cmp="5" onclick="setEtfCmpN(5,this)">5회</button>
         </div>
-        <select class="fsl sm" id="etf-cmp-etf-sel" style="width:160px;min-height:32px" onchange="renderEtfCompare()">
-          <option value="">전체 ETF</option>
-        </select>
+        <select class="fsl sm" id="etf-cmp-etf-sel" style="width:150px;min-height:32px" onchange="renderEtfCompare()"><option value="">전체 ETF</option></select>
       </div>
     </div>
-    <div class="etf-cmp-grid" id="etf-cmp-grid"></div>
+    <div id="etf-cmp-grid"></div>
     <div id="etf-cmp-table-wrap" style="display:none">
       <div class="tw"><table id="etf-cmp-table"><thead id="etf-cmp-thead"></thead><tbody id="etf-cmp-tbody"></tbody></table></div>
     </div>
-    <div id="etf-cmp-empty" style="color:var(--txt3);font-size:13px;padding:12px 0;display:none">스냅샷 데이터가 없습니다. 샘플 데이터를 생성하거나 Python 엔진에서 snapshots를 반영하세요.</div>
+    <div id="etf-cmp-empty" style="color:var(--txt3);font-size:13px;padding:8px 0;display:none">스냅샷 없음</div>
   </div>
 
-  <!-- ⑤ 리밸런싱 감지 내역 -->
-  <div class="card mt">
-    <div class="sec-hd">
-      <div class="sec-hl"><span class="sec-t">🔔 리밸런싱 감지 내역</span><span class="cbadge" id="etf-diff-cnt">0건</span></div>
-      <select class="fsl sm" id="etf-diff-etf-sel" style="width:160px;min-height:32px" onchange="renderEtfDiffLogs()">
-        <option value="">전체 ETF</option>
-      </select>
-    </div>
-    <div class="etf-table-view">
-      <div class="tw"><table><thead><tr>
-        <th>감지 시각</th><th>ETF</th><th>소스</th>
-        <th>추가</th><th>제외</th><th>증가</th><th>감소</th>
-        <th class="nr">변경수</th><th>상태</th><th>run_id</th><th></th>
-      </tr></thead><tbody id="etf-diff-tb"></tbody></table></div>
-    </div>
-    <div class="etf-card-view" id="etf-diff-cards"></div>
-  </div>
+  <!-- 8. 접기 섹션들 -->
 
-  <!-- ② ETF별 운영 상태 -->
+  <!-- watchlist -->
   <div class="card mt">
-    <div class="sec-hd" style="margin-bottom:8px">
+    <div class="etf-collapse-hd" onclick="etfToggleSection('etf-wl-body','etf-wl-btn')">
       <div class="sec-hl"><span class="sec-t">📋 ETF별 운영 상태</span><span class="cbadge" id="etf-wl-cnt">0개</span></div>
-      <div class="fl-row">
+      <button class="etf-toggle-btn" id="etf-wl-btn">▾ 펼치기</button>
+    </div>
+    <div id="etf-wl-body" style="display:none;margin-top:10px">
+      <div style="display:flex;gap:8px;margin-bottom:8px">
         <button class="btn bp sm" onclick="openEtfModal()">＋ ETF 추가</button>
         <button class="btn bs sm" onclick="generateSampleEtfTrackData()">샘플</button>
       </div>
+      <div class="etf-table-view etf-wl-ext">
+        <div class="tw"><table><thead><tr>
+          <th>ETF명</th><th>코드</th><th>상태</th>
+          <th class="nr">투자금액</th><th class="nr">목표금액</th><th class="nr">오차</th>
+          <th class="nr">최근변경</th><th>최근감지</th><th>반영소스</th><th></th>
+        </tr></thead><tbody id="etf-wl-tb"></tbody></table></div>
+      </div>
+      <div class="etf-card-view" id="etf-wl-cards"></div>
+      <div class="etf-status-grid" id="etf-status-grid" style="margin-top:12px;display:none"></div>
     </div>
-    <div class="etf-table-view etf-wl-ext">
-      <div class="tw"><table><thead><tr>
-        <th>ETF명</th><th>코드</th><th>상태</th>
-        <th class="nr">투자금액</th><th class="nr">목표금액</th><th class="nr">오차</th>
-        <th class="nr">최근변경</th><th>최근감지</th><th>반영소스</th><th></th>
-      </tr></thead><tbody id="etf-wl-tb"></tbody></table></div>
+  </div>
+
+  <!-- 감지 내역 -->
+  <div class="card mt">
+    <div class="etf-collapse-hd" onclick="etfToggleSection('etf-diff-body','etf-diff-btn')">
+      <div class="sec-hl"><span class="sec-t">🔔 감지 내역</span><span class="cbadge" id="etf-diff-cnt">0건</span></div>
+      <button class="etf-toggle-btn" id="etf-diff-btn">▾ 펼치기</button>
     </div>
-    <div class="etf-card-view" id="etf-wl-cards"></div>
-    <div class="etf-status-grid" id="etf-status-grid" style="margin-top:12px;display:none"></div>
+    <div id="etf-diff-body" style="display:none;margin-top:10px">
+      <select class="fsl sm" id="etf-diff-etf-sel" style="width:160px;min-height:32px;margin-bottom:8px" onchange="renderEtfDiffLogs()"><option value="">전체 ETF</option></select>
+      <div class="etf-table-view">
+        <div class="tw"><table><thead><tr>
+          <th>감지 시각</th><th>ETF</th><th>소스</th>
+          <th>추가</th><th>제외</th><th>증가</th><th>감소</th>
+          <th class="nr">변경수</th><th>상태</th><th>run_id</th><th></th>
+        </tr></thead><tbody id="etf-diff-tb"></tbody></table></div>
+      </div>
+      <div class="etf-card-view" id="etf-diff-cards"></div>
+    </div>
   </div>
 
-  <!-- ③ sourceSummaries -->
-  <div class="card mt" id="etf-src-card" style="display:none">
-    <div class="sec-t" style="margin-bottom:8px">📡 소스 상태</div>
-    <div class="tw"><table><thead><tr>
-      <th>ETF명</th><th>코드</th><th>TIME 기준시각</th><th>KRX 상태</th><th>최종 반영소스</th>
-    </tr></thead><tbody id="etf-src-tb"></tbody></table></div>
-  </div>
-
-  <!-- ⑦ Python 엔진 상태 -->
+  <!-- 엔진 상태 -->
   <div class="card mt">
-    <div class="sec-t" style="margin-bottom:10px">⚙️ Python 엔진 상태</div>
-    <div id="etf-engine-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px"></div>
-    <div id="etf-block-reasons" class="etf-block-reasons" style="display:none"></div>
+    <div class="etf-collapse-hd" onclick="etfToggleSection('etf-eng-body','etf-eng-btn')">
+      <div class="sec-hl"><span class="sec-t">⚙️ 엔진 상태</span><span id="etf-eng-summary" style="font-size:11px;color:var(--txt3);margin-left:6px"></span></div>
+      <button class="etf-toggle-btn" id="etf-eng-btn">▾ 펼치기</button>
+    </div>
+    <div id="etf-eng-body" style="display:none;margin-top:10px">
+      <div id="etf-engine-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px"></div>
+      <div id="etf-block-reasons" class="etf-block-reasons" style="display:none;margin-top:8px"></div>
+      <div id="etf-src-card" style="display:none;margin-top:10px">
+        <div class="fl-sect-title">📡 소스 상태</div>
+        <div class="tw"><table><thead><tr><th>ETF명</th><th>코드</th><th>TIME 기준시각</th><th>KRX 상태</th><th>최종 반영소스</th></tr></thead><tbody id="etf-src-tb"></tbody></table></div>
+      </div>
+      <div id="etf-snap-card" style="display:none;margin-top:10px">
+        <div class="fl-sect-title">🗂 스냅샷 이력 (최근 10건)</div>
+        <div class="tw"><table><thead><tr>
+          <th>run_id</th><th>생성시각</th><th>변경</th><th>중요변경</th>
+          <th class="nr">주문수</th><th class="nr">잔여 KRW</th><th class="nr">잔여 USD</th><th>차단사유</th>
+        </tr></thead><tbody id="etf-snap-tb"></tbody></table></div>
+      </div>
+    </div>
   </div>
 
-  <!-- ⑧ 스냅샷 이력 -->
-  <div class="card mt" id="etf-snap-card" style="display:none">
-    <div class="sec-t" style="margin-bottom:10px">🗂 스냅샷 이력 (최근 10건)</div>
-    <div class="tw"><table><thead><tr>
-      <th>run_id</th><th>생성시각</th><th>변경</th><th>중요변경</th>
-      <th class="nr">주문수</th><th class="nr">잔여 KRW</th><th class="nr">잔여 USD</th><th>차단사유</th>
-    </tr></thead><tbody id="etf-snap-tb"></tbody></table></div>
-  </div>
-
-  <!-- ⑨ 성과 -->
+  <!-- 로그 + import -->
   <div class="card mt">
-    <div class="sec-t" style="margin-bottom:8px">📈 성과 / 추종오차</div>
-    <div id="etf-perf-kpi" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px"></div>
-    <div class="svgwrap"><svg id="etf-perf-svg" viewBox="0 0 780 180" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="etf-collapse-hd" onclick="etfToggleSection('etf-log-body','etf-log-btn')">
+      <div class="sec-hl"><span class="sec-t">📜 연동 상태 / 로그</span></div>
+      <button class="etf-toggle-btn" id="etf-log-btn">▾ 펼치기</button>
+    </div>
+    <div id="etf-log-body" style="display:none;margin-top:10px">
+      <div id="etf-sync-status-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:12px"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:12px;font-weight:700">작업 로그</span>
+        <select class="fsl sm" id="etf-log-filter" style="width:90px;min-height:30px" onchange="renderEtfActivityLogs()">
+          <option value="">전체</option><option value="import">import</option><option value="sync">sync</option>
+          <option value="diff">diff</option><option value="order">order</option>
+          <option value="engine">engine</option><option value="approval">approval</option><option value="error">error</option>
+        </select>
+      </div>
+      <div id="etf-log-list" style="max-height:240px;overflow-y:auto;font-size:12px;margin-bottom:12px"></div>
+      <div style="border-top:1px solid var(--bd);padding-top:10px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <span style="font-size:12px;font-weight:700;color:var(--txt2)">💾 ETF 데이터</span>
+          <button class="btn bs xs" onclick="exportEtfTrackJson()">⬇ 내보내기</button>
+          <span style="font-size:11px;color:var(--txt3)">Flight 데이터와 분리</span>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px">
+          <div style="font-size:11px;font-weight:700;color:var(--txt2);margin-bottom:6px">JSON 직접 붙여넣기</div>
+          <textarea class="fi" id="etf-paste-json" rows="3" style="font-size:11px;font-family:monospace;margin-bottom:6px" placeholder='{"type":"engine_status","data":{...}}'></textarea>
+          <button class="btn bp sm" onclick="importEtfPasteJson()">▶ 반영</button>
+        </div>
+        <input type="file" id="etf-import-f" accept=".json" style="display:none" onchange="importEtfTrackJsonFile(event)">
+        <span id="etf-fetch-last-at" style="font-size:11px;color:var(--txt3)"></span>
+      </div>
+    </div>
   </div>
 
-  <!-- G. Python 연동 상태 -->
-  <div class="card mt">
-    <div class="sec-t" style="margin-bottom:8px">🔗 Python 연동 상태</div>
-    <div id="etf-sync-status-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px"></div>
-  </div>
-
-  <!-- KPI (숨김 - ops bar로 대체) -->
   <div id="etf-kpi-grid" style="display:none"></div>
-
-  <!-- ⑩ 작업 로그 -->
-  <div class="card mt">
-    <div class="sec-hd">
-      <div class="sec-hl"><span class="sec-t">📜 작업 로그</span></div>
-      <select class="fsl sm" id="etf-log-filter" style="width:100px;min-height:32px" onchange="renderEtfActivityLogs()">
-        <option value="">전체</option>
-        <option value="import">import</option>
-        <option value="sync">sync</option>
-        <option value="diff">diff</option>
-        <option value="order">order</option>
-        <option value="engine">engine</option>
-        <option value="approval">approval</option>
-        <option value="error">error</option>
-      </select>
-    </div>
-    <div id="etf-log-list" style="max-height:280px;overflow-y:auto;font-size:12px"></div>
-  </div>
-
-  <!-- ⑪ Import/Export -->
-  <div class="card mt">
-    <div class="sec-hd" style="margin-bottom:10px">
-      <div class="sec-hl">
-        <span class="sec-t">💾 ETF 데이터 관리</span>
-        <span style="font-size:11px;color:var(--txt3);font-weight:400">Flight 데이터와 분리</span>
-      </div>
-      <button class="btn bs sm" onclick="exportEtfTrackJson()">⬇ 내보내기</button>
-    </div>
-    <div class="etf-import-section">
-      <div class="etf-import-method">
-        <div class="etf-import-method-hd">
-          <span class="num">1</span>엔진 결과 파일 선택<span class="rec">권장</span>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button class="btn bp sm" onclick="document.getElementById('etf-engine-file-input').click()">📂 JSON 파일 선택해서 반영</button>
-          <input type="file" id="etf-engine-file-input" accept=".json" style="display:none" onchange="handleEtfEngineFileSelect(event)">
-          <button class="btn bgh sm" onclick="rerunLastImportedEtfPayload()">🔁 최근 결과 다시 반영</button>
-        </div>
-        <div class="etf-import-hint">Python 엔진이 만든 <code style="font-size:10px">full_etf_payload_for_html.json</code> 파일을 선택하면 자동 반영됩니다.</div>
-        <div id="etf-file-import-status" class="etf-import-status"></div>
-      </div>
-      <div class="etf-import-method">
-        <div class="etf-import-method-hd"><span class="num">2</span>엔진 새로고침 (로컬 서버)</div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button class="btn bgh sm" onclick="refreshEtfFromEngineFile()">🔄 ETF 엔진 새로고침</button>
-          <span style="font-size:11px;color:var(--txt3)" id="etf-fetch-last-at"></span>
-        </div>
-        <div class="etf-import-hint"><code style="font-size:10px">localhost</code>에서 열었을 때 사용 가능. <code style="font-size:10px">./output/full_etf_payload_for_html.json</code> 경로 fetch.</div>
-        <div id="etf-fetch-import-status" class="etf-import-status"></div>
-      </div>
-      <div class="etf-import-method">
-        <div class="etf-import-method-hd"><span class="num">3</span>JSON 직접 붙여넣기</div>
-        <textarea class="fi" id="etf-paste-json" rows="4" style="font-size:11px;font-family:monospace;margin-bottom:6px" placeholder='{"type":"engine_status","data":{...}}'></textarea>
-        <div class="etf-import-hint" style="margin-bottom:6px">지원 type: engine_status · watchlist · diff_logs · follow_positions · order_queue · perf_history · snapshots · full_etf_payload</div>
-        <button class="btn bp sm" onclick="importEtfPasteJson()">▶ 반영</button>
-      </div>
-      <input type="file" id="etf-import-f" accept=".json" style="display:none" onchange="importEtfTrackJsonFile(event)">
-    </div>
-  </div>
 </div>
 
 <!-- ETF 등록/수정 모달 -->
@@ -1624,25 +1563,16 @@ tr:hover td{background:#f8fafc}
         <div class="fg"><label class="fl">ETF명 <span class="req">*</span></label><input type="text" class="fi" id="ef-name" placeholder="TIMEFOLIO 미국나스닥100액티브"></div>
         <div class="fg"><label class="fl">운용사</label><input type="text" class="fi" id="ef-mgr" placeholder="TIMEFOLIO"></div>
         <div class="fg"><label class="fl">심볼/종목코드</label><input type="text" class="fi" id="ef-sym" placeholder="449170"></div>
-        <div class="fg"><label class="fl">시장</label>
-          <select class="fsl" id="ef-mkt"><option value="KRX">KRX</option><option value="NASDAQ">NASDAQ</option><option value="NYSE">NYSE</option><option value="OTHER">기타</option></select>
-        </div>
-        <div class="fg"><label class="fl">통화</label>
-          <select class="fsl" id="ef-cur"><option value="KRW">KRW</option><option value="USD">USD</option></select>
-        </div>
+        <div class="fg"><label class="fl">시장</label><select class="fsl" id="ef-mkt"><option value="KRX">KRX</option><option value="NASDAQ">NASDAQ</option><option value="NYSE">NYSE</option><option value="OTHER">기타</option></select></div>
+        <div class="fg"><label class="fl">통화</label><select class="fsl" id="ef-cur"><option value="KRW">KRW</option><option value="USD">USD</option></select></div>
         <div class="fg"><label class="fl">데이터 소스</label><input type="text" class="fi" id="ef-src" placeholder="timefolio-site"></div>
         <div class="fg"><label class="fl">소스 URL</label><input type="text" class="fi" id="ef-url" placeholder="https://..."></div>
         <div class="fg"><label class="fl">목표 투자금액(원)</label><input type="number" class="fi" id="ef-target-amt" placeholder="50000000" min="0"></div>
         <div class="fg sp2"><label class="fl">메모</label><input type="text" class="fi" id="ef-note"></div>
-        <div class="fg"><label class="fl">추적 활성화</label>
-          <select class="fsl" id="ef-active"><option value="true">활성</option><option value="false">비활성</option></select>
-        </div>
+        <div class="fg"><label class="fl">추적 활성화</label><select class="fsl" id="ef-active"><option value="true">활성</option><option value="false">비활성</option></select></div>
       </div>
     </div>
-    <div class="md-ft">
-      <button class="btn bgh" onclick="cm('mo-etf')">취소</button>
-      <button class="btn bp" onclick="saveEtfWatchItem()">💾 저장</button>
-    </div>
+    <div class="md-ft"><button class="btn bgh" onclick="cm('mo-etf')">취소</button><button class="btn bp" onclick="saveEtfWatchItem()">💾 저장</button></div>
   </div>
 </div>
 
@@ -2752,8 +2682,8 @@ tr:hover td{background:#f8fafc}
 
 <script>
 /* =============================================================
-   ELS Manager V26.44
-   §F  FLIGHT (V26.44: ETF운영대시보드·승인관리·예산계산)
+   ELS Manager V26.47
+   §F  FLIGHT (V26.47: ETF운영대시보드·승인관리·예산계산)
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -2764,7 +2694,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.44';
+const VER = 'V26.47';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -5171,7 +5101,7 @@ function getFullBackupPayload(){
     gitSyncSettings:{owner:gs.owner, repo:gs.repo, branch:gs.branch, path:gs.path},
     etfTrackData:loadEtfTrackData(),
     /* FLIGHT */
-    flightData:getFlight(),
+    // ★ flightData 제외 — Flight는 별도 관리
     // token은 보안상 백업에서 제외 — 복원 후 수동 재입력 필요
   };
 }
@@ -5192,8 +5122,7 @@ function applyFullBackupPayload(data){
   if(Array.isArray(data.totalAssetHistory)) saveTotalAssetHistory(data.totalAssetHistory);
   if(Array.isArray(data.compareItems)) saveCompareItems(data.compareItems);
   if(data.etfTrackData&&typeof data.etfTrackData==='object') saveEtfTrackData(data.etfTrackData);
-  /* FLIGHT */
-  if(data.flightData&&typeof data.flightData==='object') setFlight(data.flightData);
+  /* ★ flightData 복원 제외 */
   if(data.fxRate!=null) saveFxRate(Number(data.fxRate)||0);
   if(data.customTickerMap&&typeof data.customTickerMap==='object') saveCustomTickerMap(data.customTickerMap);
   if(data.gitSyncSettings){
@@ -5204,6 +5133,160 @@ function applyFullBackupPayload(data){
     if(g.path)   localStorage.setItem(GIT_KEYS.path,   g.path);
     // token은 복원하지 않음 — 수동 재입력 필요
   }
+}
+
+/* ─ 자산관리 전용 백업 (Flight 제외 whitelist 방식) ─ */
+
+/**
+ * 자산관리 전용 백업 페이로드 생성.
+ * Flight 관련 키(am_flight_*)는 절대 포함하지 않음.
+ */
+function getAssetManagerBackupPayload(){
+  const {accounts, products} = load();
+  /* els_ap_* : 기초자산 현재가 */
+  const ap = {};
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith('els_ap_')) ap[k.slice(7)] = localStorage.getItem(k);
+  });
+  /* els_pp_* : 상품별 현재가 */
+  const pp = {};
+  products.forEach(p=>{ const v=loadPP(p.id); if(Object.keys(v).length) pp[p.id]=v; });
+  const gs = loadGitSyncSettings();
+  /* ETF 프론트 상태 — 별도 키들 */
+  const etfBudget   = lsGet('etf_budget_state_v1', null);
+  const etfApproval = lsGet('etf_approval_state_v1', null);
+  const etfOverrides= lsGet('etf_order_overrides_v1', null);
+  const etfLastPayload = lsGet('etf_last_payload', null);
+  return {
+    type:        'asset_manager_backup',
+    version:     VER,
+    exportedAt:  new Date().toISOString(),
+    data: {
+      /* ELS */
+      accounts,
+      products,
+      accountOrder:       loadOrd(),
+      assetPrices:        ap,
+      prodPrices:         pp,
+      fxRate:             loadFxRate(),
+      customTickerMap:    loadCustomTickerMap(),
+      /* 이력/비교 */
+      totalAssetHistory:  loadTotalAssetHistory(),
+      compareItems:       loadCompareItems(),
+      /* GitHub 설정 (token 제외) */
+      gitSyncSettings:    {owner:gs.owner, repo:gs.repo, branch:gs.branch, path:gs.path},
+      /* ETF 추종 전체 */
+      etfTrackData:       loadEtfTrackData(),
+      /* ETF 프론트 상태 */
+      etfBudgetState:     etfBudget,
+      etfApprovalState:   etfApproval,
+      etfOrderOverrides:  etfOverrides,
+      etfLastPayload:     etfLastPayload,
+    }
+    // ★ am_flight_v1 및 Flight 관련 키는 여기에 없음
+  };
+}
+
+/** 자산관리 전용 백업 파일 다운로드 */
+function exportAssetManagerBackup(){
+  try{
+    const payload = getAssetManagerBackupPayload();
+    const json    = JSON.stringify(payload, null, 2);
+    const blob    = new Blob([json], {type:'application/json'});
+    const url     = URL.createObjectURL(blob);
+    const ts      = new Date().toISOString().slice(0,19).replace(/[-:T]/g,(c)=>c==='T'?'_':c);
+    const a       = document.createElement('a');
+    a.href        = url;
+    a.download    = `asset_manager_backup_${ts}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    /* activity log */
+    try{ _addEtfLog('import','success','자산관리 백업 파일 저장 완료'); }catch{}
+    toast('백업 파일 저장 완료 ✓','ok');
+  }catch(e){
+    toast('백업 실패: '+e.message,'err');
+  }
+}
+
+/** 자산관리 전용 백업 복원 (Flight 키 무시) */
+function importAssetManagerBackup(ev){
+  const file = ev.target.files[0];
+  if(!file){ ev.target.value=''; return; }
+  if(!confirm('현재 자산관리 데이터가 백업 파일 내용으로 덮어써집니다. 계속할까요?')){
+    ev.target.value=''; return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const parsed = JSON.parse(e.target.result);
+      /* 유효성 검사 */
+      if(!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+        throw new Error('JSON 객체 형식이 아닙니다.');
+      if(parsed.type !== 'asset_manager_backup')
+        throw new Error('type이 "asset_manager_backup"이 아닙니다. 올바른 자산관리 백업 파일을 선택하세요.');
+      if(!parsed.data || typeof parsed.data !== 'object')
+        throw new Error('data 필드가 없습니다.');
+
+      const d = parsed.data;
+
+      /* ELS 계좌/상품 */
+      if(Array.isArray(d.accounts) && Array.isArray(d.products)){
+        /* 기존 els_ap_*, els_pp_*, els_ord 제거 후 복원 */
+        Object.keys(localStorage).forEach(k=>{
+          if(k.startsWith('els_ap_') || k.startsWith('els_pp_') || k==='els_ord')
+            localStorage.removeItem(k);
+        });
+        const normalized = d.products.map(p=>({currency:'KRW', ...p}));
+        saveAcc2(d.accounts);
+        saveProd2(normalized);
+      }
+      if(d.accountOrder)  saveOrd(d.accountOrder);
+      if(d.assetPrices)   Object.entries(d.assetPrices).forEach(([k,v])=>saveAP(k,v));
+      if(d.prodPrices)    Object.entries(d.prodPrices).forEach(([pid,v])=>savePP(pid,v));
+      if(d.fxRate!=null)  saveFxRate(Number(d.fxRate)||0);
+      if(d.customTickerMap && typeof d.customTickerMap==='object') saveCustomTickerMap(d.customTickerMap);
+
+      /* 이력/비교 */
+      if(Array.isArray(d.totalAssetHistory)) saveTotalAssetHistory(d.totalAssetHistory);
+      if(Array.isArray(d.compareItems))      saveCompareItems(d.compareItems);
+
+      /* GitHub 설정 (token 제외) */
+      if(d.gitSyncSettings){
+        const g = d.gitSyncSettings;
+        if(g.owner)  localStorage.setItem(GIT_KEYS.owner,  g.owner);
+        if(g.repo)   localStorage.setItem(GIT_KEYS.repo,   g.repo);
+        if(g.branch) localStorage.setItem(GIT_KEYS.branch, g.branch);
+        if(g.path)   localStorage.setItem(GIT_KEYS.path,   g.path);
+        // token은 복원하지 않음
+      }
+
+      /* ETF 추종 전체 */
+      if(d.etfTrackData && typeof d.etfTrackData==='object') saveEtfTrackData(d.etfTrackData);
+
+      /* ETF 프론트 상태 (별도 키) */
+      if(d.etfBudgetState  != null) lsSet('etf_budget_state_v1',    d.etfBudgetState);
+      if(d.etfApprovalState!= null) lsSet('etf_approval_state_v1',  d.etfApprovalState);
+      if(d.etfOrderOverrides!=null) lsSet('etf_order_overrides_v1', d.etfOrderOverrides);
+      if(d.etfLastPayload  != null) lsSet('etf_last_payload',        d.etfLastPayload);
+
+      /* ★ Flight 데이터는 건드리지 않음 ★ */
+
+      /* activity log */
+      try{ _addEtfLog('import','success','자산관리 백업 복원 완료 (v'+parsed.version+')'); }catch{}
+
+      /* 전체 화면 재렌더 */
+      renderTab(curTab);
+      updateCnts();
+      try{ renderAssetGrid(); }catch{}
+      try{ if(curTab==='etftrack') renderEtfTrack(); else renderEtfTrack(); }catch{}
+
+      toast('백업 복원 완료 ✓ (v'+parsed.version+')','ok');
+    }catch(err){
+      toast('복원 실패: '+err.message,'err');
+    }
+    ev.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 /** GitHub REST API 공통 요청 헬퍼 */
@@ -9285,7 +9368,7 @@ function openFlDecodeHelp(){
   om('mo-fl-decode');
 }
 /* ═══════════════════════════════════════════════════════
-   §31 ETF 추종 — V26.44
+   §31 ETF 추종 — V26.47
    localStorage keys:
      am_etf_trackdata_v1   (ETF 데이터 — Flight와 완전 분리)
      etf_budget_state_v1   (예산/실행 설정)
@@ -9393,6 +9476,17 @@ function renderEtfTrack(){
   renderEtfSyncStatus();
   renderEtfActivityLogs();
   _updateEtfSelectors();
+  /* V26.47 추가 */
+  try{renderEtfAccountSummary();}catch(e){}
+  try{_etfRestoreRemoteUrlInput();}catch(e){}
+  try{
+    var _d=getEtf(),_eng=_d.engineStatus||{};
+    var _es=document.getElementById('etf-eng-summary');
+    if(_es)_es.textContent=_eng.run_id?etfShort(_eng.run_id,16)+'  '+etfTs(_eng.lastSyncAt):'';
+    var _sm=_d.syncMeta||{};
+    var _le=document.getElementById('etf-gh-last-sync');
+    if(_le&&_sm.lastImportAt)_le.textContent='최근: '+etfTs(_sm.lastImportAt);
+  }catch(e){}
 }
 
 function _updateEtfSelectors(){
@@ -10205,6 +10299,8 @@ function renderEtfSyncStatus(){
     ['approved_execution',appr.approved?'생성됨 (다운로드 필요)':'미생성'],
   ];
   el.innerHTML=items.map(function(i){return'<div class="kpi-card"><div class="kpi-lbl">'+i[0]+'</div><div style="font-size:12px;font-weight:600;word-break:break-all">'+i[1]+'</div></div>';}).join('');
+  var remoteUrl=getEtfRemoteUrl();
+  if(remoteUrl)el.innerHTML+='<div class="kpi-card"><div class="kpi-lbl">payload URL</div><div style="font-size:11px;font-weight:600;word-break:break-all">'+esc(etfShort(remoteUrl,28))+'</div></div>';
 }
 
 /* ─ KPI (호환용, 숨김 처리됨) ─ */
@@ -10413,6 +10509,184 @@ function deleteEtfWatchItem(id){
 function toggleEtfWatchActive(id){
   var d=getEtf();var w=d.watchlist.find(function(x){return x.id===id;});
   if(w){w.active=!w.active;setEtf(d);if(curTab==='etftrack')renderEtfTrack();}
+}
+
+
+/* ─ §35 ETF 샘플 데이터 ─ */
+function generateSampleEtfTrackData(){
+  if(!confirm('샘플 ETF 추종 데이터를 생성합니다. 기존 ETF 추종 데이터를 덮어씁니다.'))return;
+  function doff(t){var d=new Date();d.setDate(d.getDate()-t);return d.toISOString();}
+  var id1=genId(),id2=genId();
+  var runIds=['20260415_202802','20260412_180000','20260410_093012','20260408_201500','20260405_145530'];
+
+  var sample={
+    watchlist:[
+      {id:id1,name:'TIMEFOLIO 미국나스닥100액티브',manager:'TIMEFOLIO',symbol:'449170',market:'KRX',currency:'KRW',
+       dataSource:'timefolio-site',sourceUrl:'',targetAmount:50000000,note:'주력 ETF',active:true,createdAt:doff(30),updatedAt:doff(0)},
+      {id:id2,name:'TIMEFOLIO 글로벌AI인공지능액티브',manager:'TIMEFOLIO',symbol:'456600',market:'KRX',currency:'KRW',
+       dataSource:'timefolio-site',sourceUrl:'',targetAmount:30000000,note:'AI 테마',active:true,createdAt:doff(20),updatedAt:doff(0)},
+    ],
+    diffLogs:[
+      {id:genId(),etfId:id1,etfCode:'449170',etfName:'TIMEFOLIO 미국나스닥100액티브',detectedAt:doff(0),
+       source:'TIME_ONLY',changeType:'rebalance',runId:runIds[0],
+       added:['META','AVGO'],removed:['CSCO'],increased:['AAPL','MSFT'],decreased:['AMZN','TSLA'],changedCount:7,status:'reviewed',note:'주요 리밸런싱'},
+      {id:genId(),etfId:id2,etfCode:'456600',etfName:'TIMEFOLIO 글로벌AI인공지능액티브',detectedAt:doff(3),
+       source:'TIME_ONLY',changeType:'add',runId:runIds[1],
+       added:['NVDA','AMD'],removed:[],increased:['MSFT'],decreased:[],changedCount:3,status:'new',note:''},
+      {id:genId(),etfId:id1,etfCode:'449170',etfName:'TIMEFOLIO 미국나스닥100액티브',detectedAt:doff(5),
+       source:'KRX_PRIMARY',changeType:'rebalance',runId:runIds[2],
+       added:['GOOGL'],removed:['META'],increased:['AAPL'],decreased:['NVDA'],changedCount:4,status:'reviewed',note:''},
+    ],
+    followPositions:[
+      {id:genId(),etfId:id1,symbol:'005930',name:'삼성전자',qty:100,avgPrice:62000,currentPrice:63500,marketValue:6350000,targetAmount:6200000,targetWeight:12.7,currentWeight:13.0,weightGap:0.3,gapWeight:0.3,requiredAction:'초과',status:'초과',requiredQty:-2,market:'KRX',updatedAt:doff(0)},
+      {id:genId(),etfId:id1,symbol:'AAPL',name:'Apple Inc.',qty:10,avgPrice:178000,currentPrice:185000,marketValue:1850000,targetAmount:2000000,targetWeight:8.5,currentWeight:7.9,weightGap:-0.6,gapWeight:-0.6,requiredAction:'부족',status:'부족',requiredQty:2,market:'US',updatedAt:doff(0)},
+      {id:genId(),etfId:id1,symbol:'MSFT',name:'Microsoft Corp.',qty:5,avgPrice:395000,currentPrice:410000,marketValue:2050000,targetAmount:2100000,targetWeight:9.2,currentWeight:8.8,weightGap:-0.4,gapWeight:-0.4,requiredAction:'부족',status:'부족',requiredQty:1,market:'US',updatedAt:doff(0)},
+      {id:genId(),etfId:id1,symbol:'NVDA',name:'NVIDIA Corp.',qty:8,avgPrice:860000,currentPrice:875000,marketValue:7000000,targetAmount:7000000,targetWeight:7.0,currentWeight:7.0,weightGap:0.0,gapWeight:0.0,requiredAction:'일치',status:'일치',requiredQty:0,market:'US',updatedAt:doff(0)},
+      {id:genId(),etfId:id2,symbol:'NVDA',name:'NVIDIA Corp.',qty:5,avgPrice:880000,currentPrice:875000,marketValue:4375000,targetAmount:4000000,targetWeight:14.5,currentWeight:15.2,weightGap:0.7,gapWeight:0.7,requiredAction:'초과',status:'초과',requiredQty:-2,market:'US',updatedAt:doff(0)},
+    ],
+    orderQueue:[
+      {id:genId(),etfId:id1,symbol:'AAPL',name:'Apple Inc.',market:'US',side:'buy',qty:2,refPrice:185000,estAmount:370000,currency:'KRW',status:'pending',generatedAt:doff(0),runId:runIds[0]},
+      {id:genId(),etfId:id1,symbol:'MSFT',name:'Microsoft Corp.',market:'US',side:'buy',qty:1,refPrice:410000,estAmount:410000,currency:'KRW',status:'approved',generatedAt:doff(0),runId:runIds[0]},
+      {id:genId(),etfId:id1,symbol:'005930',name:'삼성전자',market:'KRX',side:'sell',qty:2,refPrice:63500,estAmount:127000,currency:'KRW',status:'pending',generatedAt:doff(0),runId:runIds[0]},
+    ],
+    engineStatus:{
+      run_id:runIds[0],enabled:true,dryRun:true,
+      brokerName:'KIS',accountAlias:'TIME ETF Bot',hostLabel:'Mac mini M1',
+      lastHeartbeat:doff(0),lastSyncAt:doff(0),lastFetchAt:doff(0),lastOrderRunAt:null,
+      latestError:'',
+      blockReasons:['DRY_RUN=true','execute_orders=false'],
+      sourceSummaries:[
+        {etfCode:'449170',etfName:'TIMEFOLIO 미국나스닥100액티브',timeAsOf:'2026-04-15 08:28:03',krxStatus:'NO_DATA',finalSource:'TIME_ONLY'},
+        {etfCode:'456600',etfName:'TIMEFOLIO 글로벌AI인공지능액티브',timeAsOf:'2026-04-15 08:28:04',krxStatus:'NO_DATA',finalSource:'TIME_ONLY'},
+      ]
+    },
+    perfHistory:Array.from({length:10},function(_,i){
+      var base=80000000;
+      return{date:doff(9-i).slice(0,10),trackMV:base+i*600000+Math.random()*200000,targetMV:base+i*580000,trackingError:Math.random()*0.003,cumReturn:i*0.6+Math.random()*0.2};
+    }),
+    snapshots:runIds.map(function(rid,i){
+      return{
+        run_id:rid,
+        created_at:doff(i*3),
+        changed:i<3,
+        significant_changed:i===0,
+        remaining_krw:5000000-i*200000,
+        remaining_usd:0,
+        block_reasons:i<2?['DRY_RUN=true']:i===2?['DRY_RUN=true','execute_orders=false']:[],
+        buy_orders_count:i<2?2:0,
+        totalMV:80000000+i*500000,
+        totalTarget:80000000,
+        trackingError:(i*0.5)*0.01,
+        addedSymbols:   i===0?['META','AVGO']:i===1?['NVDA','AMD']:[],
+        removedSymbols: i===0?['CSCO']:i===1?[]:i===2?['META']:[],
+        increasedSymbols:i===0?['AAPL','MSFT']:i===1?['MSFT']:[],
+        decreasedSymbols:i===0?['AMZN','TSLA']:i===2?['NVDA']:[],
+        holdingsSummary:[
+          {symbol:'AAPL',name:'Apple Inc.',currentWeight:7.9+(i*0.1),targetWeight:8.5,weightGap:(7.9+(i*0.1))-8.5},
+          {symbol:'MSFT',name:'Microsoft',currentWeight:8.8-(i*0.05),targetWeight:9.2,weightGap:(8.8-(i*0.05))-9.2},
+          {symbol:'NVDA',name:'NVIDIA',  currentWeight:7.0+(i*0.15),targetWeight:7.0,weightGap:i*0.15},
+        ],
+        etfSummaries:[
+          {etfId:id1,etfCode:'449170',mv:50000000+i*300000,target:50000000,error:(i*0.3)*0.01},
+        ],
+        sourceSummaries:[
+          {etfCode:'449170',finalSource:'TIME_ONLY',timeAsOf:'2026-04-'+(15-i*3)+' 08:28',krxStatus:'NO_DATA'},
+        ],
+      };
+    }),
+    activityLogs:[
+      {id:genId(),ts:doff(0),type:'import',level:'success',message:'샘플 데이터 생성',meta:{}},
+      {id:genId(),ts:doff(0),type:'engine',level:'info',message:'엔진 상태 수신: dry-run ON, run_id='+runIds[0],meta:{run_id:runIds[0]}},
+      {id:genId(),ts:doff(0),type:'order',level:'warn',message:'Dry-run — 주문 실행 없음',meta:{}},
+      {id:genId(),ts:doff(1),type:'diff',level:'info',message:'리밸런싱 감지: 449170 7건 변경',meta:{etfCode:'449170'}},
+      {id:genId(),ts:doff(3),type:'diff',level:'info',message:'리밸런싱 감지: 456600 3건 변경',meta:{etfCode:'456600'}},
+      {id:genId(),ts:doff(5),type:'sync',level:'success',message:'데이터 동기화 완료',meta:{}},
+    ],
+    syncMeta:{lastImportAt:new Date().toISOString(),lastImportType:'sample'}
+  };
+  setEtf(sample);
+  if(curTab==='etftrack')renderEtfTrack();
+  toast('샘플 ETF 추종 데이터 생성 완료 (5회차 비교 포함)','ok');
+}
+
+/* ═══════════════════════════════════════════════════════
+   §36 ETF V26.47 — GitHub 연동 / 계좌현황 / UI 헬퍼
+   ═══════════════════════════════════════════════════════ */
+
+var ETF_REMOTE_URL_KEY = 'etf_remote_url_v1';
+function getEtfRemoteUrl(){ return lsGet(ETF_REMOTE_URL_KEY,'')||''; }
+function saveEtfRemoteUrl(){
+  var el=document.getElementById('etf-remote-url'); if(!el)return;
+  lsSet(ETF_REMOTE_URL_KEY, el.value.trim()); toast('URL 저장됨','ok');
+}
+function _etfRestoreRemoteUrlInput(){
+  var el=document.getElementById('etf-remote-url');
+  if(el&&!el.value) el.value=getEtfRemoteUrl();
+}
+function etfToggleSection(bodyId,btnId){
+  var b=document.getElementById(bodyId), btn=document.getElementById(btnId);
+  if(!b)return;
+  var open=b.style.display!=='none';
+  b.style.display=open?'none':'';
+  if(btn)btn.textContent=open?'▾ 펼치기':'▲ 접기';
+}
+async function etfFetchFromRemoteUrl(){
+  var el=document.getElementById('etf-remote-url');
+  var statusEl=document.getElementById('etf-remote-status');
+  var url=(el?el.value.trim():'')||getEtfRemoteUrl();
+  if(!url){_etfSetStatus(statusEl,'err','URL을 입력하세요.');toast('URL을 입력하세요.','err');return;}
+  lsSet(ETF_REMOTE_URL_KEY,url);
+  _etfSetStatus(statusEl,'','🔄 연동 중…');
+  try{
+    var ctrl=new AbortController(),tid=setTimeout(function(){ctrl.abort();},15000);
+    var res=await fetch(url,{cache:'no-store',signal:ctrl.signal});
+    clearTimeout(tid);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var payload=await res.json();
+    try{lsSet('etf_last_payload',payload);}catch(ex){}
+    var ok=importEtfPayloadObject(payload,'github-fetch');
+    var ts=etfTs(new Date().toISOString());
+    _updateSyncMeta('github-fetch',new Date().toISOString(),'github-fetch',url);
+    _etfSetStatus(statusEl,ok?'ok':'err',ok?'✅ 연동 완료 ('+ts+')':'❌ 반영 실패');
+    var lastEl=document.getElementById('etf-gh-last-sync');
+    if(lastEl)lastEl.textContent='최근: '+ts;
+    _addEtfLog('sync','success','GitHub 연동: '+url);
+  }catch(e){
+    _etfSetStatus(statusEl,'err','❌ 연동 실패: '+e.message);
+    var last=lsGet('etf_last_payload',null);
+    if(last){importEtfPayloadObject(last,'cache-fallback');_etfSetStatus(statusEl,'warn','⚠️ 캐시 재반영');}
+    else toast('연동 실패: '+e.message,'err');
+  }
+}
+async function etfTestRemoteUrl(){
+  var el=document.getElementById('etf-remote-url');
+  var statusEl=document.getElementById('etf-remote-status');
+  var url=(el?el.value.trim():'')||getEtfRemoteUrl();
+  if(!url){_etfSetStatus(statusEl,'err','URL을 입력하세요.');return;}
+  _etfSetStatus(statusEl,'','🧪 테스트 중…');
+  try{
+    var ctrl=new AbortController(),tid=setTimeout(function(){ctrl.abort();},8000);
+    var res=await fetch(url,{method:'HEAD',cache:'no-store',signal:ctrl.signal});
+    clearTimeout(tid);
+    _etfSetStatus(statusEl,res.ok?'ok':'err',res.ok?'✅ 연결 성공 ('+res.status+')':'❌ HTTP '+res.status);
+  }catch(e){_etfSetStatus(statusEl,'err','❌ 연결 실패: '+e.message);}
+}
+function renderEtfAccountSummary(){
+  var d=getEtf();var el=document.getElementById('etf-acct-summary');if(!el)return;
+  var snap=(d.snapshots||[])[0]||{},eng=d.engineStatus||{};
+  var acct=snap.accountSummary||eng.accountSummary||null;
+  if(!acct){
+    el.innerHTML='<div style="color:var(--txt3);font-size:12px;grid-column:1/-1;padding:8px 0">계좌 현황 없음</div>';return;
+  }
+  var items=[
+    {l:'국내 현금',v:etfFmtN(acct.cashKrw||acct.domestic_cash||0,'KRW')},
+    {l:'해외 현금',v:etfFmtN(acct.cashUsd||acct.overseas_cash||0,'USD')},
+    {l:'국내 평가금액',v:etfFmtN(acct.evalKrw||acct.domestic_eval||0,'KRW')},
+    {l:'해외 평가금액',v:etfFmtN(acct.evalUsd||acct.overseas_eval||0,'USD')},
+    {l:'총 평가금액',v:etfFmtN(acct.totalEval||acct.total_eval||0,'KRW')},
+    {l:'조회 시각',v:etfTs(acct.asOf||acct.updated_at||null)},
+  ];
+  el.innerHTML=items.map(function(i){return'<div class="etf-acct-card"><div class="etf-acct-lbl">'+i.l+'</div><div class="etf-acct-val">'+i.v+'</div></div>';}).join('');
 }
 
 /* ─ §30 초기화 ─ */
