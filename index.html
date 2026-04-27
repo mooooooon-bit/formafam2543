@@ -614,7 +614,7 @@ tr:hover td{background:#f8fafc}
 .fl-sid-pill{display:inline-block;background:#0f172a;color:#7dd3fc;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;font-family:monospace;margin:1px 2px}
 .fl-star-pill{display:inline-block;background:#1c1917;color:#fcd34d;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;font-family:monospace;margin:1px 2px}
 
-/* FLIGHT V26.47 additions */
+/* FLIGHT V26.50 additions */
 .fl-lb-badge-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
 .fl-lb-ap-badge{background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:700;padding:1px 7px;border-radius:5px;font-family:monospace}
 .fl-lb-plan-badge{background:#f0fdf4;color:#15803d;font-size:10px;font-weight:700;padding:1px 7px;border-radius:5px}
@@ -633,7 +633,7 @@ tr:hover td{background:#f8fafc}
 .fl-map-legend{display:flex;gap:10px;flex-wrap:wrap;padding:8px 12px;background:rgba(255,255,255,.92);border-radius:var(--r2);margin-bottom:8px;font-size:11px;align-items:center}
 .fl-map-legend-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
 
-/* FLIGHT V26.47 additions */
+/* FLIGHT V26.50 additions */
 .fl-time-basis-bar{display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;align-items:center}
 .fl-time-basis-bar label{font-size:11px;color:var(--txt3);font-weight:600;margin-right:2px}
 .fl-time-basis-btn{font-size:11px;padding:3px 10px;border-radius:12px;border:1px solid var(--bd);background:var(--surface);color:var(--txt2);cursor:pointer;font-family:var(--f);font-weight:600}
@@ -650,7 +650,7 @@ tr:hover td{background:#f8fafc}
 .fl-ov-metar-lbl{font-size:10px;font-weight:700;color:var(--txt3);margin-bottom:2px;margin-top:6px}
 .fl-ov-metar-box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:6px 10px;font-size:10px;font-family:monospace;color:var(--txt);white-space:pre-wrap;word-break:break-all}
 
-/* ─ ETF V26.47 ─ */
+/* ─ ETF V26.50 ─ */
 /* ops bar */
 .etf-ops-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);margin-top:8px;min-height:38px}
 .etf-ops-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
@@ -738,7 +738,7 @@ tr:hover td{background:#f8fafc}
 .etf-pos-filter button.active{background:var(--acc);color:#fff;border-color:var(--acc)}
 .etf-runid{font-family:monospace;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;display:inline-block;vertical-align:middle}
 
-/* ─ ETF V26.47 추가 CSS ─ */
+/* ─ ETF V26.50 추가 CSS ─ */
 .etf-flow-box{background:var(--acc-l);border:1px solid #bfdbfe;border-radius:var(--r2);padding:9px 14px;font-size:12px;color:#1e40af;display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .etf-flow-box .step{font-weight:700;white-space:nowrap}
 .etf-flow-sep{color:#93c5fd;margin:0 1px}
@@ -764,7 +764,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.47</span>
+      <span class="ver-badge">V26.50</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
@@ -1316,6 +1316,7 @@ tr:hover td{background:#f8fafc}
           <button class="btn bgh sm" onclick="etfTestRemoteUrl()">🧪 연결 테스트</button>
           <button class="btn bgh sm" onclick="saveEtfRemoteUrl()">💾 URL 저장</button>
           <button class="btn bgh sm" onclick="rerunLastImportedEtfPayload()">🔁 최근 재반영</button>
+          <button class="btn bd-btn xs" onclick="etfClearCache()" style="margin-left:auto">🗑 ETF 캐시 초기화</button>
         </div>
         <div id="etf-remote-status" class="etf-import-status"></div>
         <div style="margin-top:8px;font-size:11px;color:var(--txt3)">보조:
@@ -2682,8 +2683,8 @@ tr:hover td{background:#f8fafc}
 
 <script>
 /* =============================================================
-   ELS Manager V26.47
-   §F  FLIGHT (V26.47: ETF운영대시보드·승인관리·예산계산)
+   ELS Manager V26.50
+   §F  FLIGHT (V26.50: ETF운영대시보드·승인관리·예산계산)
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -2694,7 +2695,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.47';
+const VER = 'V26.50';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -9368,7 +9369,7 @@ function openFlDecodeHelp(){
   om('mo-fl-decode');
 }
 /* ═══════════════════════════════════════════════════════
-   §31 ETF 추종 — V26.47
+   §31 ETF 추종 — V26.50
    localStorage keys:
      am_etf_trackdata_v1   (ETF 데이터 — Flight와 완전 분리)
      etf_budget_state_v1   (예산/실행 설정)
@@ -9385,7 +9386,10 @@ const ETF_OVERRIDES_KEY = 'etf_order_overrides_v1';
 function _etfDefaultShape(){
   return{watchlist:[],diffLogs:[],followPositions:[],orderQueue:[],
     engineStatus:null,perfHistory:[],activityLogs:[],
-    snapshots:[],syncMeta:{lastImportAt:null,lastImportType:null,source:null,lastFileName:null}};
+    snapshots:[],
+    accountSummary:null,performanceSummary:null,
+    rebalanceBudget:null,etfTopHoldings:[],
+    syncMeta:{lastImportAt:null,lastImportType:null,source:null,lastFileName:null}};
 }
 function _etfBudgetDefault(){
   return{budget_krw:0,budget_usd:0,execute_date:'',execute_time:'10:30'};
@@ -9458,7 +9462,7 @@ function _updateSyncMeta(type,ts,source,fileName){
    §32 ETF 렌더 메인
    ═══════════════════════════════════════════════════════ */
 function renderEtfTrack(){
-  var d=getEtf();setEtf(d);
+  var d=getEtf();
   renderEtfOpsBar();
   renderEtfSummaryCards();
   renderEtfTopBlockReasons();
@@ -9476,7 +9480,7 @@ function renderEtfTrack(){
   renderEtfSyncStatus();
   renderEtfActivityLogs();
   _updateEtfSelectors();
-  /* V26.47 추가 */
+  /* V26.50 추가 */
   try{renderEtfAccountSummary();}catch(e){}
   try{_etfRestoreRemoteUrlInput();}catch(e){}
   try{
@@ -9524,7 +9528,14 @@ function renderEtfOpsBar(){
 /* ─ A. 운영 요약 카드 ─ */
 function renderEtfSummaryCards(){
   var d=getEtf();var el=document.getElementById('etf-summary-grid');if(!el)return;
-  var budget=getEtfBudget();var appr=getEtfApproval();var eng=d.engineStatus||{};
+  var budget=getEtfBudget();
+  /* payload의 rebalanceBudget 우선 */
+  var d2rebalance=d.rebalanceBudget;
+  if(d2rebalance){
+    if(d2rebalance.budgetKRW||d2rebalance.budget_krw) budget.budget_krw=d2rebalance.budgetKRW||d2rebalance.budget_krw||0;
+    if(d2rebalance.budgetUSD||d2rebalance.budget_usd) budget.budget_usd=d2rebalance.budgetUSD||d2rebalance.budget_usd||0;
+  }
+  var appr=getEtfApproval();var eng=d.engineStatus||{};
 
   /* 이번 승인안 필요 자금 (orderQueue pending 기준) */
   var reqKrw=0,reqUsd=0;
@@ -9986,7 +9997,12 @@ function renderEtfCompare(){
   snaps=snaps.slice(0,etfCmpN);
   var grid=document.getElementById('etf-cmp-grid');var tableWrap=document.getElementById('etf-cmp-table-wrap');var empty=document.getElementById('etf-cmp-empty');
   if(!grid)return;
-  if(!snaps.length){grid.innerHTML='';if(tableWrap)tableWrap.style.display='none';if(empty)empty.style.display='';return;}
+  if(!snaps.length||snaps.length<2){
+    if(grid)grid.innerHTML='<div style="color:var(--txt3);font-size:13px;padding:12px 0">비교 스냅샷 부족 — GitHub 연동 후 2회 이상 수신 시 비교됩니다.</div>';
+    if(tableWrap)tableWrap.style.display='none';
+    if(empty)empty.style.display='none';
+    return;
+  }
   if(empty)empty.style.display='none';
 
   grid.innerHTML=snaps.map(function(s,i){
@@ -10263,27 +10279,8 @@ function renderEtfSnapshots(){
 
 /* ─ 성과 ─ */
 function renderEtfPerf(){
-  var d=getEtf();var perf=d.perfHistory||[];
-  var kpiEl=document.getElementById('etf-perf-kpi');var svg=document.getElementById('etf-perf-svg');
-  if(!perf.length){if(kpiEl)kpiEl.innerHTML='<span style="color:var(--txt3);font-size:13px">성과 데이터 없음</span>';if(svg)svg.innerHTML='';return;}
-  var last=perf[perf.length-1]||{};
-  var errs=perf.map(function(p){return Number(p.trackingError)||0;});
-  var avgErr=errs.reduce(function(s,v){return s+v;},0)/errs.length;
-  if(kpiEl)kpiEl.innerHTML=[{l:'추종오차 평균',v:(avgErr*100).toFixed(3)+'%'},{l:'최근 추종 MV',v:etfFmtN(last.trackMV,'KRW')},{l:'최근 목표 MV',v:etfFmtN(last.targetMV,'KRW')},{l:'누적수익률',v:last.cumReturn!=null?last.cumReturn.toFixed(2)+'%':'-'}].map(function(k){return'<div class="kpi-card"><div class="kpi-lbl">'+k.l+'</div><div class="kpi-val" style="font-size:14px">'+k.v+'</div></div>';}).join('');
-  if(!svg)return;
-  var W=780,H=180,pad={t:10,r:10,b:30,l:50};
-  var xs=perf.map(function(_,i){return pad.l+(W-pad.l-pad.r)*(i/(Math.max(perf.length-1,1)));});
-  function norm(arr){var mn=Math.min.apply(null,arr),mx=Math.max.apply(null,arr);if(mx===mn)return arr.map(function(){return 0.5;});return arr.map(function(v){return(v-mn)/(mx-mn);});}
-  function pts(ys){return xs.map(function(x,i){return x+','+(pad.t+(H-pad.t-pad.b)*(1-ys[i]));}).join(' ');}
-  var mvs=perf.map(function(p){return Number(p.trackMV)||0;});
-  var tgs=perf.map(function(p){return Number(p.targetMV)||0;});
-  var all=mvs.concat(tgs);var mn=Math.min.apply(null,all);var mx=Math.max.apply(null,all);
-  function normArr(arr){if(mx===mn)return arr.map(function(){return 0.5;});return arr.map(function(v){return(v-mn)/(mx-mn);});}
-  svg.innerHTML='<polyline points="'+pts(normArr(mvs))+'" fill="none" stroke="var(--acc)" stroke-width="2.5"/>'+
-    '<polyline points="'+pts(normArr(tgs))+'" fill="none" stroke="var(--am)" stroke-width="1.5" stroke-dasharray="4,3"/>'+
-    perf.map(function(p,i){return'<text x="'+xs[i]+'" y="'+(H-pad.b+14)+'" text-anchor="middle" font-size="9" fill="var(--txt3)">'+esc(String(p.date||'').slice(5))+'</text>';}).join('')+
-    '<text x="'+(W-pad.r)+'" y="20" text-anchor="end" font-size="10" fill="var(--acc)">추종 MV</text>'+
-    '<text x="'+(W-pad.r)+'" y="34" text-anchor="end" font-size="10" fill="var(--am)">목표 MV</text>';
+  /* renderEtfAccountSummary에서 통합 처리됨 */
+  renderEtfAccountSummary();
 }
 
 /* ─ G. Python 연동 상태 ─ */
@@ -10341,8 +10338,10 @@ function importEtfPayloadObject(payload,sourceName){
   if(!type||type==='full_etf_payload'){
     var full=payload.data||payload;
     importEtfTrackJson(full);
-    _addEtfLog('import','success','['+sourceName+'] full_etf_payload 반영');
-    _updateSyncMeta('full_etf_payload',now,sourceName,null);
+    /* syncMeta는 importEtfTrackJson 내부에서 이미 저장됨 — 중복 호출 제거 */
+    _addEtfLog('import','success','['+sourceName+'] full_etf_payload — state 완전 교체 완료');
+    if(curTab==='etftrack')renderEtfTrack();
+    toast('payload 기준 전체 state 교체 완료','ok');
     return true;
   }
   var data=payload.data;
@@ -10388,16 +10387,117 @@ function importEtfPayloadObject(payload,sourceName){
 }
 
 function importEtfTrackJson(data){
-  if(!data||typeof data!=='object'||Array.isArray(data)){toast('올바른 ETF 데이터 객체가 아닙니다.','err');return;}
-  var d=getEtf();
-  ['watchlist','diffLogs','followPositions','orderQueue','perfHistory','activityLogs','snapshots'].forEach(function(k){if(Array.isArray(data[k]))d[k]=data[k];});
-  if(data.engineStatus&&typeof data.engineStatus==='object')d.engineStatus=data.engineStatus;
-  if(data.syncMeta&&typeof data.syncMeta==='object')d.syncMeta=Object.assign(d.syncMeta||{},data.syncMeta);
-  if(d.diffLogs.length>100)d.diffLogs=d.diffLogs.slice(0,100);
-  if(d.snapshots.length>100)d.snapshots=d.snapshots.slice(0,100);
+  /* full_etf_payload 수신 시 완전 교체 — merge 절대 금지 */
+  if(!data||typeof data!=='object'||Array.isArray(data)){
+    toast('올바른 ETF 데이터 객체가 아닙니다.','err');return;
+  }
+  var now=new Date().toISOString();
+
+  /* 새 state를 _etfDefaultShape()으로 초기화 (기존 localStorage 무시) */
+  var d=_etfDefaultShape();
+
+  /* ── 배열 필드 완전 교체 ── */
+  /* watchlist: 여러 키 이름 지원 */
+  var wl=data.watchlist||data.etfWatchlist||data.etf_watchlist||[];
+  if(Array.isArray(wl)&&wl.length) d.watchlist=wl;
+
+  var fl=data.followPositions||data.follow_positions||data.positions||[];
+  if(Array.isArray(fl)) d.followPositions=fl;
+
+  var oq=data.orderQueue||data.order_queue||data.orders||[];
+  if(Array.isArray(oq)) d.orderQueue=oq;
+
+  var dl=data.diffLogs||data.diff_logs||data.detectedLogs||[];
+  if(Array.isArray(dl)) d.diffLogs=dl;
+
+  var sn=data.snapshots||data.snapshot||[];
+  if(Array.isArray(sn)) d.snapshots=sn;
+
+  var ph=data.perfHistory||data.perf_history||data.performanceHistory||[];
+  if(Array.isArray(ph)) d.perfHistory=ph;
+
+  var al=data.activityLogs||data.activity_logs||[];
+  if(Array.isArray(al)) d.activityLogs=al;
+
+  /* ── 객체 필드 완전 교체 ── */
+  var es=data.engineStatus||data.engine_status||data.engine||null;
+  if(es&&typeof es==='object') d.engineStatus=es;
+
+  var as=data.accountSummary||data.account_summary||null;
+  if(as) d.accountSummary=as;
+
+  var ps=data.performanceSummary||data.performance_summary||null;
+  if(ps) d.performanceSummary=ps;
+
+  var rb=data.rebalanceBudget||data.rebalance_budget||null;
+  if(rb) d.rebalanceBudget=rb;
+
+  var th=data.etfTopHoldings||data.top_holdings||data.etfHoldings||[];
+  if(Array.isArray(th)) d.etfTopHoldings=th;
+
+  /* ── watchlist 자동 생성: etfTopHoldings 또는 engineStatus.sourceSummaries ── */
+  if(!d.watchlist.length){
+    var sources=[];
+    /* etfTopHoldings 에서 */
+    if(d.etfTopHoldings.length){
+      var seen={};
+      d.etfTopHoldings.forEach(function(h){
+        var code=h.etfCode||h.etfId||h.symbol||'';
+        if(code&&!seen[code]){
+          seen[code]=true;
+          sources.push({id:genId(),name:h.etfName||h.name||code,symbol:code,
+            market:'KRX',currency:'KRW',active:true,
+            targetAmount:h.targetAmount||0,manager:h.manager||'',
+            dataSource:'payload',updatedAt:now,createdAt:now});
+        }
+      });
+    }
+    /* engineStatus.sourceSummaries 에서 */
+    if(!sources.length&&d.engineStatus){
+      var ss=(d.engineStatus.sourceSummaries||d.engineStatus.source_summaries||[]);
+      ss.forEach(function(s){
+        var code=s.etfCode||s.etf_code||'';
+        if(code) sources.push({id:genId(),name:s.etfName||s.etf_name||code,symbol:code,
+          market:'KRX',currency:'KRW',active:true,targetAmount:0,
+          manager:'',dataSource:'engine',updatedAt:now,createdAt:now});
+      });
+    }
+    /* followPositions의 etfId 기준으로 */
+    if(!sources.length&&d.followPositions.length){
+      var etfIds={};
+      d.followPositions.forEach(function(p){
+        var code=p.etfCode||p.etfId||'';
+        if(code&&!etfIds[code]){
+          etfIds[code]=true;
+          sources.push({id:genId(),name:p.etfName||code,symbol:code,
+            market:'KRX',currency:'KRW',active:true,targetAmount:0,
+            manager:'',dataSource:'positions',updatedAt:now,createdAt:now});
+        }
+      });
+    }
+    d.watchlist=sources;
+  }
+
+  /* ── syncMeta 갱신 ── */
+  d.syncMeta={
+    lastImportAt:now,
+    lastImportType:'full_etf_payload',
+    source:data.syncMeta&&data.syncMeta.source||'github-fetch',
+    lastFileName:data.syncMeta&&data.syncMeta.lastFileName||null
+  };
+
+  /* ── 크기 제한 ── */
+  if(d.diffLogs.length>100) d.diffLogs=d.diffLogs.slice(0,100);
+  if(d.snapshots.length>100) d.snapshots=d.snapshots.slice(0,100);
+  if(d.activityLogs.length>200) d.activityLogs=d.activityLogs.slice(0,200);
+
+  /* ── localStorage에 완전 저장 ── */
   setEtf(d);
-  if(curTab==='etftrack')renderEtfTrack();
-  toast('ETF 데이터 불러옴','ok');
+
+  /* ── order overrides 초기화 (새 주문안과 충돌 방지) ── */
+  setEtfOverrides({});
+
+  /* 렌더는 호출자(importEtfPayloadObject)가 담당 */
 }
 
 function importEtfTrackJsonFile(ev){
@@ -10418,7 +10518,6 @@ function handleEtfEngineFileSelect(ev){
       var payload=JSON.parse(e.target.result);
       try{lsSet('etf_last_payload',payload);}catch(ex){}
       var ok=importEtfPayloadObject(payload,file.name);
-      _updateSyncMeta('file',new Date().toISOString(),'file-select',file.name);
       _etfSetStatus(statusEl,ok?'ok':'err',ok?'✅ 반영 완료: '+file.name:'❌ 반영 실패');
     }catch(err){_etfSetStatus(statusEl,'err','❌ JSON 파싱 오류: '+err.message);toast('파싱 오류: '+err.message,'err');}
     ev.target.value='';
@@ -10429,7 +10528,11 @@ function handleEtfEngineFileSelect(ev){
 function rerunLastImportedEtfPayload(){
   var statusEl=document.getElementById('etf-file-import-status');
   var last=lsGet('etf_last_payload',null);
-  if(!last){_etfSetStatus(statusEl,'warn','⚠️ 최근 payload 없음. 파일을 선택하세요.');toast('최근 payload 없음','warn');return;}
+  if(!last){
+    _etfSetStatus(statusEl,'warn','⚠️ 최근 payload 없음. 파일을 선택하거나 GitHub 연동을 하세요.');
+    toast('최근 payload 없음','warn');
+    return;
+  }
   var ok=importEtfPayloadObject(last,'재반영');
   _etfSetStatus(statusEl,ok?'ok':'err',ok?'✅ 재반영 완료 ('+etfTs(new Date().toISOString())+')':'❌ 재반영 실패');
 }
@@ -10610,7 +10713,7 @@ function generateSampleEtfTrackData(){
 }
 
 /* ═══════════════════════════════════════════════════════
-   §36 ETF V26.47 — GitHub 연동 / 계좌현황 / UI 헬퍼
+   §36 ETF V26.50 — GitHub 연동 / 계좌현황 / UI 헬퍼
    ═══════════════════════════════════════════════════════ */
 
 var ETF_REMOTE_URL_KEY = 'etf_remote_url_v1';
@@ -10630,6 +10733,14 @@ function etfToggleSection(bodyId,btnId){
   b.style.display=open?'none':'';
   if(btn)btn.textContent=open?'▾ 펼치기':'▲ 접기';
 }
+function etfClearCache(){
+  if(!confirm('ETF 관련 모든 캐시와 데이터를 초기화합니다. 계속할까요?'))return;
+  [ETF_KEY,ETF_BUDGET_KEY,ETF_APPROVAL_KEY,ETF_OVERRIDES_KEY,'etf_last_payload',ETF_REMOTE_URL_KEY].forEach(function(k){
+    try{localStorage.removeItem(k);}catch(ex){}
+  });
+  toast('ETF 캐시 초기화 완료 — 페이지를 새로고침합니다.','ok');
+  setTimeout(function(){location.reload();},800);
+}
 async function etfFetchFromRemoteUrl(){
   var el=document.getElementById('etf-remote-url');
   var statusEl=document.getElementById('etf-remote-status');
@@ -10646,18 +10757,16 @@ async function etfFetchFromRemoteUrl(){
     try{lsSet('etf_last_payload',payload);}catch(ex){}
     var ok=importEtfPayloadObject(payload,'github-fetch');
     var ts=etfTs(new Date().toISOString());
-    _updateSyncMeta('github-fetch',new Date().toISOString(),'github-fetch',url);
-    _etfSetStatus(statusEl,ok?'ok':'err',ok?'✅ 연동 완료 ('+ts+')':'❌ 반영 실패');
+    _etfSetStatus(statusEl,ok?'ok':'err',ok?'\u2705 payload 기준 전체 state 교체 완료 ('+ts+')':'\u274c 반영 실패');
     var lastEl=document.getElementById('etf-gh-last-sync');
     if(lastEl)lastEl.textContent='최근: '+ts;
-    _addEtfLog('sync','success','GitHub 연동: '+url);
+    _addEtfLog('sync','success','GitHub 연동 완료: '+url);
   }catch(e){
-    _etfSetStatus(statusEl,'err','❌ 연동 실패: '+e.message);
-    var last=lsGet('etf_last_payload',null);
-    if(last){importEtfPayloadObject(last,'cache-fallback');_etfSetStatus(statusEl,'warn','⚠️ 캐시 재반영');}
-    else toast('연동 실패: '+e.message,'err');
+    _etfSetStatus(statusEl,'err','\u274c 연동 실패: '+e.message+' — 파일 선택 또는 URL 재확인 필요');
+    toast('연동 실패: '+e.message,'err');
   }
 }
+
 async function etfTestRemoteUrl(){
   var el=document.getElementById('etf-remote-url');
   var statusEl=document.getElementById('etf-remote-status');
@@ -10672,21 +10781,70 @@ async function etfTestRemoteUrl(){
   }catch(e){_etfSetStatus(statusEl,'err','❌ 연결 실패: '+e.message);}
 }
 function renderEtfAccountSummary(){
-  var d=getEtf();var el=document.getElementById('etf-acct-summary');if(!el)return;
-  var snap=(d.snapshots||[])[0]||{},eng=d.engineStatus||{};
-  var acct=snap.accountSummary||eng.accountSummary||null;
+  var d=getEtf();
+  var el=document.getElementById('etf-acct-summary');
+  if(!el)return;
+  var snap=(d.snapshots||[])[0]||{};
+  var eng=d.engineStatus||{};
+  /* 우선순위: d.accountSummary > snap.accountSummary > eng.accountSummary */
+  var acct=d.accountSummary||snap.accountSummary||eng.accountSummary||null;
   if(!acct){
-    el.innerHTML='<div style="color:var(--txt3);font-size:12px;grid-column:1/-1;padding:8px 0">계좌 현황 없음</div>';return;
+    el.innerHTML='<div style="color:var(--txt3);font-size:12px;grid-column:1/-1;padding:8px 0">계좌 현황 없음 — payload의 accountSummary 포함 시 표시됩니다.</div>';
+  }else{
+    var items=[
+      {l:'국내 현금',   v:etfFmtN(acct.cashKrw||acct.domestic_cash||0,'KRW')},
+      {l:'해외 현금',   v:etfFmtN(acct.cashUsd||acct.overseas_cash||0,'USD')},
+      {l:'국내 평가금액',v:etfFmtN(acct.evalKrw||acct.domestic_eval||0,'KRW')},
+      {l:'해외 평가금액',v:etfFmtN(acct.evalUsd||acct.overseas_eval||0,'USD')},
+      {l:'총 평가금액', v:etfFmtN(acct.totalEval||acct.total_eval||0,'KRW')},
+      {l:'조회 시각',   v:etfTs(acct.asOf||acct.updated_at||null)},
+    ];
+    el.innerHTML=items.map(function(i){return'<div class="etf-acct-card"><div class="etf-acct-lbl">'+i.l+'</div><div class="etf-acct-val">'+i.v+'</div></div>';}).join('');
   }
-  var items=[
-    {l:'국내 현금',v:etfFmtN(acct.cashKrw||acct.domestic_cash||0,'KRW')},
-    {l:'해외 현금',v:etfFmtN(acct.cashUsd||acct.overseas_cash||0,'USD')},
-    {l:'국내 평가금액',v:etfFmtN(acct.evalKrw||acct.domestic_eval||0,'KRW')},
-    {l:'해외 평가금액',v:etfFmtN(acct.evalUsd||acct.overseas_eval||0,'USD')},
-    {l:'총 평가금액',v:etfFmtN(acct.totalEval||acct.total_eval||0,'KRW')},
-    {l:'조회 시각',v:etfTs(acct.asOf||acct.updated_at||null)},
-  ];
-  el.innerHTML=items.map(function(i){return'<div class="etf-acct-card"><div class="etf-acct-lbl">'+i.l+'</div><div class="etf-acct-val">'+i.v+'</div></div>';}).join('');
+  /* performanceSummary */
+  var perfEl=document.getElementById('etf-perf-kpi');
+  var svgEl=document.getElementById('etf-perf-svg');
+  var ps=d.performanceSummary||snap.performanceSummary||null;
+  var perf=d.perfHistory||[];
+  if(ps&&perfEl){
+    perfEl.innerHTML=[
+      {l:'포트폴리오 평가금액',v:etfFmtN(ps.totalMV||ps.portfolioValue||0,'KRW')},
+      {l:'목표 포트폴리오',v:etfFmtN(ps.targetMV||ps.targetValue||0,'KRW')},
+      {l:'추종 오차',v:ps.trackingError!=null?etfFmtPct(ps.trackingError*100):'-'},
+      {l:'누적 수익률',v:ps.cumReturn!=null?etfFmtPct(ps.cumReturn):'-'},
+      {l:'기준 시각',v:etfTs(ps.asOf||ps.updatedAt||null)},
+    ].map(function(k){return'<div class="kpi-card"><div class="kpi-lbl">'+k.l+'</div><div class="kpi-val" style="font-size:14px">'+k.v+'</div></div>';}).join('');
+  }else if(perfEl&&perf.length){
+    var last=perf[perf.length-1]||{};
+    var errs=perf.map(function(p){return Number(p.trackingError)||0;});
+    var avgErr=errs.reduce(function(s,v){return s+v;},0)/errs.length;
+    perfEl.innerHTML=[
+      {l:'추종오차 평균',v:(avgErr*100).toFixed(3)+'%'},
+      {l:'최근 추종 MV',v:etfFmtN(last.trackMV,'KRW')},
+      {l:'최근 목표 MV',v:etfFmtN(last.targetMV,'KRW')},
+      {l:'누적수익률',v:last.cumReturn!=null?last.cumReturn.toFixed(2)+'%':'-'},
+    ].map(function(k){return'<div class="kpi-card"><div class="kpi-lbl">'+k.l+'</div><div class="kpi-val" style="font-size:14px">'+k.v+'</div></div>';}).join('');
+  }else if(perfEl){
+    perfEl.innerHTML='<span style="color:var(--txt3);font-size:13px">성과 데이터 없음</span>';
+  }
+  /* 차트 — perfHistory 없으면 숨김 */
+  if(svgEl){
+    if(!perf.length){svgEl.innerHTML='<text x="50%" y="50%" text-anchor="middle" fill="var(--txt3)" font-size="13">데이터 없음</text>';return;}
+    var W=780,H=160,pad={t:10,r:10,b:30,l:50};
+    var xs=perf.map(function(_,i){return pad.l+(W-pad.l-pad.r)*(i/(Math.max(perf.length-1,1)));});
+    function normArr(arr){var mn=Math.min.apply(null,arr),mx=Math.max.apply(null,arr);if(mx===mn)return arr.map(function(){return 0.5;});return arr.map(function(v){return(v-mn)/(mx-mn);});}
+    function pts(ys){return xs.map(function(x,i){return x+','+(pad.t+(H-pad.t-pad.b)*(1-ys[i]));}).join(' ');}
+    var mvs=perf.map(function(p){return Number(p.trackMV)||0;});
+    var tgs=perf.map(function(p){return Number(p.targetMV)||0;});
+    var all=mvs.concat(tgs);
+    var mn=Math.min.apply(null,all),mx=Math.max.apply(null,all);
+    function na(arr){if(mx===mn)return arr.map(function(){return 0.5;});return arr.map(function(v){return(v-mn)/(mx-mn);});}
+    svgEl.innerHTML='<polyline points="'+pts(na(mvs))+'" fill="none" stroke="var(--acc)" stroke-width="2.5"/>'+
+      '<polyline points="'+pts(na(tgs))+'" fill="none" stroke="var(--am)" stroke-width="1.5" stroke-dasharray="4,3"/>'+
+      perf.map(function(p,i){return'<text x="'+xs[i]+'" y="'+(H-pad.b+14)+'" text-anchor="middle" font-size="9" fill="var(--txt3)">'+esc(String(p.date||'').slice(5))+'</text>';}).join('')+
+      '<text x="'+(W-pad.r)+'" y="20" text-anchor="end" font-size="10" fill="var(--acc)">추종 MV</text>'+
+      '<text x="'+(W-pad.r)+'" y="34" text-anchor="end" font-size="10" fill="var(--am)">목표 MV</text>';
+  }
 }
 
 /* ─ §30 초기화 ─ */
