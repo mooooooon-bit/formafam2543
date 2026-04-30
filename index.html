@@ -310,7 +310,7 @@ tr:hover td{background:#f8fafc}
   .cmp-card-view{display:flex}
 }
 
-/* ─ ETF V26.53 전용 CSS ─ */
+/* ─ ETF V26.56 전용 CSS ─ */
 /* ops bar */
 .etf-ops-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);margin-top:6px;min-height:38px;font-size:12px}
 .etf-ops-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
@@ -427,6 +427,28 @@ tr:hover td{background:#f8fafc}
   .etf-status-grid{grid-template-columns:1fr}
   .etf-acct-grid{grid-template-columns:repeat(2,1fr)}
 }
+/* ─ 추종도 KPI (V26.56) ─ */
+.etf-tracking-kpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:10px}
+.etf-tracking-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;box-shadow:var(--sh);text-align:center}
+.etf-tracking-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:4px}
+.etf-tracking-val{font-size:26px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}
+.etf-tracking-sub{font-size:11px;color:var(--txt3);margin-top:3px}
+.etf-tracking-trend{display:flex;gap:3px;justify-content:center;margin-top:5px}
+.etf-tracking-trend span{font-size:12px;font-weight:700;padding:1px 5px;border-radius:3px;background:var(--s2)}
+.etf-score-green{color:#16a34a}
+.etf-score-blue{color:var(--acc)}
+.etf-score-orange{color:#d97706}
+.etf-score-red{color:var(--r)}
+.etf-pos-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-bottom:10px}
+.etf-pos-kpi-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:8px 10px;text-align:center}
+.etf-pos-kpi-lbl{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:2px}
+.etf-pos-kpi-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+.etf-top5-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd);font-size:12px}
+.etf-top5-row:last-child{border-bottom:none}
+@media(max-width:700px){
+  .etf-tracking-kpi{grid-template-columns:repeat(2,1fr)}
+  .etf-pos-kpi-grid{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
@@ -436,10 +458,10 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.53</span>
+      <span class="ver-badge">V26.56</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
-      <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
+      <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
       <button class="tbtn" data-tab="etftrack" onclick="sw('etftrack')">📡 ETF 추종</button>
       <button class="tbtn" data-tab="earlysim" onclick="sw('earlysim')">💰 조기상환 시</button>
       <button class="tbtn" data-tab="annual" onclick="sw('annual')">📊 연간 실적</button>
@@ -458,7 +480,7 @@ tr:hover td{background:#f8fafc}
 
 <div id="storage-warn"></div>
 
-<!-- ====== 탭: 대시보드 ====== -->
+<!-- ====== 탭: ELS Invest ====== -->
 <div class="page on" id="tab-dash">
   <div class="disclaimer">⚠️ 이 도구는 개인 기록·계산 전용입니다. 금융상품 추천·투자 판단 도구가 아닙니다. 모든 수치는 참고용이며 실제 결과와 다를 수 있습니다.</div>
 
@@ -475,9 +497,8 @@ tr:hover td{background:#f8fafc}
       <div class="asset-head-actions">
         <button class="btn bgh sm" id="btn-fetch-prices" onclick="fetchAllCurrentPrices()" style="font-size:11px">🔄 현재가 불러오기</button>
         <button class="btn bgh sm" onclick="openTickerMapModal()" style="font-size:11px">⚙️ 자산 매핑 관리</button>
-        <button class="btn bs sm" onclick="exportAssetManagerBackup()" style="font-size:11px">💾 백업하기</button>
-        <button class="btn bgh sm" onclick="document.getElementById('am-backup-import-f').click()" style="font-size:11px">📂 백업 불러오기</button>
-        <input type="file" id="am-backup-import-f" accept=".json" style="display:none" onchange="importAssetManagerBackup(event)">
+        <button class="btn bs sm" onclick="uploadBackupToGitHub()" style="font-size:11px">💾 백업하기</button>
+        <button class="btn bgh sm" onclick="downloadBackupFromGitHub()" style="font-size:11px">📂 백업 불러오기</button>
       </div>
       <div class="asset-head-fx">
         <label style="font-size:12px;font-weight:700;color:var(--txt2);white-space:nowrap">💱 USD/KRW 환율</label>
@@ -967,8 +988,11 @@ tr:hover td{background:#f8fafc}
   <div id="etf-ops-bar" class="etf-ops-bar" style="margin-top:6px"></div>
   <div id="etf-top-block-reasons" style="display:none" class="etf-block-reasons"></div>
 
+  <!-- 추종도 KPI -->
+  <div class="etf-tracking-kpi" id="etf-tracking-kpi" style="margin-top:8px"></div>
+
   <!-- 1. 운영 요약 카드 -->
-  <div class="etf-summary-grid" id="etf-summary-grid" style="margin-top:8px"></div>
+  <div class="etf-summary-grid" id="etf-summary-grid" style="margin-top:6px"></div>
 
   <!-- 2. GitHub 연동 -->
   <div class="card mt">
@@ -1069,6 +1093,8 @@ tr:hover td{background:#f8fafc}
       <span style="font-size:11px;color:var(--txt3)" id="etf-pos-updatedAt"></span>
     </div>
     <div class="etf-port-summary" id="etf-port-summary"></div>
+    <!-- 추종 현황 요약 KPI -->
+    <div id="etf-pos-kpi-wrap" style="margin-bottom:10px"></div>
     <div id="etf-cash-bar" style="display:none;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:8px 12px;margin-bottom:10px;font-size:12px"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
       <div class="etf-pos-filter" id="etf-pos-market-filter">
@@ -1138,6 +1164,7 @@ tr:hover td{background:#f8fafc}
         <div class="tw"><table><thead><tr>
           <th>ETF명</th><th>코드</th><th>상태</th>
           <th class="nr">투자금액</th><th class="nr">목표금액</th><th class="nr">오차</th>
+          <th class="nr">추종도</th><th class="nr">평균오차</th>
           <th class="nr">최근변경</th><th>최근감지</th><th>반영소스</th><th></th>
         </tr></thead><tbody id="etf-wl-tb"></tbody></table></div>
       </div>
@@ -1483,8 +1510,8 @@ tr:hover td{background:#f8fafc}
 
 <script>
 /* =============================================================
-   ELS Manager V26.53
-   §F  FLIGHT (V26.53: ETF운영대시보드·승인관리·예산계산)
+   ELS Manager V26.56
+   §F  FLIGHT (V26.56: ETF운영대시보드·승인관리·예산계산)
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1495,7 +1522,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.53';
+const VER = 'V26.56';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -4676,7 +4703,7 @@ function renderCompareTab(){
 }
 
 /* ═══════════════════════════════════════════════════════
-   §31 ETF 추종 — V26.53
+   §31 ETF 추종 — V26.56
    localStorage keys (최소화):
      etf_remote_url_v1      (GitHub payload URL)
      etf_sync_meta_v1       (마지막 연동 메타)
@@ -4803,7 +4830,15 @@ function etfBar(pct,color){return'<div class="etf-bar-wrap"><div class="etf-bar-
 function etfDualBar(tgt,cur){var t=Math.min(100,Math.max(0,tgt||0)),c=Math.min(100,Math.max(0,cur||0));return'<div class="etf-dual-bar"><div class="etf-dual-bar-t" style="width:'+t+'%"></div><div class="etf-dual-bar-c" style="width:'+c+'%"></div></div>';}
 function isKRsym(sym){return /^\d{6}$/.test(sym||'');}
 function etfMarketLabel(sym,market){return(market==='KRX'||isKRsym(sym))? '🇰🇷 KR':'🇺🇸 US';}
-function _etfSetStatus(el,type,msg){if(!el)return;el.textContent=msg;el.className='etf-import-status'+(type?' '+type:'');el.style.display=msg?'':'none';}
+function _etfSetStatus(el,type,msg){
+  if(!el)return;
+  try{
+    el.textContent=msg||'';
+    el.className='etf-import-status'+(type?' '+type:'');
+    el.style.display=msg?'block':'none';
+  }catch(ex){ console.warn('_etfSetStatus failed:',ex); }
+}
+function _etfErrMsg(e){ return e&&e.message?e.message:(typeof e==='string'?e:String(e||'알 수 없는 오류')); }
 function _addEtfLog(type,level,message,meta){}  /* 메모리 로그 비활성화 */
 function _updateSyncMeta(type,ts,source,url){
   setEtfSyncMeta({lastImportAt:ts,lastImportType:type,source:source||'unknown',lastUrl:url||null});
@@ -4820,6 +4855,7 @@ var etfPosStFilter='all';
    ═══════════════════════════════════════════════════════ */
 function renderEtfTrack(){
   var d=getEtfState();
+  renderEtfTrackingKpi(d);
   renderEtfOpsBar(d);
   renderEtfSummaryCards(d);
   renderEtfTopBlockReasons(d);
@@ -5039,6 +5075,8 @@ function renderEtfFollowPortfolio(d){
   var over=allPos.filter(function(p){return(p.gapWeight||p.weightGap||0)>0.5;}).length;
   var sumEl=document.getElementById('etf-port-summary');
   if(sumEl)sumEl.innerHTML=[{l:'평가금액',v:etfFmtN(totalMV,'KRW'),c:''},{l:'목표금액',v:totalTgt?etfFmtN(totalTgt,'KRW'):'-',c:''},{l:'추종오차',v:totalTgt?etfFmtPct(gap):'-',c:Math.abs(gap)>2?'warn':'ok'},{l:'종목수',v:allPos.length+'개',c:''},{l:'부족',v:under+'개',c:under?'warn':''},{l:'초과',v:over+'개',c:over?'warn':''}].map(function(c){return'<div class="etf-port-card"><div class="etf-port-lbl">'+c.l+'</div><div class="etf-port-val '+(c.c||'')+'">'+c.v+'</div></div>';}).join('');
+  /* 추종 현황 KPI */
+  renderEtfPosKpi(d);
   var upEl=document.getElementById('etf-pos-updatedAt');if(upEl)upEl.textContent=positions.length&&positions[0].updatedAt?'기준: '+etfTs(positions[0].updatedAt):'';
   var tb=document.getElementById('etf-pos-tb'),cards=document.getElementById('etf-pos-cards');
   if(!positions.length){if(tb)tb.innerHTML='<tr><td colspan="12" style="text-align:center;color:var(--txt3);padding:20px">포트폴리오 데이터 없음</td></tr>';if(cards)cards.innerHTML='<div style="color:var(--txt3);padding:12px">포트폴리오 데이터 없음</div>';return;}
@@ -5133,8 +5171,22 @@ function renderEtfWatchlist(d){
   var tb=document.getElementById('etf-wl-tb'),cards=document.getElementById('etf-wl-cards'),sgrid=document.getElementById('etf-status-grid');
   if(!(d.watchlist||[]).length){if(tb)tb.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:20px">ETF 없음 — 연동하기를 클릭하세요</td></tr>';if(cards)cards.innerHTML='<div style="color:var(--txt3);padding:12px">ETF 없음</div>';if(sgrid)sgrid.style.display='none';return;}
   var srcMap={};((d.engineStatus&&d.engineStatus.sourceSummaries)||[]).forEach(function(s){srcMap[s.etfCode||s.etf_code||'']=s;});
-  var rows=(d.watchlist||[]).map(function(w){var log=(d.diffLogs||[]).find(function(l){return l.etfId===w.id||l.etfCode===w.symbol;});var src=srcMap[w.symbol||''];var mv=(d.followPositions||[]).filter(function(p){return p.etfId===w.id||p.etfCode===w.symbol;}).reduce(function(s,p){return s+(Number(p.marketValue||p.evalAmount)||0);},0);return{w:w,log:log,src:src,mv:mv,target:Number(w.targetAmount||0)};});
-  if(tb)tb.innerHTML=rows.map(function(r){var w=r.w,log=r.log,src=r.src;var err=r.target>0?((r.mv-r.target)/r.target*100):null;return'<tr><td><b>'+esc(etfShort(w.name,20))+'</b></td><td><code style="font-size:11px">'+esc(w.symbol||'-')+'</code></td><td>'+etfBadge(w.active?'active':'inactive',w.active?'활성':'비활성')+'</td><td class="nr">'+etfFmtN(r.mv,'KRW')+'</td><td class="nr">'+etfFmtN(r.target,'KRW')+'</td><td class="nr" style="'+etfGapColor(err)+'">'+(err!=null?etfFmtPct(err):'-')+'</td><td class="nr">'+(log&&log.changedCount!=null?log.changedCount:'-')+'</td><td style="font-size:11px">'+(log?etfTs(log.detectedAt):'-')+'</td><td>'+(src?'<span class="etf-src-badge">'+esc(src.finalSource||src.final_source||'-')+'</span>':'-')+'</td><td><div style="display:flex;gap:3px"><button class="btn bgh xs" onclick="openEtfModal(\''+w.id+'\')">수정</button><button class="btn bd-btn xs" onclick="deleteEtfWatchItem(\''+w.id+'\')">삭제</button></div></td></tr>';}).join('');
+  var rows=(d.watchlist||[]).map(function(w){
+    var log=(d.diffLogs||[]).find(function(l){return l.etfId===w.id||l.etfCode===w.symbol;});
+    var src=srcMap[w.symbol||''];
+    var etfPos=(d.followPositions||[]).filter(function(p){return p.etfId===w.id||p.etfCode===w.symbol;});
+    var mv=etfPos.reduce(function(s,p){return s+(Number(p.marketValue||p.evalAmount)||0);},0);
+    var etfScore=_calcTrackingScore(etfPos);
+    var etfAvgGap=etfPos.length?etfPos.reduce(function(s,p){return s+Math.abs(p.gapWeight||p.weightGap||0);},0)/etfPos.length:null;
+    return{w:w,log:log,src:src,mv:mv,target:Number(w.targetAmount||0),etfScore:etfScore,etfAvgGap:etfAvgGap};
+  });
+  if(tb)tb.innerHTML=rows.map(function(r){
+    var w=r.w,log=r.log,src=r.src;
+    var err=r.target>0?((r.mv-r.target)/r.target*100):null;
+    var scoreHtml=r.etfScore!=null?'<span style="'+_scoreClass(r.etfScore)+';font-weight:700">'+r.etfScore+'점</span>':'<span style="color:var(--txt3)">-</span>';
+    var gapHtml=r.etfAvgGap!=null?'<span style="color:'+(r.etfAvgGap<0.5?'#16a34a':r.etfAvgGap<1.5?'var(--acc)':'#d97706')+'">'+r.etfAvgGap.toFixed(2)+'%p</span>':'<span style="color:var(--txt3)">-</span>';
+    return'<tr><td><b>'+esc(etfShort(w.name,20))+'</b></td><td><code style="font-size:11px">'+esc(w.symbol||'-')+'</code></td><td>'+etfBadge(w.active?'active':'inactive',w.active?'활성':'비활성')+'</td><td class="nr">'+etfFmtN(r.mv,'KRW')+'</td><td class="nr">'+etfFmtN(r.target,'KRW')+'</td><td class="nr" style="'+etfGapColor(err)+'">'+(err!=null?etfFmtPct(err):'-')+'</td><td class="nr">'+scoreHtml+'</td><td class="nr">'+gapHtml+'</td><td class="nr">'+(log&&log.changedCount!=null?log.changedCount:'-')+'</td><td style="font-size:11px">'+(log?etfTs(log.detectedAt):'-')+'</td><td>'+(src?'<span class="etf-src-badge">'+esc(src.finalSource||src.final_source||'-')+'</span>':'-')+'</td><td><div style="display:flex;gap:3px"><button class="btn bgh xs" onclick="openEtfModal(\''+w.id+'\')">수정</button><button class="btn bd-btn xs" onclick="deleteEtfWatchItem(\''+w.id+'\')">삭제</button></div></td></tr>';
+  }).join('');
   if(cards)cards.innerHTML=rows.map(function(r){var w=r.w;return'<div class="etf-card"><div class="etf-card-hd"><div class="etf-card-nm">'+esc(w.name)+'</div>'+etfBadge(w.active?'active':'inactive',w.active?'활성':'비활성')+'</div><div class="etf-card-row"><span>코드</span><span class="v"><code>'+esc(w.symbol||'-')+'</code></span></div><div class="etf-card-row"><span>투자/목표</span><span class="v">'+etfFmtN(r.mv,'KRW')+' / '+etfFmtN(r.target,'KRW')+'</span></div><div style="display:flex;gap:6px;margin-top:8px"><button class="btn bgh sm" style="flex:1" onclick="openEtfModal(\''+w.id+'\')">수정</button><button class="btn bd-btn sm" style="flex:1" onclick="deleteEtfWatchItem(\''+w.id+'\')">삭제</button></div></div>';}).join('');
   if(sgrid){sgrid.style.display='grid';sgrid.innerHTML=rows.map(function(r){var w=r.w,src=r.src,log=r.log;var err=r.target>0?((r.mv-r.target)/r.target*100):null;return'<div class="etf-status-card"><div class="etf-status-card-hd"><div class="etf-status-card-nm">'+esc(etfShort(w.name,18))+'</div>'+etfBadge(w.active?'active':'inactive',w.active?'활성':'비활성')+'</div><div class="etf-status-row"><span>코드</span><span class="sv"><code>'+esc(w.symbol||'-')+'</code></span></div><div class="etf-status-row"><span>TIME기준</span><span class="sv" style="font-size:11px">'+esc(src?src.timeAsOf||src.time_as_of||'-':'-')+'</span></div><div class="etf-status-row"><span>최종소스</span><span class="sv">'+(src?'<span class="etf-src-badge">'+esc(src.finalSource||src.final_source||'-')+'</span>':'-')+'</span></div><div class="etf-status-row"><span>추종오차</span><span class="sv" style="'+etfGapColor(err)+'">'+(err!=null?etfFmtPct(err):'-')+'</span></div><div class="etf-status-row"><span>최근감지</span><span class="sv" style="font-size:11px">'+(log?etfTs(log.detectedAt):'-')+'</span></div></div>';}).join('');}
 }
@@ -5277,7 +5329,7 @@ function exportEtfTrackJson(){
 function importEtfTrackJsonFile(ev){
   var file=ev.target.files[0];if(!file)return;
   var r=new FileReader();
-  r.onload=function(e){try{importEtfPayloadObject(JSON.parse(e.target.result),file.name);}catch(err){toast('파싱 오류: '+err.message,'err');}ev.target.value='';};
+  r.onload=function(e){try{importEtfPayloadObject(JSON.parse(e.target.result),file.name);}catch(err){toast('파싱 오류: '+_etfErrMsg(err),'err');}ev.target.value='';};
   r.readAsText(file);
 }
 
@@ -5288,7 +5340,7 @@ function handleEtfEngineFileSelect(ev){
   var r=new FileReader();
   r.onload=function(e){
     try{var ok=importEtfPayloadObject(JSON.parse(e.target.result),file.name);_etfSetStatus(statusEl,ok?'ok':'err',ok?'✅ 반영 완료: '+file.name:'❌ 반영 실패');}
-    catch(err){_etfSetStatus(statusEl,'err','❌ 파싱 오류: '+err.message);}
+    catch(err){_etfSetStatus(statusEl,'err','❌ 파싱 오류: '+_etfErrMsg(err));}
     ev.target.value='';
   };
   r.readAsText(file);
@@ -5319,13 +5371,13 @@ function refreshEtfFromEngineFile(){
       _etfSetStatus(statusEl,ok?'ok':'err',ok?'✅ 반영 완료 ('+ts+')':'❌ 반영 실패');
       if(lastEl)lastEl.textContent='최근: '+ts;
     })
-    .catch(function(err){_etfSetStatus(statusEl,'err','❌ fetch 실패: '+err.message);toast('fetch 실패','warn');});
+    .catch(function(err){_etfSetStatus(statusEl,'err','❌ fetch 실패: '+_etfErrMsg(err));toast('fetch 실패','warn');});
 }
 
 function importEtfPasteJson(){
   var raw=((document.getElementById('etf-paste-json')||{}).value||'').trim();
   if(!raw){toast('JSON을 붙여넣어주세요.','err');return;}
-  var payload;try{payload=JSON.parse(raw);}catch(e){toast('JSON 형식 오류: '+e.message,'err');return;}
+  var payload;try{payload=JSON.parse(raw);}catch(e){toast('JSON 형식 오류: '+_etfErrMsg(e),'err');return;}
   if(importEtfPayloadObject(payload,'붙여넣기'))document.getElementById('etf-paste-json').value='';
 }
 
@@ -5407,7 +5459,7 @@ async function etfFetchFromRemoteUrl(){
     _etfSetStatus(statusEl,ok?'ok':'err',ok?'✅ payload 기준 state 반영 완료 ('+ts+')':'❌ 반영 실패');
     var lastEl=document.getElementById('etf-gh-last-sync');if(lastEl)lastEl.textContent='최근: '+ts;
   }catch(e){
-    _etfSetStatus(statusEl,'err','❌ 연동 실패: '+e.message);toast('연동 실패: '+e.message,'err');
+    _etfSetStatus(statusEl,'err','❌ 연동 실패: '+_etfErrMsg(e));toast('연동 실패: '+_etfErrMsg(e),'err');
   }
 }
 async function etfTestRemoteUrl(){
@@ -5416,11 +5468,152 @@ async function etfTestRemoteUrl(){
   if(!url){_etfSetStatus(statusEl,'err','URL을 입력하세요.');return;}
   _etfSetStatus(statusEl,'','🧪 테스트 중…');
   try{var ctrl=new AbortController(),tid=setTimeout(function(){ctrl.abort();},8000);var res=await fetch(url,{method:'HEAD',cache:'no-store',signal:ctrl.signal});clearTimeout(tid);_etfSetStatus(statusEl,res.ok?'ok':'err',res.ok?'✅ 연결 성공 ('+res.status+')':'❌ HTTP '+res.status);}
-  catch(e){_etfSetStatus(statusEl,'err','❌ 연결 실패: '+e.message);}
+  catch(e){_etfSetStatus(statusEl,'err','❌ 연결 실패: '+_etfErrMsg(e));}
 }
 
 function generateSampleEtfTrackData(){ toast("샘플 기능이 제거됐습니다. GitHub 연동을 사용하세요.","warn"); }
-/* ─ §30 초기화 ─ */
+/* ═══════════════════════════════════════════════════════
+   §36b 추종도 지표 (V26.56)
+   ═══════════════════════════════════════════════════════ */
+
+/** 추종도 점수 계산 (0~100) — abs(gapWeight) 기반 */
+function _calcTrackingScore(positions){
+  if(!positions||!positions.length) return null;
+  var totalGap=positions.reduce(function(s,p){return s+Math.abs(p.gapWeight||p.weightGap||0);},0);
+  var avgGap=totalGap/positions.length;
+  /* avgGap 0%p → 100점, 5%p 이상 → 0점 (선형) */
+  var score=Math.max(0,Math.min(100,Math.round(100-avgGap*20)));
+  return score;
+}
+
+/** 점수에 따른 색상 클래스 */
+function _scoreClass(score){
+  if(score==null) return 'color:var(--txt3)';
+  if(score>=90) return 'color:#16a34a';
+  if(score>=80) return 'color:var(--acc)';
+  if(score>=70) return 'color:#d97706';
+  return 'color:var(--r)';
+}
+function _scoreLabel(score){
+  if(score==null) return '-';
+  if(score>=90) return '우수';
+  if(score>=80) return '양호';
+  if(score>=70) return '보통';
+  return '주의';
+}
+
+/** 추종도 KPI 5개 렌더 */
+function renderEtfTrackingKpi(d){
+  var el=document.getElementById('etf-tracking-kpi');if(!el)return;
+  d=d||getEtfState();
+  var pos=d.followPositions||[];
+  if(!pos.length){el.innerHTML='';return;}
+
+  /* 1. 추종도 점수 */
+  var score=_calcTrackingScore(pos);
+  var scoreClr=_scoreClass(score);
+
+  /* 2. 평균 비중 오차 */
+  var avgGap=pos.length?pos.reduce(function(s,p){return s+Math.abs(p.gapWeight||p.weightGap||0);},0)/pos.length:0;
+  var gapClr=avgGap<0.5?'color:#16a34a':avgGap<1?'color:var(--acc)':avgGap<2?'color:#d97706':'color:var(--r)';
+
+  /* 3. 상위 10개 커버율 */
+  var th=(d.etfTopHoldings||[]).slice(0,10);
+  var covRate=null;
+  if(th.length){
+    var posSym=new Set(pos.map(function(p){return p.symbol||'';}));
+    var covered=th.filter(function(h){return posSym.has(h.symbol||h.etfCode||'');}).length;
+    covRate=Math.round(covered/th.length*100);
+  }
+
+  /* 4. 미투자 현금 비율 */
+  var cashRatio=null;
+  var snap=(d.snapshots||[])[0]||{};
+  var remKrw=snap.remaining_krw!=null?snap.remaining_krw:null;
+  var budget=getEtfBudget();var bKrw=Number(budget.budget_krw)||0;
+  if(bKrw>0&&remKrw!=null) cashRatio=Math.round(Math.max(0,remKrw)/bKrw*100);
+
+  /* 5. 최근 3회 추종도 추세 */
+  var snaps=(d.snapshots||[]).slice(0,3);
+  var trendHtml='';
+  if(snaps.length>=2){
+    trendHtml=snaps.map(function(s,i){
+      var clr=s.significant_changed?'color:#d97706':s.changed?'color:var(--acc)':'color:#16a34a';
+      var lbl=s.significant_changed?'⚡':s.changed?'△':'✓';
+      return'<span style="'+clr+';font-size:11px;font-weight:700">'+lbl+'</span>';
+    }).join('<span style="color:var(--bd2)">›</span>');
+  }
+
+  function tc(lbl,valHtml,sub,trend){
+    return'<div class="etf-tracking-card">'+
+      '<div class="etf-tracking-lbl">'+lbl+'</div>'+
+      '<div class="etf-tracking-val">'+valHtml+'</div>'+
+      (sub?'<div class="etf-tracking-sub">'+sub+'</div>':'')+
+      (trend?'<div class="etf-tracking-trend">'+trend+'</div>':'')+
+    '</div>';
+  }
+
+  var html='';
+  html+=tc('추종도 점수',
+    score!=null?'<span style="'+scoreClr+'">'+score+'</span><span style="font-size:14px;color:var(--txt3)">점</span>':'<span style="color:var(--txt3)">-</span>',
+    score!=null?_scoreLabel(score):'데이터 없음','');
+  html+=tc('평균 비중 오차',
+    '<span style="'+gapClr+'">'+avgGap.toFixed(2)+'</span><span style="font-size:14px;color:var(--txt3)">%p</span>',
+    avgGap<0.5?'매우 낮음':avgGap<1?'낮음':avgGap<2?'보통':'높음','');
+  html+=tc('상위 10 커버율',
+    covRate!=null?'<span style="color:'+(covRate>=80?'#16a34a':covRate>=60?'var(--acc)':'#d97706')+'">'+covRate+'</span><span style="font-size:14px;color:var(--txt3)">%</span>':'<span style="color:var(--txt3)">-</span>',
+    th.length?'top '+th.length+'개 기준':'etfTopHoldings 없음','');
+  html+=tc('미투자 현금',
+    cashRatio!=null?'<span style="color:'+(cashRatio<5?'#16a34a':cashRatio<15?'var(--acc)':'#d97706')+'">'+cashRatio+'</span><span style="font-size:14px;color:var(--txt3)">%</span>':'<span style="color:var(--txt3)">-</span>',
+    cashRatio!=null?'예산 대비 잔여':'예산/스냅샷 필요','');
+  html+=tc('최근 3회 추세',
+    trendHtml||'<span style="color:var(--txt3);font-size:14px">-</span>',
+    snaps.length>=2?'변화 없음✓ / 변화△ / 중요⚡':'스냅샷 2개 이상 필요','');
+
+  el.innerHTML=html;
+}
+
+/** 추종 현황 상단 요약 KPI */
+function renderEtfPosKpi(d){
+  var el=document.getElementById('etf-pos-kpi-wrap');if(!el)return;
+  d=d||getEtfState();
+  var pos=d.followPositions||[];
+  if(!pos.length){el.innerHTML='';return;}
+
+  var under=pos.filter(function(p){return(p.gapWeight||p.weightGap||0)<-0.3;}).length;
+  var onTgt=pos.filter(function(p){return Math.abs(p.gapWeight||p.weightGap||0)<0.3;}).length;
+  var over= pos.filter(function(p){return(p.gapWeight||p.weightGap||0)>0.3;}).length;
+
+  /* 갭 절대값 상위 5종목 */
+  var top5=pos.slice().sort(function(a,b){return Math.abs(b.gapWeight||b.weightGap||0)-Math.abs(a.gapWeight||a.weightGap||0);}).slice(0,5);
+
+  var kpiHtml='<div class="etf-pos-kpi-grid">'+
+    [
+      {l:'부족 종목',v:under+'개',c:under?'color:var(--r)':'color:var(--g)'},
+      {l:'일치 종목',v:onTgt+'개',c:'color:#16a34a'},
+      {l:'초과 종목',v:over+'개',c:over?'color:#d97706':'color:var(--g)'},
+      {l:'총 종목',v:pos.length+'개',c:'color:var(--txt)'},
+    ].map(function(k){return'<div class="etf-pos-kpi-card"><div class="etf-pos-kpi-lbl">'+k.l+'</div><div class="etf-pos-kpi-val" style="'+k.c+'">'+k.v+'</div></div>';}).join('')+
+  '</div>';
+
+  if(top5.length){
+    kpiHtml+='<div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:8px 12px;margin-bottom:2px">'+
+      '<div style="font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;margin-bottom:4px">갭 상위 5종목</div>'+
+      top5.map(function(p){
+        var g=p.gapWeight||p.weightGap||0;
+        return'<div class="etf-top5-row">'+
+          '<span style="font-weight:600;font-size:12px">'+esc(etfShort(p.name||p.symbol||'-',14))+'</span>'+
+          '<span style="font-family:monospace;font-size:11px;color:var(--txt3)">'+esc(p.symbol||'-')+'</span>'+
+          '<span style="font-weight:700;font-size:12px;'+etfGapColor(g)+'">'+etfFmtPct(g)+'</span>'+
+        '</div>';
+      }).join('')+
+    '</div>';
+  }
+
+  el.innerHTML=kpiHtml;
+}
+
+
 (function init(){
   initSample();
   updateCnts();
