@@ -310,6 +310,123 @@ tr:hover td{background:#f8fafc}
   .cmp-card-view{display:flex}
 }
 
+/* ─ ETF V26.53 전용 CSS ─ */
+/* ops bar */
+.etf-ops-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);margin-top:6px;min-height:38px;font-size:12px}
+.etf-ops-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
+.etf-ops-sep{color:var(--bd2);font-size:14px;margin:0 2px}
+.etf-dryrun{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:var(--r2);padding:3px 10px;font-size:12px;font-weight:700}
+.etf-live{background:var(--g-bg);color:var(--g);border:1px solid #86efac;border-radius:var(--r2);padding:3px 10px;font-size:12px;font-weight:700}
+/* block reasons */
+.etf-block-reasons{background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r2);padding:10px 13px;margin-top:6px}
+.etf-block-reasons .lbl{font-size:11px;font-weight:700;color:var(--am);margin-bottom:5px}
+.etf-block-tag{display:inline-block;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:4px;padding:2px 8px;font-size:11px;margin:2px 3px 2px 0}
+/* src badge */
+.etf-src-badge{display:inline-block;background:var(--acc-l);color:var(--acc);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600}
+/* flow box */
+.etf-flow-box{background:var(--acc-l);border:1px solid #bfdbfe;border-radius:var(--r2);padding:9px 14px;font-size:12px;color:#1e40af;display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.etf-flow-box .step{font-weight:700;white-space:nowrap}
+.etf-flow-sep{color:#93c5fd;margin:0 1px}
+/* collapse */
+.etf-collapse-hd{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:2px 0}
+.etf-toggle-btn{font-size:11px;color:var(--acc);background:none;border:none;cursor:pointer;font-weight:700;padding:2px 8px;border-radius:4px;font-family:var(--f)}
+.etf-toggle-btn:hover{background:var(--s2)}
+/* summary cards */
+.etf-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin:8px 0}
+.etf-summary-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh)}
+.etf-summary-card.accent{border-color:var(--acc);background:var(--acc-l)}
+.etf-summary-card.warn{border-color:var(--am-bd);background:var(--am-bg)}
+.etf-summary-card.ok{border-color:#86efac;background:var(--g-bg)}
+.etf-summary-card.danger{border-color:var(--r-bd);background:var(--r-bg)}
+.etf-summary-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:4px}
+.etf-summary-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2;word-break:break-all}
+.etf-summary-sub{font-size:11px;color:var(--txt3);margin-top:3px}
+/* import status */
+.etf-import-status{font-size:11px;padding:5px 8px;border-radius:var(--r3);margin-top:6px;display:none}
+.etf-import-status.ok{background:var(--g-bg);color:var(--g);display:block}
+.etf-import-status.err{background:var(--r-bg);color:var(--r);display:block}
+.etf-import-status.warn{background:var(--am-bg);color:var(--am);display:block}
+/* gh row */
+.etf-gh-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.etf-gh-row label{font-size:11px;font-weight:700;color:var(--txt2);width:80px;flex-shrink:0}
+.etf-gh-row input{flex:1;min-width:160px;max-width:360px}
+/* budget */
+.etf-budget-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.etf-budget-row label{font-size:11px;font-weight:700;color:var(--txt2);width:90px;flex-shrink:0}
+.etf-budget-row input{flex:1;min-width:80px;max-width:180px}
+.etf-deficit{color:var(--r);font-weight:700}
+.etf-surplus{color:var(--g);font-weight:700}
+/* port summary */
+.etf-port-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.etf-port-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px}
+.etf-port-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:3px}
+.etf-port-val{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
+.etf-port-val.warn{color:var(--am)}
+.etf-port-val.ok{color:var(--g)}
+/* bar */
+.etf-bar-wrap{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;margin-top:3px}
+.etf-bar-fill{height:100%;border-radius:3px;transition:width .3s}
+.etf-dual-bar{height:8px;background:var(--s3);border-radius:4px;overflow:hidden;position:relative;margin-top:2px}
+.etf-dual-bar-t{height:100%;border-radius:4px;background:#bfdbfe;position:absolute;top:0;left:0}
+.etf-dual-bar-c{height:100%;border-radius:4px;background:var(--acc);position:absolute;top:0;left:0;opacity:.85}
+/* card/table toggle */
+.etf-table-view{display:block}
+.etf-card-view{display:none;flex-direction:column;gap:10px}
+.etf-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;box-shadow:var(--sh)}
+.etf-card-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.etf-card-nm{font-weight:700;font-size:14px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.etf-card-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px solid var(--bd);color:var(--txt2)}
+.etf-card-row:last-of-type{border-bottom:none}
+.etf-card-row .v{font-weight:600;color:var(--txt);text-align:right;font-variant-numeric:tabular-nums}
+/* compare */
+.etf-cmp-row{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:8px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;margin-bottom:6px}
+.etf-cmp-row.latest{border-color:var(--acc);background:var(--acc-l)}
+.etf-cmp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:12px}
+.etf-cmp-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;box-shadow:var(--sh)}
+.etf-cmp-tag{display:inline-block;font-size:10px;font-weight:700;border-radius:3px;padding:1px 6px;margin:1px 2px}
+.etf-cmp-tag.added{background:#f0fdf4;color:#15803d;border:1px solid #86efac}
+.etf-cmp-tag.removed{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.etf-cmp-tag.increased{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+.etf-cmp-tag.decreased{background:#faf5ff;color:#7e22ce;border:1px solid #e9d5ff}
+/* order filter */
+.etf-ord-filter{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.etf-ord-filter button.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+/* pos filter */
+.etf-pos-filter{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.etf-pos-filter button.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+/* ETF status grid */
+.etf-status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:8px}
+.etf-status-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh)}
+.etf-status-card-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.etf-status-card-nm{font-weight:700;font-size:14px;flex:1}
+.etf-status-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--bd)}
+.etf-status-row:last-child{border-bottom:none}
+.etf-status-row .sv{font-weight:600;color:var(--txt)}
+/* acct grid */
+.etf-acct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:8px;margin-top:6px}
+.etf-acct-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px}
+.etf-acct-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:3px}
+.etf-acct-val{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
+/* runid */
+.etf-runid{font-family:monospace;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;display:inline-block;vertical-align:middle}
+/* watchlist table */
+.etf-wl-ext td,.etf-wl-ext th{white-space:nowrap}
+/* change pill */
+.cp-add{color:var(--g);font-weight:700}
+.cp-rem{color:var(--r);font-weight:700}
+.cp-inc{color:var(--acc);font-weight:700}
+.cp-dec{color:#7e22ce;font-weight:700}
+/* approval card */
+.etf-approval-json-wrap{margin-top:10px}
+/* mobile */
+@media(max-width:700px){
+  .etf-table-view{display:none}
+  .etf-card-view{display:flex}
+  .etf-summary-grid{grid-template-columns:repeat(2,1fr)}
+  .etf-flow-box{flex-direction:column;gap:3px;align-items:flex-start}
+  .etf-status-grid{grid-template-columns:1fr}
+  .etf-acct-grid{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
@@ -319,7 +436,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.51</span>
+      <span class="ver-badge">V26.53</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">🏠 대시보드</button>
@@ -1366,8 +1483,8 @@ tr:hover td{background:#f8fafc}
 
 <script>
 /* =============================================================
-   ELS Manager V26.51
-   §F  FLIGHT (V26.51: ETF운영대시보드·승인관리·예산계산)
+   ELS Manager V26.53
+   §F  FLIGHT (V26.53: ETF운영대시보드·승인관리·예산계산)
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1378,7 +1495,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.51';
+const VER = 'V26.53';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -1395,7 +1512,7 @@ function lsSet(k, v){
   }
 }
 function lsDel(k){try{localStorage.removeItem(k);}catch{}}
-function showStorageWarn(msg){const el=document.getElementById('storage-warn');el.textContent='⚠️ '+msg;el.style.display='block';setTimeout(()=>el.style.display='none',8000);}
+function showStorageWarn(msg){const el=document.getElementById('storage-warn');if(!el){console.warn('storage-warn missing:',msg);return;}el.textContent='⚠️ '+msg;el.style.display='block';setTimeout(()=>{if(el)el.style.display='none';},8000);}
 function load(){return{accounts:lsGet('els_acc',[]),products:lsGet('els_prod',[])};}
 function saveAcc2(a){lsSet('els_acc',a);}
 function saveProd2(p){lsSet('els_prod',p);}
@@ -4559,7 +4676,7 @@ function renderCompareTab(){
 }
 
 /* ═══════════════════════════════════════════════════════
-   §31 ETF 추종 — V26.51
+   §31 ETF 추종 — V26.53
    localStorage keys (최소화):
      etf_remote_url_v1      (GitHub payload URL)
      etf_sync_meta_v1       (마지막 연동 메타)
@@ -4611,35 +4728,39 @@ function getEtfMinimal(){ return Object.assign({},_etfMinimalDefault(),lsGet(ETF
 /** 최소 state로 압축해서 저장 — 항상 이 함수를 통해서만 저장 */
 function saveEtfMinimal(fullData){
   if(!fullData) return;
+  /* 레거시 대용량 키 먼저 정리 */
+  try{localStorage.removeItem(ETF_KEY_LEGACY);}catch(ex){}
+  try{localStorage.removeItem('etf_last_payload');}catch(ex){}
   var now=new Date().toISOString();
-  function trimPos(p){ return {id:p.id||genId(),etfId:p.etfId||'',symbol:p.symbol||'',name:p.name||p.symbol||'',market:p.market||'',currency:p.currency||'KRW',qty:p.qty||0,currentPrice:p.currentPrice||0,marketValue:p.marketValue||p.evalAmount||0,targetAmount:p.targetAmount||0,currentWeight:p.currentWeight||0,targetWeight:p.targetWeight||0,gapWeight:p.gapWeight||p.weightGap||0,requiredQty:p.requiredQty||0,requiredAction:p.requiredAction||p.status||'-'}; }
-  function trimOrder(o){ return {id:o.id||genId(),symbol:o.symbol||'',name:o.name||o.symbol||'',market:o.market||'',side:o.side||'buy',qty:o.qty||0,refPrice:o.refPrice||0,estAmount:o.estAmount||0,currency:o.currency||'KRW',status:o.status||'pending',runId:o.runId||o.run_id||'',generatedAt:o.generatedAt||now}; }
-  function trimSnap(s){ return {run_id:s.run_id||'',created_at:s.created_at||s.run_at||now,changed:s.changed||false,significant_changed:s.significant_changed||false,buy_orders_count:s.buy_orders_count||0,remaining_krw:s.remaining_krw||null,remaining_usd:s.remaining_usd||null,block_reasons:s.block_reasons||[],addedSymbols:s.addedSymbols||[],removedSymbols:s.removedSymbols||[],increasedSymbols:s.increasedSymbols||[],decreasedSymbols:s.decreasedSymbols||[]}; }
-  function trimDiff(l){ return {id:l.id||genId(),etfId:l.etfId||'',etfCode:l.etfCode||'',etfName:l.etfName||l.etfCode||'',detectedAt:l.detectedAt||now,source:l.source||'',added:l.added||[],removed:l.removed||[],increased:l.increased||[],decreased:l.decreased||[],changedCount:l.changedCount||0,status:l.status||'new',runId:l.runId||l.run_id||''}; }
+  function trimPos(p){return{id:p.id||genId(),etfId:p.etfId||'',symbol:p.symbol||'',name:p.name||p.symbol||'',market:p.market||'',currency:p.currency||'KRW',qty:p.qty||0,currentPrice:p.currentPrice||0,marketValue:p.marketValue||p.evalAmount||0,targetAmount:p.targetAmount||0,currentWeight:p.currentWeight||0,targetWeight:p.targetWeight||0,gapWeight:p.gapWeight||p.weightGap||0,requiredQty:p.requiredQty||0,requiredAction:p.requiredAction||p.status||'-'};}
+  function trimOrder(o){return{id:o.id||genId(),symbol:o.symbol||'',name:o.name||o.symbol||'',market:o.market||'',side:o.side||'buy',qty:o.qty||0,refPrice:o.refPrice||0,estAmount:o.estAmount||0,currency:o.currency||'KRW',status:o.status||'pending',runId:o.runId||o.run_id||''};}
+  function trimSnap(s){return{run_id:s.run_id||'',created_at:s.created_at||s.run_at||now,changed:s.changed||false,significant_changed:s.significant_changed||false,buy_orders_count:s.buy_orders_count||0,remaining_krw:s.remaining_krw||null,remaining_usd:s.remaining_usd||null,block_reasons:(s.block_reasons||[]).slice(0,3),addedSymbols:(s.addedSymbols||[]).slice(0,5),removedSymbols:(s.removedSymbols||[]).slice(0,5)};}
+  function trimDiff(l){return{id:l.id||genId(),etfCode:l.etfCode||'',etfName:l.etfName||l.etfCode||'',detectedAt:l.detectedAt||now,source:l.source||'',added:(l.added||[]).slice(0,5),removed:(l.removed||[]).slice(0,5),changedCount:l.changedCount||0,status:l.status||'new'};}
   var eng=fullData.engineStatus||fullData.engine_status||{};
-  var minimal={
-    watchlist:(fullData.watchlist||[]).map(function(w){return {id:w.id||genId(),name:w.name||'',symbol:w.symbol||'',market:w.market||'KRX',currency:w.currency||'KRW',active:w.active!==false,targetAmount:w.targetAmount||0,manager:w.manager||''};}),
-    latestRunId:eng.run_id||eng.runId||(fullData.snapshots&&fullData.snapshots[0]&&fullData.snapshots[0].run_id)||null,
+  var base={
+    watchlist:(fullData.watchlist||[]).slice(0,20).map(function(w){return{id:w.id||genId(),name:w.name||'',symbol:w.symbol||'',active:w.active!==false,targetAmount:w.targetAmount||0};}),
+    latestRunId:eng.run_id||eng.runId||null,
     lastSyncAt:eng.lastSyncAt||eng.last_sync_at||now,
-    engineSummary:{run_id:eng.run_id||eng.runId||null,enabled:eng.enabled||false,dryRun:eng.dryRun||eng.dry_run||false,brokerName:eng.brokerName||'',accountAlias:eng.accountAlias||'',lastSyncAt:eng.lastSyncAt||null,lastFetchAt:eng.lastFetchAt||null,blockReasons:eng.blockReasons||eng.block_reasons||[],latestError:eng.latestError||'',sourceSummaries:(eng.sourceSummaries||[]).slice(0,5)},
-    orderQueue:(fullData.orderQueue||fullData.order_queue||[]).slice(0,30).map(trimOrder),
-    followPositions:(fullData.followPositions||fullData.follow_positions||[]).slice(0,50).map(trimPos),
-    snapshots:(fullData.snapshots||[]).slice(0,5).map(trimSnap),
-    diffLogs:(fullData.diffLogs||fullData.diff_logs||[]).slice(0,10).map(trimDiff),
+    engineSummary:{run_id:eng.run_id||eng.runId||null,enabled:eng.enabled||false,dryRun:eng.dryRun||eng.dry_run||false,brokerName:eng.brokerName||'',accountAlias:eng.accountAlias||'',lastSyncAt:eng.lastSyncAt||null,lastFetchAt:eng.lastFetchAt||null,lastOrderRunAt:eng.lastOrderRunAt||null,blockReasons:(eng.blockReasons||eng.block_reasons||[]).slice(0,5),latestError:eng.latestError||'',sourceSummaries:(eng.sourceSummaries||[]).slice(0,3)},
+    orderQueue:(fullData.orderQueue||fullData.order_queue||[]).slice(0,15).map(trimOrder),
+    followPositions:(fullData.followPositions||fullData.follow_positions||[]).slice(0,20).map(trimPos),
+    snapshots:(fullData.snapshots||[]).slice(0,3).map(trimSnap),
+    diffLogs:(fullData.diffLogs||fullData.diff_logs||[]).slice(0,5).map(trimDiff),
     accountSummary:fullData.accountSummary||fullData.account_summary||null,
     performanceSummary:fullData.performanceSummary||fullData.performance_summary||null,
-    etfTopHoldings:(fullData.etfTopHoldings||fullData.top_holdings||[]).slice(0,20),
     savedAt:now
   };
-  try{ lsSet(ETF_MINIMAL_KEY,minimal); }
-  catch(e){
-    /* 그래도 quota exceeded면 더 줄여서 재시도 */
-    minimal.followPositions=minimal.followPositions.slice(0,20);
-    minimal.orderQueue=minimal.orderQueue.slice(0,10);
-    minimal.snapshots=minimal.snapshots.slice(0,3);
-    minimal.diffLogs=minimal.diffLogs.slice(0,5);
-    try{ lsSet(ETF_MINIMAL_KEY,minimal); } catch(e2){ console.warn('ETF minimal save failed:',e2.message); }
+  /* 단계적 축소 저장 시도 */
+  var levels=[
+    function(m){return m;},
+    function(m){var c=Object.assign({},m);c.followPositions=c.followPositions.slice(0,10);c.orderQueue=c.orderQueue.slice(0,8);c.snapshots=c.snapshots.slice(0,2);c.diffLogs=[];return c;},
+    function(m){return{watchlist:m.watchlist,latestRunId:m.latestRunId,lastSyncAt:m.lastSyncAt,engineSummary:{run_id:m.engineSummary.run_id,dryRun:m.engineSummary.dryRun,brokerName:m.engineSummary.brokerName,lastSyncAt:m.engineSummary.lastSyncAt},savedAt:m.savedAt};}
+  ];
+  for(var i=0;i<levels.length;i++){
+    try{lsSet(ETF_MINIMAL_KEY,levels[i](base));return;}
+    catch(ex){/* 용량 초과 — 더 줄여서 재시도 */}
   }
+  console.warn('ETF minimal: 모든 저장 시도 실패');
 }
 
 /** 현재 렌더용 state 반환 (메모리 우선, 없으면 최소 localStorage 복구) */
