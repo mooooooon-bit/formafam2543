@@ -310,7 +310,7 @@ tr:hover td{background:#f8fafc}
   .cmp-card-view{display:flex}
 }
 
-/* ─ ETF V26.60 전용 CSS ─ */
+/* ─ ETF V26.63 전용 CSS ─ */
 /* ops bar */
 .etf-ops-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);margin-top:6px;min-height:38px;font-size:12px}
 .etf-ops-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
@@ -427,7 +427,7 @@ tr:hover td{background:#f8fafc}
   .etf-status-grid{grid-template-columns:1fr}
   .etf-acct-grid{grid-template-columns:repeat(2,1fr)}
 }
-/* ─ 추종도 KPI (V26.60) ─ */
+/* ─ 추종도 KPI (V26.63) ─ */
 .etf-tracking-kpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:10px}
 .etf-tracking-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;box-shadow:var(--sh);text-align:center}
 .etf-tracking-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:4px}
@@ -449,7 +449,7 @@ tr:hover td{background:#f8fafc}
   .etf-tracking-kpi{grid-template-columns:repeat(2,1fr)}
   .etf-pos-kpi-grid{grid-template-columns:repeat(2,1fr)}
 }
-/* ─ ETF 레버리지 탭 (V26.60) ─ */
+/* ─ ETF 레버리지 탭 (V26.63) ─ */
 .lev-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:10px 0}
 .lev-summary-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh)}
 .lev-summary-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:4px}
@@ -490,7 +490,7 @@ tr:hover td{background:#f8fafc}
   .lev-check-grid{grid-template-columns:1fr}
   .lev-judge-lbl{width:90px}
 }
-/* ─ ETF 레버리지 V26.60 추가 CSS ─ */
+/* ─ ETF 레버리지 V26.63 추가 CSS ─ */
 .lev-pos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:8px}
 .lev-pos-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center}
 .lev-pos-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:3px}
@@ -518,6 +518,30 @@ tr:hover td{background:#f8fafc}
   .lev-brake-grid{grid-template-columns:1fr}
   .lev-perf-grid{grid-template-columns:repeat(2,1fr)}
 }
+/* ─ ETF 레버리지 V26.63 추가 CSS ─ */
+/* 실전주문 배너 */
+.lev-order-banner{padding:10px 16px;border-radius:var(--r2);font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.lev-order-banner.dry{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+.lev-order-banner.live{background:var(--r-bg);color:var(--r);border:1px solid var(--r-bd)}
+/* 시장 세션 카드 */
+.lev-market-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);font-size:12px}
+.lev-market-row:last-child{border-bottom:none}
+.lev-market-lbl{color:var(--txt3);font-weight:600;flex-shrink:0;min-width:100px}
+.lev-market-val{font-weight:700}
+/* 유니버스 뱃지 */
+.lev-ticker-badge{display:inline-block;background:var(--acc-l);color:var(--acc);border:1px solid var(--acc);border-radius:4px;padding:2px 10px;font-size:12px;font-weight:700;margin:2px 3px 2px 0;font-family:monospace}
+/* 유니버스 테이블 */
+.lev-uni-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* KIS 카드 */
+.lev-kis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px}
+.lev-kis-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px}
+.lev-kis-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:3px}
+.lev-kis-val{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+/* universe_status 행 색상 */
+.lev-uni-row-blocked{background:#fef3c7 !important}
+@media(max-width:700px){
+  .lev-kis-grid{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
@@ -527,7 +551,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.60</span>
+      <span class="ver-badge">V26.63</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -1360,6 +1384,9 @@ tr:hover td{background:#f8fafc}
 <div class="page" id="tab-etflev">
   <div class="disclaimer">⚠️ 관제 화면 전용 — 주문 실행은 Python 엔진이 처리합니다. 이 화면은 결과 모니터링 전용입니다.</div>
 
+  <!-- 실전주문 잠금 배너 (V26.63) -->
+  <div id="lev-live-order-banner" style="display:none;margin-top:8px"></div>
+
   <!-- 새로고침 버튼 -->
   <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
     <button class="btn bp sm" onclick="levFetchData()">🔄 데이터 새로고침</button>
@@ -1445,7 +1472,7 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 
-  <!-- ── V26.60 추가 섹션 ── -->
+  <!-- ── V26.63 추가 섹션 ── -->
 
   <!-- 1. 보유 포지션 -->
   <div class="card mt">
@@ -1504,6 +1531,62 @@ tr:hover td{background:#f8fafc}
     </div>
     <div id="lev-log-list" style="max-height:260px;overflow-y:auto">
       <div style="text-align:center;color:var(--txt3);padding:16px;font-size:13px">데이터 대기중</div>
+    </div>
+  </div>
+</div>
+
+  <!-- V26.63: 시장 세션 카드 -->
+  <div class="card mt">
+    <div class="sec-hd" style="margin-bottom:8px">
+      <div class="sec-hl"><span class="sec-t">🕐 시장 세션</span></div>
+      <span id="lev-market-badge"></span>
+    </div>
+    <div id="lev-market-body">
+      <div style="color:var(--txt3);font-size:13px;padding:6px 0">시장 세션 데이터 대기중</div>
+    </div>
+  </div>
+
+  <!-- V26.63: 활성 감시 종목 카드 -->
+  <div class="card mt">
+    <div class="sec-hd" style="margin-bottom:8px">
+      <div class="sec-hl"><span class="sec-t">🎯 활성 감시 종목</span><span class="cbadge" id="lev-universe-cnt">0</span></div>
+    </div>
+    <div id="lev-universe-body">
+      <div style="color:var(--txt3);font-size:13px;padding:6px 0">활성 종목 없음</div>
+    </div>
+  </div>
+
+  <!-- V26.63: 전체 감시 종목 테이블 -->
+  <div class="card mt">
+    <div class="sec-hd" style="margin-bottom:8px">
+      <div class="sec-hl"><span class="sec-t">📋 전체 감시 종목</span><span class="cbadge" id="lev-uni-table-cnt">0</span></div>
+      <button class="btn bgh xs" onclick="etfToggleSection('lev-uni-table-body','lev-uni-table-btn')" id="lev-uni-table-btn">▾ 펼치기</button>
+    </div>
+    <div id="lev-uni-table-body" style="display:none">
+      <div class="lev-uni-table-wrap">
+        <table><thead><tr>
+          <th>티커</th><th>테마</th><th class="nr">현재가</th><th class="nr">전일종가</th>
+          <th class="nr">등락률</th><th>50일선↓</th><th>200일선↓</th>
+          <th class="nr">보유</th><th class="nr">평균단가</th><th class="nr">차수</th>
+          <th>계산신호</th><th>최종신호</th><th class="nr">우선순위</th><th>사유</th>
+        </tr></thead><tbody id="lev-uni-tb">
+          <tr><td colspan="14" style="text-align:center;color:var(--txt3);padding:16px">감시 종목 데이터 대기중</td></tr>
+        </tbody></table>
+      </div>
+      <!-- 모바일 카드뷰 -->
+      <div id="lev-uni-cards" class="etf-card-view" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- V26.63: KIS 계좌/API 연결 상태 -->
+  <div class="card mt">
+    <div class="sec-hd" style="margin-bottom:8px">
+      <div class="sec-hl"><span class="sec-t">🏦 KIS 계좌/API 연결 상태</span><span id="lev-kis-badge" style="margin-left:8px"></span></div>
+    </div>
+    <div id="lev-kis-body">
+      <div class="lev-kis-grid">
+        <div class="lev-kis-card"><div class="lev-kis-lbl">연결 상태</div><div class="lev-kis-val" style="color:var(--txt3)">KIS 미연결</div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1735,8 +1818,8 @@ tr:hover td{background:#f8fafc}
 
 <script>
 /* =============================================================
-   ELS Manager V26.60
-   §F  FLIGHT (V26.60: ETF운영대시보드·승인관리·예산계산)
+   ELS Manager V26.63
+   §F  FLIGHT (V26.63: ETF운영대시보드·승인관리·예산계산)
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1747,7 +1830,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.60';
+const VER = 'V26.63';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -3383,14 +3466,12 @@ function renderBackup(){
   const fxRate=loadFxRate();
   const tickerCnt=Object.keys(loadCustomTickerMap()).length;
   const gs=loadGitSyncSettings();
-  const flPlanCnt=0; /* FLIGHT 제거됨 */
-  const flTplCnt=fd.checklistTemplates.length;
-  const flRunCnt=(fd.checklistRuns||[]).length;
-  const flLogCnt=fd.logbook.length;
-  const flNoteCnt=Object.keys(fd.airportNotes||{}).length+Object.keys(fd.cityNotes||{}).length;
-  const flCoordCnt=Object.keys(fd.airportCoords||{}).length;
+
   document.getElementById('bk-stats').innerHTML=`
-    <div style="margin-bottom:10px;font-size:12px;color:var(--txt3)">📦 아래 항목이 모두 백업 JSON에 포함됩니다. GitHub 토큰은 보안상 제외됩니다.</div>
+    <div style="margin-bottom:8px;font-size:12px;color:var(--txt3)">📦 아래 항목이 모두 백업 JSON에 포함됩니다. GitHub 토큰은 보안상 제외됩니다.</div>
+    <div style="font-size:12px;color:var(--am);background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--r2);padding:7px 12px;margin-bottom:10px">
+      ⚠️ 토큰은 보안상 백업 파일에 포함되지 않으며, 복원 후 다시 입력해야 합니다.
+    </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px">
       ${[
         ['계좌 수',accounts.length+'개'],
@@ -3405,11 +3486,6 @@ function renderBackup(){
         ['사용자 티커 매핑',tickerCnt+'개'],
         ['GitHub Owner',gs.owner||'미설정'],
         ['✈️ 비행 계획',flPlanCnt+'개'],
-        ['✈️ 체크리스트 템플릿',flTplCnt+'개'],
-        ['✈️ 체크리스트 run',flRunCnt+'개'],
-        ['✈️ 로그북 항목',flLogCnt+'개'],
-        ['✈️ 공항·도시 노트',flNoteCnt+'개'],
-        flCoordCnt?['✈️ 사용자 공항 좌표',flCoordCnt+'개']:null,
         ['저장 용량',sz+' KB'],
       ].filter(Boolean).map(([k,v])=>`<div style="background:var(--s2);padding:10px 12px;border-radius:var(--r2);border:1px solid var(--bd)">
           <div style="font-size:10px;color:var(--txt3);margin-bottom:2px">${k}</div>
@@ -4116,13 +4192,14 @@ function toggleGitTokenVisibility(){
   if(btn)btn.textContent=hidden?'숨기기':'보기';
 }
 function initGhConfig(){
-  const s=loadGitSyncSettings();
-  const set=(id,v)=>{const el=document.getElementById(id);if(el&&!el.value)el.value=v;};
+  const s = loadGitSyncSettings();
+  /* 탭 전환 후에도 비지 않도록 항상 덮어씀 */
+  const set = (id,v) => { const el=document.getElementById(id); if(el&&v) el.value=v; };
   set('gh-token',  s.token);
-  set('gh-owner',  s.owner||GIT_DEFAULTS.owner);
-  set('gh-repo',   s.repo||GIT_DEFAULTS.repo);
-  set('gh-branch', s.branch||GIT_DEFAULTS.branch);
-  set('gh-path',   s.path||GIT_DEFAULTS.path);
+  set('gh-owner',  s.owner  || GIT_DEFAULTS.owner);
+  set('gh-repo',   s.repo   || GIT_DEFAULTS.repo);
+  set('gh-branch', s.branch || GIT_DEFAULTS.branch);
+  set('gh-path',   s.path   || GIT_DEFAULTS.path);
   _ghRestoreLastUpload();
 }
 // 하위 호환 alias
@@ -4350,15 +4427,15 @@ async function githubRequest(method, url, token, body=null){
 
 /** GitHub에 백업 업로드 */
 /* ── GitHub 상태 helper (null-safe) ── */
-var _ghUploadResult = null; /* 'ok' | 'err' | null */
+var _ghUploadResult = null; /* 'ok' | 'err' | null — flag 기반 */
 
+/* ── GitHub 상태 공통 helper (null-safe, 단일 진입점) ── */
 function _ghSetStatus(msg, ok){
   var el = document.getElementById('gh-status');
   if(!el) return;
   try {
-    el.innerHTML = '<span style="color:' +
-      (ok === true ? 'var(--g)' : ok === false ? 'var(--r)' : 'var(--txt3)') +
-      '">' + (msg || '') + '</span>';
+    var c = ok===true?'var(--g)':ok===false?'var(--r)':'var(--txt3)';
+    el.innerHTML = '<span style="color:'+c+'">'+(msg||'')+'</span>';
   } catch(ex) {}
 }
 
@@ -4366,63 +4443,76 @@ function _ghSetBtn(loading){
   var btn = document.getElementById('gh-upload-btn');
   if(!btn) return;
   try {
-    btn.disabled = loading;
+    btn.disabled = !!loading;
     btn.textContent = loading ? '업로드 중...' : '⬆ GitHub에 백업 업로드';
     if(loading) btn.setAttribute('data-loading','1');
     else btn.removeAttribute('data-loading');
   } catch(ex) {}
 }
 
-function _ghSaveLastUpload(ts){
+function _ghSaveLastUpload(ts, s){
   try { lsSet('gh_last_upload_at', ts); } catch(ex) {}
+  if(s){
+    try {
+      lsSet('gh_last_owner',  s.owner||'');
+      lsSet('gh_last_repo',   s.repo||'');
+      lsSet('gh_last_branch', s.branch||'');
+      lsSet('gh_last_path',   s.path||'');
+    } catch(ex) {}
+  }
   var el = document.getElementById('gh-last-upload');
   if(!el) return;
-  try { el.textContent = '최근 업로드: ' + ts; } catch(ex) {}
+  try { el.textContent = ts ? '최근 업로드: '+ts : ''; } catch(ex) {}
 }
 
 function _ghRestoreLastUpload(){
-  var ts = lsGet('gh_last_upload_at', null);
-  var el = document.getElementById('gh-last-upload');
+  var ts  = lsGet('gh_last_upload_at', null);
+  var el  = document.getElementById('gh-last-upload');
   if(!el) return;
-  try { el.textContent = ts ? '최근 업로드: ' + ts : ''; } catch(ex) {}
+  try { el.textContent = ts ? '최근 업로드: '+ts : ''; } catch(ex) {}
 }
 
 async function uploadBackupToGitHub(){
   const s = loadGitSyncSettings();
   if(!s.token||!s.owner||!s.repo||!s.path){
-    toast('GitHub 토큰·Owner·Repo·경로를 모두 입력하세요.','err'); return;
+    toast('GitHub 토큰·Owner·Repo·경로를 모두 입력하세요.','err');
+    return;
   }
-  _ghUploadResult = null;
+  _ghUploadResult = null;   /* 초기화 */
   _ghSetBtn(true);
-  _ghSetStatus('GitHub에 업로드 중...');
+  _ghSetStatus('GitHub에 업로드 중…');
+
   try {
     const payload = JSON.stringify(getFullBackupPayload(), null, 2);
     const content = btoa(unescape(encodeURIComponent(payload)));
     const apiBase = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${s.path}`;
     let sha = '';
-    try { const r = await githubRequest('GET', `${apiBase}?ref=${s.branch}`, s.token); sha = r.sha||''; } catch{}
+    try { const r = await githubRequest('GET',`${apiBase}?ref=${s.branch}`,s.token); sha=r.sha||''; } catch{}
     const body = {message:'ELS backup update', content, branch:s.branch};
     if(sha) body.sha = sha;
     await githubRequest('PUT', apiBase, s.token, body);
-    const ts = new Date().toLocaleString('ko-KR', {hour12:false}).replace(/\./g,'-').replace(/ -/,'').trim();
+
+    /* ── 성공 경로 ── */
     _ghUploadResult = 'ok';
+    const timeStr = new Date().toLocaleTimeString('ko-KR');
+    const tsLong  = new Date().toLocaleString('ko-KR',{hour12:false});
     toast('GitHub 백업 업로드 완료','ok');
-    _ghSetStatus('✅ 업로드 완료 (' + new Date().toLocaleTimeString() + ')', true);
-    _ghSaveLastUpload(ts);
+    _ghSetStatus('✅ 업로드 완료 ('+timeStr+')', true);
+    _ghSaveLastUpload(tsLong, s);
+
   } catch(e) {
+    /* ── 실패 경로 ── */
     _ghUploadResult = 'err';
-    const msg = e && e.message ? e.message : String(e||'오류');
-    toast('GitHub 업로드 실패: ' + msg, 'err');
-    _ghSetStatus('❌ 업로드 오류: ' + msg, false);
+    const errMsg = e&&e.message ? e.message : String(e||'알 수 없는 오류');
+    toast('GitHub 업로드 실패: '+errMsg, 'err');
+    _ghSetStatus('❌ 업로드 오류: '+errMsg, false);
+
   } finally {
+    /* 버튼 무조건 복구 */
     _ghSetBtn(false);
-    /* finally 안전망: 아직 "업로드 중" 상태가 남아있으면 강제 복구 */
-    var statusEl = document.getElementById('gh-status');
-    if(statusEl && statusEl.textContent && statusEl.textContent.includes('업로드 중')) {
-      _ghSetStatus(_ghUploadResult === 'ok'
-        ? '✅ 업로드 완료 (' + new Date().toLocaleTimeString() + ')'
-        : '❌ 업로드 중 예외 — 새로고침 후 재시도',
-        _ghUploadResult === 'ok');
+    /* flag 기반 안전망 — 텍스트 검사 없음 */
+    if(_ghUploadResult === null){
+      _ghSetStatus('❌ 업로드 중 예외 — 재시도하세요', false);
     }
   }
 }
@@ -4982,7 +5072,7 @@ function renderCompareTab(){
 }
 
 /* ═══════════════════════════════════════════════════════
-   §31 ETF 추종 — V26.60
+   §31 ETF 추종 — V26.63
    localStorage keys (최소화):
      etf_remote_url_v1      (GitHub payload URL)
      etf_sync_meta_v1       (마지막 연동 메타)
@@ -5752,7 +5842,7 @@ async function etfTestRemoteUrl(){
 
 function generateSampleEtfTrackData(){ toast("샘플 기능이 제거됐습니다. GitHub 연동을 사용하세요.","warn"); }
 /* ═══════════════════════════════════════════════════════
-   §36b 추종도 지표 (V26.60)
+   §36b 추종도 지표 (V26.63)
    ═══════════════════════════════════════════════════════ */
 
 /** 추종도 점수 계산 (0~100) — abs(gapWeight) 기반 */
@@ -5894,7 +5984,7 @@ function renderEtfPosKpi(d){
 
 
 /* ═══════════════════════════════════════════════════════
-   §37 ETF 레버리지 관제 탭 (V26.60)
+   §37 ETF 레버리지 관제 탭 (V26.63)
    Python 연동 포인트:
      - JSON URL: ./output/lev_etf_status.json (또는 GitHub Raw URL)
      - localStorage 키: lev_etf_json_url
@@ -5923,7 +6013,7 @@ var LEV_DUMMY = {
     {time:'18:20',level:'INFO',message:'레버리지 오토 엔진 정상 실행'},
     {time:'18:19',level:'INFO',message:'텔레그램 발송 완료: TQQQ HOLD'}
   ],
-  /* ── V26.60 추가 필드 ── */
+  /* ── V26.63 추가 필드 ── */
   position:{ticker:'TQQQ',quantity:15,avg_price:55.20,current_price:58.20,market_value:873.00,unrealized_pnl:45.00,unrealized_pnl_pct:5.43,cash_usd:2120.50,buying_power_usd:2000.00},
   mode:{strategy_mode:'SHORT_TERM',trade_state:'WAITING_ENTRY',next_action:'HOLD',next_action_amount_usd:0,description:'현재는 매수 기준가 도달 전이라 진입 대기'},
   brake:{daily_loss_limit_usd:150,weekly_loss_limit_usd:400,max_position_usd:3000,max_position_pct:35,stop_loss_pct:-7,take_profit_pct:12,volatility_block:true,price_spike_block:true},
@@ -5932,7 +6022,15 @@ var LEV_DUMMY = {
     {code:'DUPLICATE_SIGNAL',message:'이미 같은 BUY 신호를 처리함',active:false}
   ],
   performance:{today_realized_pnl:0,week_realized_pnl:42.50,total_realized_pnl:318.20,win_rate_pct:62.5,avg_win_usd:38.40,avg_loss_usd:-21.70,max_drawdown_pct:-6.8},
-  explain:{summary:'현재가는 매수 기준보다 높고 매도 기준보다 낮아 관망',buy_condition:'현재가가 매수 기준가 이하로 내려오면 BUY 후보',sell_condition:'현재가가 매도 기준가 이상으로 올라가면 SELL 후보',hold_condition:'현재가가 매수/매도 기준 사이면 HOLD',next_trigger:'TQQQ가 $56.50 이하로 내려오면 매수 조건 재검토'}
+  explain:{summary:'현재가는 매수 기준보다 높고 매도 기준보다 낮아 관망',buy_condition:'현재가가 매수 기준가 이하로 내려오면 BUY 후보',sell_condition:'현재가가 매도 기준가 이상으로 올라가면 SELL 후보',hold_condition:'현재가가 매수/매도 기준 사이면 HOLD',next_trigger:'TQQQ가 $56.50 이하로 내려오면 매수 조건 재검토'},
+  /* ── V26.63 신규 필드 ── */
+  market:{session:'PREMARKET',label:'프리마켓',tradable:true,session_allowed:true,is_dst:true,kst_time:'2026-05-02 18:30:00'},
+  universe:{group_name:'레버리지 ETF 전체군',grade:'MIXED',count:3,enabled_tickers:['TQQQ','SOXL','TSLL']},
+  universe_status:[
+    {ticker:'TQQQ',name:'ProShares UltraPro QQQ',theme:'tech_growth',current_price:58.2,previous_close:60.5,change_pct:-3.8,ma50:61.2,ma200:52.3,below_ma50:true,below_ma200:false,quantity:0,avg_price:0,tranches:0,calculated_signal:'HOLD',final_signal:'HOLD',confidence:'HIGH',reason:'1차 진입 기준 미도달',priority_score:3.8,next_tranche:0,target_profit_pct:0,blocked:false},
+    {ticker:'SOXL',name:'Direxion Semiconductor Bull 3X',theme:'semiconductor',current_price:32.1,previous_close:34.0,change_pct:-5.59,ma50:35.2,ma200:28.7,below_ma50:true,below_ma200:false,quantity:0,avg_price:0,tranches:0,calculated_signal:'BUY',final_signal:'BUY',confidence:'HIGH',reason:'전일 대비 -4.5% 하락으로 1차 진입 조건 충족',priority_score:5.59,next_tranche:1,target_profit_pct:5,blocked:false}
+  ],
+  kis:{connected:false,mode:'NOT_CONFIGURED',account_alias:'레버리지 오토 계좌',account_no_masked:'',balance_success:false,order_api_ready:false,last_balance_at:'',cash_usd:0,buying_power_usd:0}
 };
 
 function levFmtUsd(n){if(n==null||isNaN(n))return'-';return'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -5968,12 +6066,166 @@ async function levFetchData(){
 function renderLevTab(){
   var d=_levData||LEV_DUMMY;
   _levRestoreUrl();
+  renderLevLiveOrderBanner(d);
   _renderLevSummary(d);_renderLevJudge(d);_renderLevRisk(d);
   _renderLevOrders(d);_renderLevHistory(d);_renderLevTelegram(d);_renderLevLogs(d);
-  /* V26.60 추가 렌더 */
   _renderLevPosition(d);_renderLevMode(d);_renderLevBrake(d);
   _renderLevBlockReasons(d);_renderLevPerformance(d);_renderLevExplain(d);
+  /* V26.63 신규 */
+  renderLevLiveOrderBanner(d);
+  renderLevMarket(d);
+  renderLevUniverse(d);
+  renderLevUniverseTable(d);
+  renderLevKisStatus(d);
 }
+
+/* ── 실전주문 잠금 배너 ── */
+function renderLevLiveOrderBanner(d){
+  var el=document.getElementById('lev-live-order-banner');if(!el)return;
+  var eng=d.engine||{};
+  var isDry=eng.dry_run!==false||eng.execute_orders===false;
+  var isLive=eng.execute_orders===true&&eng.dry_run===false;
+  try{
+    if(isLive){
+      el.innerHTML='<div class="lev-order-banner live">🔴 실전 주문 활성화 상태 — execute_orders=true / dry_run=false</div>';
+      el.style.display='';
+    }else if(isDry){
+      el.innerHTML='<div class="lev-order-banner dry">🟡 DRY_RUN 모드 / 실전 주문 차단 중 — 실제 주문이 전송되지 않습니다.</div>';
+      el.style.display='';
+    }else{
+      el.style.display='none';
+    }
+  }catch(ex){}
+}
+
+/* ── 시장 세션 카드 ── */
+function renderLevMarket(d){
+  var body=document.getElementById('lev-market-body');
+  var badge=document.getElementById('lev-market-badge');
+  if(!body)return;
+  var m=d.market;
+  if(!m){try{body.innerHTML='<div style="color:var(--txt3);font-size:13px;padding:6px 0">시장 세션 데이터 대기중</div>';}catch(ex){}return;}
+  var tradable=m.tradable&&m.session_allowed;
+  var partialBlock=m.tradable&&!m.session_allowed;
+  var badgeColor=tradable?'color:#16a34a':partialBlock?'color:#d97706':'color:var(--r)';
+  var badgeText=tradable?'거래 가능':partialBlock?'설정 미허용':'거래 불가';
+  if(badge)try{badge.innerHTML='<span style="font-size:12px;font-weight:700;'+badgeColor+'">'+badgeText+'</span>';}catch(ex){}
+  var rows=[
+    ['현재 세션',   esc(m.label||m.session||'—')],
+    ['세션 코드',   '<code style="font-size:11px">'+esc(m.session||'—')+'</code>'],
+    ['거래 가능',   m.tradable?'<span style="color:#16a34a;font-weight:700">✅ 가능</span>':'<span style="color:var(--r);font-weight:700">❌ 불가</span>'],
+    ['설정상 허용', m.session_allowed?'<span style="color:#16a34a;font-weight:700">✅ 허용</span>':'<span style="color:#d97706;font-weight:700">⚠️ 미허용</span>'],
+    ['서머타임',    m.is_dst?'<span style="color:var(--acc)">DST 적용 중</span>':'일반 시간'],
+    ['기준 시각',   esc(m.kst_time||'—')],
+  ];
+  try{body.innerHTML='<div style="background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh)">'+
+    rows.map(function(r){return'<div class="lev-market-row"><span class="lev-market-lbl">'+r[0]+'</span><span class="lev-market-val">'+r[1]+'</span></div>';}).join('')+
+  '</div>';}catch(ex){}
+}
+
+/* ── 활성 감시 종목 ── */
+function renderLevUniverse(d){
+  var body=document.getElementById('lev-universe-body');
+  var cntEl=document.getElementById('lev-universe-cnt');
+  if(!body)return;
+  var u=d.universe;
+  if(!u){try{body.innerHTML='<div style="color:var(--txt3);font-size:13px;padding:6px 0">활성 종목 없음</div>';}catch(ex){}return;}
+  if(cntEl)try{cntEl.textContent=u.count||0;}catch(ex){}
+  var tickers=u.enabled_tickers||[];
+  var tickerHtml=tickers.length
+    ?tickers.map(function(t){return'<span class="lev-ticker-badge">'+esc(t)+'</span>';}).join('')
+    :'<span style="color:var(--txt3);font-size:12px">활성 종목 없음</span>';
+  try{body.innerHTML='<div style="background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh)">'+
+    '<div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;margin-bottom:10px">'+
+      '<span><b>그룹명</b>: '+esc(u.group_name||'—')+'</span>'+
+      '<span><b>등급</b>: <span style="font-weight:700;color:var(--acc)">'+esc(u.grade||'—')+'</span></span>'+
+      '<span><b>종목 수</b>: '+esc(u.count||0)+'개</span>'+
+    '</div>'+
+    '<div>'+tickerHtml+'</div>'+
+  '</div>';}catch(ex){}
+}
+
+/* ── 전체 감시 종목 테이블 ── */
+function renderLevUniverseTable(d){
+  var tb=document.getElementById('lev-uni-tb');
+  var cards=document.getElementById('lev-uni-cards');
+  var cntEl=document.getElementById('lev-uni-table-cnt');
+  var rows=d.universe_status||[];
+  if(cntEl)try{cntEl.textContent=rows.length+'개';}catch(ex){}
+  if(!tb)return;
+  if(!rows.length){
+    try{tb.innerHTML='<tr><td colspan="14" style="text-align:center;color:var(--txt3);padding:16px">감시 종목 데이터 대기중</td></tr>';}catch(ex){}
+    if(cards)try{cards.innerHTML='<div style="color:var(--txt3);padding:12px">감시 종목 데이터 대기중</div>';}catch(ex){}
+    return;
+  }
+  var sigBg={'BUY':'background:#dbeafe;color:#1d4ed8','BUY_ADD':'background:#dbeafe;color:#1d4ed8','SELL':'background:#fee2e2;color:#dc2626','HOLD':'background:var(--s2);color:var(--txt2)','CHECK_REQUIRED':'background:#fef3c7;color:#92400e'};
+  function sigBadge(s){var st=sigBg[s]||sigBg['HOLD'];return'<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;'+st+'">'+esc(s||'—')+'</span>';}
+  try{tb.innerHTML=rows.map(function(r){
+    var chg=Number(r.change_pct)||0;
+    var chgClr=chg>=0?'color:#16a34a':'color:var(--r)';
+    var rowCls=r.blocked?'class="lev-uni-row-blocked"':'';
+    return'<tr '+rowCls+'>'+
+      '<td><code style="font-size:12px;font-weight:700">'+esc(r.ticker||'—')+'</code></td>'+
+      '<td style="font-size:11px;color:var(--txt3)">'+esc(r.theme||'—')+'</td>'+
+      '<td class="nr lev-dollar">'+levFmtUsd(r.current_price)+'</td>'+
+      '<td class="nr lev-dollar">'+levFmtUsd(r.previous_close)+'</td>'+
+      '<td class="nr" style="'+chgClr+';font-weight:700">'+levFmtPct(r.change_pct)+'</td>'+
+      '<td style="text-align:center">'+(r.below_ma50?'<span style="color:#d97706">▼</span>':'<span style="color:#16a34a">—</span>')+'</td>'+
+      '<td style="text-align:center">'+(r.below_ma200?'<span style="color:var(--r)">▼</span>':'<span style="color:#16a34a">—</span>')+'</td>'+
+      '<td class="nr">'+(r.quantity||0)+'주</td>'+
+      '<td class="nr lev-dollar">'+(r.avg_price?levFmtUsd(r.avg_price):'-')+'</td>'+
+      '<td class="nr">'+(r.tranches||0)+'차</td>'+
+      '<td>'+sigBadge(r.calculated_signal)+'</td>'+
+      '<td>'+sigBadge(r.final_signal)+'</td>'+
+      '<td class="nr" style="font-size:11px">'+(r.priority_score!=null?Number(r.priority_score).toFixed(2):'-')+'</td>'+
+      '<td style="font-size:11px;color:var(--txt2);max-width:160px">'+esc(r.reason||'')+'</td>'+
+    '</tr>';
+  }).join('');}catch(ex){}
+  /* 모바일 카드뷰 */
+  if(cards)try{cards.innerHTML=rows.map(function(r){
+    var chg=Number(r.change_pct)||0;var chgClr=chg>=0?'color:#16a34a':'color:var(--r)';
+    return'<div class="etf-card" style="'+(r.blocked?'background:#fef3c7':'')+'">'+
+      '<div class="etf-card-hd"><div class="etf-card-nm"><code>'+esc(r.ticker)+'</code> <span style="font-size:11px;color:var(--txt3)">'+esc(r.theme||'')+'</span></div>'+sigBadge(r.final_signal)+'</div>'+
+      '<div class="etf-card-row"><span>현재가/전일</span><span class="v lev-dollar">'+levFmtUsd(r.current_price)+' / '+levFmtUsd(r.previous_close)+'</span></div>'+
+      '<div class="etf-card-row"><span>등락률</span><span class="v" style="'+chgClr+'">'+levFmtPct(r.change_pct)+'</span></div>'+
+      '<div class="etf-card-row"><span>보유/차수</span><span class="v">'+(r.quantity||0)+'주 / '+(r.tranches||0)+'차</span></div>'+
+      '<div class="etf-card-row"><span>우선순위</span><span class="v">'+(r.priority_score!=null?Number(r.priority_score).toFixed(2):'-')+'</span></div>'+
+      '<div style="font-size:11px;color:var(--txt2);margin-top:6px">'+esc(r.reason||'')+'</div>'+
+    '</div>';
+  }).join('');}catch(ex){}
+}
+
+/* ── KIS 계좌/API 연결 상태 ── */
+function renderLevKisStatus(d){
+  var body=document.getElementById('lev-kis-body');
+  var badge=document.getElementById('lev-kis-badge');
+  if(!body)return;
+  var k=d.kis;
+  if(!k){
+    try{body.innerHTML='<div class="lev-kis-grid"><div class="lev-kis-card"><div class="lev-kis-lbl">연결 상태</div><div class="lev-kis-val" style="color:var(--txt3)">KIS 미연결</div></div></div>';}catch(ex){}
+    if(badge)try{badge.innerHTML='<span style="color:var(--txt3);font-size:11px">미연결</span>';}catch(ex){}
+    return;
+  }
+  var modeColor=k.mode==='LIVE'?'color:var(--r)':k.mode==='PAPER'?'color:var(--acc)':'color:var(--txt3)';
+  var connColor=k.connected?'color:#16a34a':'color:var(--txt3)';
+  if(badge)try{badge.innerHTML='<span style="font-size:11px;font-weight:700;'+modeColor+'">'+esc(k.mode||'미연결')+'</span>';}catch(ex){}
+  var items=[
+    {l:'연결 상태',  v:k.connected?'<span style="color:#16a34a;font-weight:700">✅ 연결됨</span>':'<span style="color:var(--r)">❌ 미연결</span>'},
+    {l:'모드',       v:'<span style="'+modeColor+';font-weight:700">'+esc(k.mode||'NOT_CONFIGURED')+'</span>'},
+    {l:'계좌명',     v:esc(k.account_alias||'—')},
+    {l:'계좌번호',   v:k.account_no_masked?'<code>'+esc(k.account_no_masked)+'</code>':'—'},
+    {l:'잔고 조회',  v:k.balance_success?'<span style="color:#16a34a;font-weight:700">✅ 성공</span>':'<span style="color:var(--txt3)">❌ 미조회</span>'},
+    {l:'주문 API',   v:k.order_api_ready?'<span style="color:#16a34a;font-weight:700">✅ 준비됨</span>':'<span style="color:var(--txt3)">❌ 미준비</span>'},
+    {l:'마지막 잔고 조회', v:esc(k.last_balance_at||'—')},
+    {l:'현금 USD',   v:'<b class="lev-dollar">'+levFmtUsd(k.cash_usd)+'</b>'},
+    {l:'매수가능 USD',v:'<b class="lev-dollar">'+levFmtUsd(k.buying_power_usd)+'</b>'},
+  ];
+  try{body.innerHTML='<div class="lev-kis-grid">'+items.map(function(i){
+    return'<div class="lev-kis-card"><div class="lev-kis-lbl">'+i.l+'</div><div class="lev-kis-val">'+i.v+'</div></div>';
+  }).join('')+'</div>';}catch(ex){}
+}
+
+
 
 /* ── 1. 보유 포지션 ── */
 function _renderLevPosition(d){
@@ -6110,6 +6362,33 @@ function _renderLevSummary(d){
   if(orderSubEl)try{orderSubEl.textContent=risk.today_order_usd!=null?'한도 '+levFmtUsd(risk.max_daily_order_usd):'';}catch(ex){}
   var updEl=document.getElementById('lev-updated-at');
   if(updEl)try{updEl.textContent=d.updated_at||'—';updEl.style.fontSize='13px';updEl.style.color='var(--txt)';}catch(ex){}
+  /* 보강 카드들 */
+  var grid=document.getElementById('lev-summary-grid');if(!grid)return;
+  var u=d.universe||{};var m=d.market||{};var k=d.kis||{};
+  /* 활성 종목 수 카드 */
+  var c1=document.getElementById('lev-sum-active-tickers');
+  if(!c1){var div=document.createElement('div');div.className='lev-summary-card';div.id='lev-sum-active-tickers';grid.appendChild(div);}
+  var c1el=document.getElementById('lev-sum-active-tickers');
+  if(c1el)try{c1el.innerHTML='<div class="lev-summary-lbl">활성 종목</div><div class="lev-summary-val" style="font-size:22px">'+(u.count||0)+'<span style="font-size:13px;color:var(--txt3)">개</span></div><div class="lev-summary-sub">'+(u.group_name?'그룹: '+esc(u.group_name):'—')+'</div>';}catch(ex){}
+  /* 시장 세션 카드 */
+  var c2=document.getElementById('lev-sum-market');
+  if(!c2){var div2=document.createElement('div');div2.className='lev-summary-card';div2.id='lev-sum-market';grid.appendChild(div2);}
+  var c2el=document.getElementById('lev-sum-market');
+  var mClr=m.tradable&&m.session_allowed?'color:#16a34a':m.tradable?'color:#d97706':'color:var(--r)';
+  if(c2el)try{c2el.innerHTML='<div class="lev-summary-lbl">시장 세션</div><div class="lev-summary-val" style="font-size:15px;'+mClr+'">'+(m.label||'대기중')+'</div><div class="lev-summary-sub">'+(m.kst_time||'—')+'</div>';}catch(ex){}
+  /* KIS 연결 카드 */
+  var c3=document.getElementById('lev-sum-kis');
+  if(!c3){var div3=document.createElement('div');div3.className='lev-summary-card';div3.id='lev-sum-kis';grid.appendChild(div3);}
+  var c3el=document.getElementById('lev-sum-kis');
+  var kisClr=k.connected?'color:#16a34a':'color:var(--txt3)';
+  if(c3el)try{c3el.innerHTML='<div class="lev-summary-lbl">KIS 연결</div><div class="lev-summary-val" style="font-size:15px;'+kisClr+'">'+(k.connected?'✅ 연결됨':'❌ 미연결')+'</div><div class="lev-summary-sub">'+(k.mode||'—')+'</div>';}catch(ex){}
+  /* 실전주문 상태 카드 */
+  var c4=document.getElementById('lev-sum-live');
+  if(!c4){var div4=document.createElement('div');div4.className='lev-summary-card';div4.id='lev-sum-live';grid.appendChild(div4);}
+  var c4el=document.getElementById('lev-sum-live');
+  var isLive=eng.execute_orders===true&&eng.dry_run===false;
+  var liveClr=isLive?'color:var(--r)':'color:#d97706';
+  if(c4el)try{c4el.innerHTML='<div class="lev-summary-lbl">실전 주문</div><div class="lev-summary-val" style="font-size:15px;'+liveClr+'">'+(isLive?'🔴 활성화':'🟡 차단 중')+'</div><div class="lev-summary-sub">'+(isLive?'execute_orders=true':'DRY_RUN')+'</div>';}catch(ex){}
 }
 
 function _renderLevJudge(d){
