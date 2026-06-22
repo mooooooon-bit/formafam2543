@@ -68,11 +68,14 @@ body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px;l
 
 /* ─ KPI 카드 그리드 ─ */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:4px}
-.kpi-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh)}
+.kpi-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh);min-width:0;overflow:hidden}
 .kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:5px}
-.kpi-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.kpi-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2;word-break:break-all;overflow-wrap:break-word}
 .kpi-val.green{color:var(--g)}.kpi-val.red{color:var(--r)}.kpi-val.blue{color:var(--acc)}.kpi-val.warn{color:var(--am)}
-.kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px}
+.kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px;word-break:keep-all}
+.kpi-pct{font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi-pct.green{color:var(--g)}.kpi-pct.red{color:var(--r)}
+.kpi-forecast-card{grid-column:span 2}
 
 /* ─ 버튼 ─ */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:var(--touch);padding:0 14px;border-radius:var(--r2);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;line-height:1.3;-webkit-tap-highlight-color:transparent}
@@ -271,6 +274,7 @@ tr:hover td{background:#f8fafc}
 }
 @media(max-width:900px){
   .sp2{grid-column:auto}
+  .kpi-forecast-card{grid-column:span 2}
 }
 
 /* ─ 조기상환 시 탭 모바일 카드뷰 ─ */
@@ -569,7 +573,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.75</span>
+      <span class="ver-badge">V26.78</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -1850,6 +1854,10 @@ tr:hover td{background:#f8fafc}
    - V26.73: 백업 탭 GitHub 기본값(owner/repo/branch/path) 화면 고정,
              initGhConfig 빈값 보정 강화 (token 제외)
    - V26.74: 버전 동기화
+   - V26.75: toast() null-safe, exportAll 다운로드 수정, downloadBackupFromGitHub confirm 순서 수정
+   - V26.76: 현재 보유 KPI에 원금 가중평균 예상수익률 표시
+   - V26.77: 3개년 예상 세후수익 KPI 카드 추가 (calcProductExpectedItem 재사용)
+   - V26.78: 실제 세후수익금·해당연도 세후수익금 KPI에 현재 보유 원금 대비 수익률(%) 추가, 모바일 KPI CSS 개선
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1860,7 +1868,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.75';
+const VER = 'V26.78';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -3098,22 +3106,101 @@ function renderKPI(accounts,products){
     estNet += toKRW(t.net, p.currency, rate);
   });
 
-  const items=[
-    {lbl:'현재 보유',          val:active.length+'개', sub:'보유중',              cls:'blue'},
+  /* 원금 가중평균 예상수익률 계산 */
+  let _wPrinSum=0, _wProfSum=0;
+  active.forEach(p=>{
+    const pr=toKRW(Number(p.principal||0),p.currency,rate);
+    const ey=Number(p.expectedYield);
+    const profit=(isFinite(ey)&&!isNaN(ey))?toKRW(Number(p.principal||0)*ey/100,p.currency,rate):0;
+    _wPrinSum+=pr;
+    _wProfSum+=profit;
+  });
+  const _wavgYield=(_wPrinSum>0)?(_wProfSum/_wPrinSum*100):null;
+  const _wavgStr=(_wavgYield===null)?'-':fp(_wavgYield);
+
+  /* 3개년 예상 세후수익금 계산 — calcProductExpectedItem() 재사용 */
+  const _y0=thisYr, _y1=String(Number(thisYr)+1), _y2=String(Number(thisYr)+2);
+  const _yrNet={[_y0]:0,[_y1]:0,[_y2]:0};
+  active.forEach(p=>{
+    const acc=accounts.find(a=>a.id===p.accountId);
+    const item=calcProductExpectedItem(p,acc?.type);
+    if(!item)return;
+    if(item.year===_y0)_yrNet[_y0]+=item.net;
+    else if(item.year===_y1)_yrNet[_y1]+=item.net;
+    else if(item.year===_y2)_yrNet[_y2]+=item.net;
+  });
+  const _pctStr=(net)=>{
+    if(!totalPr)return'-';
+    const pct=net/totalPr*100;
+    return (pct>=0?'+':'')+fp(pct);
+  };
+  const _yrRow=(yr,net)=>{
+    const cls=net>0?'color:var(--g)':net<0?'color:var(--r)':'color:var(--txt2)';
+    return `<div style="display:flex;justify-content:space-between;align-items:baseline;gap:4px;margin-bottom:3px">
+      <span style="font-size:11px;color:var(--txt3);white-space:nowrap">${yr}년</span>
+      <span style="font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;${cls};text-align:right;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${fm(net)} <span style="font-size:10px;font-weight:500">(${_pctStr(net)})</span></span>
+    </div>`;
+  };
+
+  /* 현재 보유 원금 대비 수익률 계산 헬퍼 */
+  const _actPct=(net)=>{
+    if(!totalPr||!isFinite(net/totalPr))return null;
+    return net/totalPr*100;
+  };
+  const _pctCls=(pct)=>pct===null?'':pct>=0?'green':'red';
+  const _pctDisp=(pct,prefix='')=>{
+    if(pct===null)return'-';
+    return prefix+(pct>=0?'+':'')+fp(pct);
+  };
+
+  /* 실제 세후 수익금 퍼센티지 */
+  const _totalNetPct=_actPct(totalNet);
+  /* 해당 연도 세후 수익금 퍼센티지 */
+  const _thisYrNetPct=_actPct(thisYrNet);
+
+  /* 퍼센티지 포함 카드 HTML 생성 헬퍼 */
+  const _mkPctCard=(lbl,val,valCls,pct,sub)=>`
+    <div class="kpi-card">
+      <div class="kpi-lbl">${lbl}</div>
+      <div class="kpi-val ${valCls}">${val}</div>
+      <div class="kpi-pct ${_pctCls(pct)}">${_pctDisp(pct)}</div>
+      <div class="kpi-sub">${sub}</div>
+    </div>`;
+
+  const simpleItems=[
+    {lbl:'현재 보유',          val:active.length+'개', sub:'평균 예상수익률 '+_wavgStr, cls:'blue'},
     {lbl:'완료 상품',          val:done.length+'개',   sub:'조기·만기·손실 완료', cls:''},
     {lbl:'전체 투자원금',       val:fm(totalPr),         sub:'보유중 합계',         cls:''},
-    {lbl:thisYr+'년 예상 수익금',val:fm(estNet),          sub:'배리어 초과 상품 세후',cls:estNet>0?'green':''},
-    {lbl:'실제 세후 수익금',    val:fm(totalNet),         sub:'전체 완료 합계',      cls:totalNet>=0?'green':'red'},
-    {lbl:thisYr+'년 세후 수익금',val:fm(thisYrNet),       sub:thisYr+'년 완료 기준', cls:thisYrNet>=0?'green':'red'},
-    {lbl:'30일내 평가일',       val:near30eval+'건',       sub:'조기상환 평가 임박',  cls:near30eval>0?'warn':''},
-    {lbl:'30일내 만기',         val:near30mat+'건',        sub:'만기 임박',           cls:near30mat>0?'warn':''},
+    {lbl:'30일내 평가일',       val:near30eval+'건',      sub:'조기상환 평가 임박',  cls:near30eval>0?'warn':''},
+    {lbl:'30일내 만기',         val:near30mat+'건',       sub:'만기 임박',           cls:near30mat>0?'warn':''},
   ];
-  document.getElementById('kpi-grid').innerHTML=items.map(i=>`
+  const stdCards=simpleItems.map(i=>`
     <div class="kpi-card">
       <div class="kpi-lbl">${i.lbl}</div>
       <div class="kpi-val ${i.cls}">${i.val}</div>
       <div class="kpi-sub">${i.sub}</div>
     </div>`).join('');
+
+  const totalNetCard=_mkPctCard(
+    '실제 세후 수익금', fm(totalNet), totalNet>=0?'green':'red',
+    _totalNetPct, '현재 보유 원금 대비 누적');
+  const thisYrNetCard=_mkPctCard(
+    thisYr+'년 세후 수익금', fm(thisYrNet), thisYrNet>=0?'green':'red',
+    _thisYrNetPct, '현재 보유 원금 대비 해당 연도');
+
+  /* 3개년 전망 카드 — sp2로 모바일 2열 전체 폭 사용 */
+  const forecastCard=`
+    <div class="kpi-card kpi-forecast-card">
+      <div class="kpi-lbl">3개년 예상 세후수익</div>
+      <div style="margin-top:6px">
+        ${_yrRow(_y0,_yrNet[_y0])}
+        ${_yrRow(_y1,_yrNet[_y1])}
+        ${_yrRow(_y2,_yrNet[_y2])}
+      </div>
+      <div class="kpi-sub" style="margin-top:4px">현재가 기준 첫 상환가능 차수·만기 추정</div>
+    </div>`;
+
+  document.getElementById('kpi-grid').innerHTML=forecastCard+totalNetCard+thisYrNetCard+stdCards;
 }
 
 function renderSchedule(accounts, products){
