@@ -6,10 +6,11 @@
 <title>Asset Manager</title>
 <style>
 /* =============================================================
-   ELS Manager V26.28
+   ELS Manager V26.30
    - 계좌 탭: 계좌 총 금액 = 완료 상품 실제 금액만 반영
    - 시뮬 탭: 총 자산 성장 추적 → 실제 스냅샷 기록기로 교체
    - 연간 실적 탭: 올해/내년/내후년 예상 수익 3개 연도 동시 표시
+   - ELS 기초자산 매핑: 마이크론(MU) 추가
    ============================================================= */
 :root {
   --bg:#f2f5f9; --surface:#fff; --s2:#f0f4f9; --s3:#e6ecf5;
@@ -310,7 +311,7 @@ tr:hover td{background:#f8fafc}
   .cmp-card-view{display:flex}
 }
 
-/* ─ ETF V26.71 전용 CSS ─ */
+/* ─ ETF V26.70 전용 CSS ─ */
 /* ops bar */
 .etf-ops-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);margin-top:6px;min-height:38px;font-size:12px}
 .etf-ops-item{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
@@ -427,7 +428,7 @@ tr:hover td{background:#f8fafc}
   .etf-status-grid{grid-template-columns:1fr}
   .etf-acct-grid{grid-template-columns:repeat(2,1fr)}
 }
-/* ─ 추종도 KPI (V26.71) ─ */
+/* ─ 추종도 KPI (V26.70) ─ */
 .etf-tracking-kpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:10px}
 .etf-tracking-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;box-shadow:var(--sh);text-align:center}
 .etf-tracking-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:4px}
@@ -449,7 +450,7 @@ tr:hover td{background:#f8fafc}
   .etf-tracking-kpi{grid-template-columns:repeat(2,1fr)}
   .etf-pos-kpi-grid{grid-template-columns:repeat(2,1fr)}
 }
-/* ─ ETF 레버리지 탭 (V26.71) ─ */
+/* ─ ETF 레버리지 탭 (V26.70) ─ */
 .lev-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:10px 0}
 .lev-summary-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh)}
 .lev-summary-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:4px}
@@ -490,7 +491,7 @@ tr:hover td{background:#f8fafc}
   .lev-check-grid{grid-template-columns:1fr}
   .lev-judge-lbl{width:90px}
 }
-/* ─ ETF 레버리지 V26.71 추가 CSS ─ */
+/* ─ ETF 레버리지 V26.70 추가 CSS ─ */
 .lev-pos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:8px}
 .lev-pos-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center}
 .lev-pos-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:3px}
@@ -518,7 +519,7 @@ tr:hover td{background:#f8fafc}
   .lev-brake-grid{grid-template-columns:1fr}
   .lev-perf-grid{grid-template-columns:repeat(2,1fr)}
 }
-/* ─ ETF 레버리지 V26.71 추가 CSS ─ */
+/* ─ ETF 레버리지 V26.70 추가 CSS ─ */
 /* 실전주문 배너 */
 .lev-order-banner{padding:10px 16px;border-radius:var(--r2);font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .lev-order-banner.dry{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
@@ -542,7 +543,7 @@ tr:hover td{background:#f8fafc}
 @media(max-width:700px){
   .lev-kis-grid{grid-template-columns:repeat(2,1fr)}
 }
-/* ─ ETF 추종 계좌 요약 KPI (V26.71) ─ */
+/* ─ ETF 추종 계좌 요약 KPI (V26.70) ─ */
 .etf-acct-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:8px 0 4px}
 .etf-acct-kpi-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;box-shadow:var(--sh)}
 .etf-acct-kpi-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:3px}
@@ -568,7 +569,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.71</span>
+      <span class="ver-badge">V26.74</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -608,9 +609,8 @@ tr:hover td{background:#f8fafc}
       <div class="asset-head-actions">
         <button class="btn bgh sm" id="btn-fetch-prices" onclick="fetchAllCurrentPrices()" style="font-size:11px">🔄 현재가 불러오기</button>
         <button class="btn bgh sm" onclick="openTickerMapModal()" style="font-size:11px">⚙️ 자산 매핑 관리</button>
-        <button class="btn bs sm" onclick="exportAssetManagerBackup()" style="font-size:11px">💾 백업하기</button>
-        <button class="btn bgh sm" onclick="document.getElementById('asset-backup-import-file').click()" style="font-size:11px">📂 백업 불러오기</button>
-        <input id="asset-backup-import-file" type="file" accept=".json" style="display:none" onchange="importAssetManagerBackup(event)">
+        <button class="btn bs sm" onclick="uploadBackupToGitHub()" style="font-size:11px">💾 백업하기</button>
+        <button class="btn bgh sm" onclick="downloadBackupFromGitHub()" style="font-size:11px">📂 백업 불러오기</button>
       </div>
       <div class="asset-head-fx">
         <label style="font-size:12px;font-weight:700;color:var(--txt2);white-space:nowrap">💱 USD/KRW 환율</label>
@@ -909,10 +909,10 @@ tr:hover td{background:#f8fafc}
           <button class="btn bd-btn sm" onclick="clearGitToken()" style="flex-shrink:0">토큰 지우기</button>
         </div>
       </div>
-      <div class="fg"><label class="fl">Owner</label><input type="text" class="fi" id="gh-owner" placeholder="mooooooon-bit" oninput="saveGitSyncSettings()"></div>
-      <div class="fg"><label class="fl">Repository 이름</label><input type="text" class="fi" id="gh-repo" placeholder="ellsbuppri" oninput="saveGitSyncSettings()"></div>
-      <div class="fg"><label class="fl">Branch</label><input type="text" class="fi" id="gh-branch" placeholder="main" oninput="saveGitSyncSettings()"></div>
-      <div class="fg"><label class="fl">백업 파일 경로</label><input type="text" class="fi" id="gh-path" placeholder="backups/els-backup.json" oninput="saveGitSyncSettings()"></div>
+      <div class="fg"><label class="fl">Owner</label><input type="text" class="fi" id="gh-owner" placeholder="mooooooon-bit" value="mooooooon-bit" oninput="saveGitSyncSettings()"></div>
+      <div class="fg"><label class="fl">Repository 이름</label><input type="text" class="fi" id="gh-repo" placeholder="ellsbuppri" value="ellsbuppri" oninput="saveGitSyncSettings()"></div>
+      <div class="fg"><label class="fl">Branch</label><input type="text" class="fi" id="gh-branch" placeholder="main" value="main" oninput="saveGitSyncSettings()"></div>
+      <div class="fg"><label class="fl">백업 파일 경로</label><input type="text" class="fi" id="gh-path" placeholder="backups/els-backup.json" value="backups/els-backup.json" oninput="saveGitSyncSettings()"></div>
     </div>
     <div class="fl-row" style="margin-top:12px">
       <button class="btn bp" id="gh-upload-btn" onclick="uploadBackupToGitHub()">⬆ GitHub에 백업 업로드</button>
@@ -1101,7 +1101,7 @@ tr:hover td{background:#f8fafc}
   <div id="etf-ops-bar" class="etf-ops-bar" style="margin-top:6px"></div>
   <div id="etf-top-block-reasons" style="display:none" class="etf-block-reasons"></div>
 
-  <!-- ETF 추종 KIS 계좌 요약 (V26.71) -->
+  <!-- ETF 추종 KIS 계좌 요약 (V26.70) -->
   <div class="card" style="margin-top:10px" id="etf-track-acct-section">
     <div class="sec-hd" style="margin-bottom:6px">
       <div class="sec-hl"><span class="sec-t">🏦 ETF 추종 KIS 계좌</span><span style="font-size:11px;color:var(--txt3);margin-left:8px" id="etf-track-acct-updated"></span></div>
@@ -1376,31 +1376,6 @@ tr:hover td{background:#f8fafc}
   <div id="etf-kpi-grid" style="display:none"></div>
 </div>
 
-<!-- 자산 매핑 관리 모달 -->
-<div class="mo" id="mo-ticker-map">
-  <div class="mo-box" style="max-width:480px">
-    <div class="mo-hd">
-      <span class="mo-title">⚙️ 자산 매핑 관리</span>
-      <button class="mo-close" onclick="cm('mo-ticker-map')">✕</button>
-    </div>
-    <div class="mo-body">
-      <div style="font-size:12px;color:var(--txt3);margin-bottom:12px">
-        자산명으로 현재가를 조회할 때 사용할 Yahoo Finance 티커를 직접 지정합니다.<br>
-        사용자 정의 매핑이 기본 매핑보다 우선 적용됩니다.
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-        <input id="tm-name" class="fi" placeholder="자산명 (예: 테슬라, S&P500)" style="flex:1;min-width:120px">
-        <input id="tm-ticker" class="fi" placeholder="티커 (예: TSLA, ^GSPC)" style="width:110px">
-        <button class="btn bp sm" onclick="addCustomTicker()">추가</button>
-      </div>
-      <div id="custom-ticker-list" style="max-height:260px;overflow-y:auto"></div>
-    </div>
-    <div class="mo-foot">
-      <button class="btn bgh" onclick="cm('mo-ticker-map')">닫기</button>
-    </div>
-  </div>
-</div>
-
 <!-- ETF 등록/수정 모달 -->
 <div class="mo" id="mo-etf">
   <div class="md">
@@ -1437,7 +1412,7 @@ tr:hover td{background:#f8fafc}
 <div class="page" id="tab-etflev">
   <div class="disclaimer">⚠️ 관제 화면 전용 — 주문 실행은 Python 엔진이 처리합니다. 이 화면은 결과 모니터링 전용입니다.</div>
 
-  <!-- 실전주문 잠금 배너 (V26.71) -->
+  <!-- 실전주문 잠금 배너 (V26.70) -->
   <div id="lev-live-order-banner" style="display:none;margin-top:8px"></div>
 
   <!-- 새로고침 버튼 -->
@@ -1525,7 +1500,7 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 
-  <!-- ── V26.71 추가 섹션 ── -->
+  <!-- ── V26.70 추가 섹션 ── -->
 
   <!-- 1. 보유 포지션 -->
   <div class="card mt">
@@ -1587,7 +1562,7 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 
-  <!-- V26.71: 시장 세션 카드 -->
+  <!-- V26.70: 시장 세션 카드 -->
   <div class="card mt">
     <div class="sec-hd" style="margin-bottom:8px">
       <div class="sec-hl"><span class="sec-t">🕐 시장 세션</span></div>
@@ -1598,7 +1573,7 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 
-  <!-- V26.71: 활성 감시 종목 카드 -->
+  <!-- V26.70: 활성 감시 종목 카드 -->
   <div class="card mt">
     <div class="sec-hd" style="margin-bottom:8px">
       <div class="sec-hl"><span class="sec-t">🎯 활성 감시 종목</span><span class="cbadge" id="lev-universe-cnt">0</span></div>
@@ -1608,7 +1583,7 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 
-  <!-- V26.71: 전체 감시 종목 테이블 -->
+  <!-- V26.70: 전체 감시 종목 테이블 -->
   <div class="card mt">
     <div class="sec-hd" style="margin-bottom:8px">
       <div class="sec-hl"><span class="sec-t">📋 전체 감시 종목</span><span class="cbadge" id="lev-uni-table-cnt">0</span></div>
@@ -1630,7 +1605,7 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 
-  <!-- V26.71: KIS 계좌/API 연결 상태 -->
+  <!-- V26.70: KIS 계좌/API 연결 상태 -->
   <div class="card mt">
     <div class="sec-hd" style="margin-bottom:8px">
       <div class="sec-hl"><span class="sec-t">🏦 KIS 계좌/API 연결 상태</span><span id="lev-kis-badge" style="margin-left:8px"></span></div>
@@ -1870,8 +1845,11 @@ tr:hover td{background:#f8fafc}
 
 <script>
 /* =============================================================
-   ELS Manager V26.71
-   §F  FLIGHT (V26.71: ETF운영대시보드·승인관리·예산계산)
+   ELS Manager V26.74
+   §F  FLIGHT (V26.70: ETF운영대시보드·승인관리·예산계산)
+   - V26.73: 백업 탭 GitHub 기본값(owner/repo/branch/path) 화면 고정,
+             initGhConfig 빈값 보정 강화 (token 제외)
+   - V26.74: 버전 동기화
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1882,7 +1860,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.71';
+const VER = 'V26.74';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -1947,6 +1925,9 @@ const ASSET_TICKER_MAP = {
   'microsoft':   'MSFT',
   'pltr':        'PLTR',
   'palantir':    'PLTR',
+  'mu':             'MU',
+  'micron':         'MU',
+  'microntechnology': 'MU',
 };
 
 /** 자산명 정규화: trim → 소문자 → 특수문자·공백 제거 */
@@ -1970,6 +1951,7 @@ const ASSET_KO_ALIAS = {
   '애플':'aapl', 'apple':'aapl', 'aapl':'aapl',
   '마이크로소프트':'msft', 'microsoft':'msft', 'msft':'msft',
   '팔란티어':'pltr', 'palantir':'pltr', 'pltr':'pltr',
+  '마이크론':'mu', '마이크론테크놀로지':'mu', 'micron':'mu', 'microntechnology':'mu', 'mu':'mu',
 };
 
 /* ─ 사용자 정의 티커 매핑 (localStorage) ─ */
@@ -1994,15 +1976,15 @@ function looksLikeTicker(name){
  */
 function resolveAssetTicker(assetName){
   const norm = normalizeAssetName(assetName);
-  // 1) 사용자 정의 매핑 최우선 (custom map)
+  // 1) 한글 alias 먼저 확인
+  const koKey = ASSET_KO_ALIAS[norm];
+  if(koKey && ASSET_TICKER_MAP[koKey]) return ASSET_TICKER_MAP[koKey];
+  // 2) 기본 매핑 직접 확인
+  if(ASSET_TICKER_MAP[norm]) return ASSET_TICKER_MAP[norm];
+  // 3) 사용자 정의 매핑
   const custom = loadCustomTickerMap();
   const customKey = Object.keys(custom).find(k=>normalizeAssetName(k)===norm);
   if(customKey) return custom[customKey];
-  // 2) 한글 alias
-  const koKey = ASSET_KO_ALIAS[norm];
-  if(koKey && ASSET_TICKER_MAP[koKey]) return ASSET_TICKER_MAP[koKey];
-  // 3) 기본 매핑 직접 확인
-  if(ASSET_TICKER_MAP[norm]) return ASSET_TICKER_MAP[norm];
   // 4) 부분 매칭 (기본)
   const keys = Object.keys(ASSET_KO_ALIAS);
   for(const k of keys){ if(norm.includes(k)||k.includes(norm)) return ASSET_TICKER_MAP[ASSET_KO_ALIAS[k]]||null; }
@@ -2015,8 +1997,6 @@ function resolveAssetTicker(assetName){
 
 /* ─ 자산 매핑 관리 모달 ─ */
 function openTickerMapModal(){
-  const modal = document.getElementById('mo-ticker-map');
-  if(!modal){ console.error('[TickerMap] mo-ticker-map 모달 없음'); toast('자산 매핑 모달이 없습니다','err'); return; }
   renderCustomTickerList();
   om('mo-ticker-map');
 }
@@ -2025,10 +2005,7 @@ function renderCustomTickerList(){
   const el = document.getElementById('custom-ticker-list');
   if(!el) return;
   const entries = Object.entries(map);
-  if(!entries.length){
-    el.innerHTML='<div style="color:var(--txt3);font-size:13px;padding:8px 0">사용자 정의 매핑이 없습니다.<br><span style="font-size:11px">자산명과 티커를 입력 후 추가하세요. (예: 테슬라 → TSLA)</span></div>';
-    return;
-  }
+  if(!entries.length){ el.innerHTML=`<div style="color:var(--txt3);font-size:13px">사용자 정의 매핑이 없습니다.</div>`; return; }
   el.innerHTML=entries.map(([nm,ticker])=>`
     <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd)">
       <span style="flex:1;font-weight:600">${esc(nm)}</span>
@@ -2037,29 +2014,27 @@ function renderCustomTickerList(){
     </div>`).join('');
 }
 function addCustomTicker(){
-  const nm = (document.getElementById('tm-name')?.value||'').trim();
-  const ticker = (document.getElementById('tm-ticker')?.value||'').trim().toUpperCase();
-  if(!nm||!ticker){ toast('자산명과 티커를 모두 입력하세요.','err'); return; }
+  const nm = document.getElementById('tm-name')?.value.trim();
+  const ticker = document.getElementById('tm-ticker')?.value.trim().toUpperCase();
+  if(!nm||!ticker){ toast('자산명과 티커를 입력하세요.','err'); return; }
   const map = loadCustomTickerMap();
   map[nm] = ticker;
   saveCustomTickerMap(map);
-  const nameEl=document.getElementById('tm-name'); if(nameEl) nameEl.value='';
-  const tickerEl=document.getElementById('tm-ticker'); if(tickerEl) tickerEl.value='';
+  document.getElementById('tm-name').value='';
+  document.getElementById('tm-ticker').value='';
   renderCustomTickerList();
-  try{ renderAssets(); }catch(ex){}
-  toast(`${nm} → ${ticker} 매핑 추가됨`, 'ok');
+  toast(`${nm} → ${ticker} 매핑이 추가됐습니다.`);
 }
 function removeCustomTicker(nm){
   const map = loadCustomTickerMap();
   delete map[nm];
   saveCustomTickerMap(map);
   renderCustomTickerList();
-  try{ renderAssets(); }catch(ex){}
-  toast(`${nm} 매핑 삭제됨`, 'ok');
+  toast(`${nm} 매핑이 삭제됐습니다.`);
 }
 
 /** Yahoo Finance 공개 API로 단일 자산 현재가 조회 */
-/** 가격 조회 — V26.71
+/** 가격 조회 — V26.70
  *  다중 소스 폴백:
  *   1차: Stooq CSV — CORS 허용, cookie 불필요 (US 주식 + 지수 모두)
  *   2차: Yahoo Finance v8 (corsproxy.io 경유)
@@ -2171,7 +2146,7 @@ async function fetchPriceByAssetName(assetName){
 }
 
 
-/** 기초자산 현재가 일괄 불러오기 — V26.71
+/** 기초자산 현재가 일괄 불러오기 — V26.70
  *  BATCH=10 병렬 처리 (성공률 우선) + 무한 로딩 방지 유지
  */
 async function fetchAllCurrentPrices(){
@@ -2274,7 +2249,7 @@ async function fetchAllCurrentPrices(){
   try{ if(curTab==='dash'){ renderHolding(); renderSchedule(); } }catch(ex){}
   try{ if(curTab==='earlysim') renderEarlySim(); }catch(ex){}
   try{ if(curTab==='sim') renderSim(); }catch(ex){}
-  try{ const {accounts,products}=load(); renderKPI(accounts,products); }catch(ex){}
+  try{ renderKPI(...Object.values(load())); }catch(ex){}
 
   /* 완료 토스트 */
   const parts=[];
@@ -4382,7 +4357,9 @@ function loadGitSyncSettings(){
 }
 function saveGitSyncSettings(){
   const g=id=>document.getElementById(id)?.value||'';
-  localStorage.setItem(GIT_KEYS.token,  g('gh-token'));
+  /* 토큰은 빈 문자열이면 기존 저장값 유지 — UI 하이드레이션 타이밍에 덮어쓰기 방지 */
+  const tok=g('gh-token');
+  if(tok) localStorage.setItem(GIT_KEYS.token, tok);
   localStorage.setItem(GIT_KEYS.owner,  g('gh-owner')||GIT_DEFAULTS.owner);
   localStorage.setItem(GIT_KEYS.repo,   g('gh-repo')||GIT_DEFAULTS.repo);
   localStorage.setItem(GIT_KEYS.branch, g('gh-branch')||GIT_DEFAULTS.branch);
@@ -4404,8 +4381,8 @@ function toggleGitTokenVisibility(){
 }
 function initGhConfig(){
   const s = loadGitSyncSettings();
-  /* 탭 전환 후에도 비지 않도록 항상 덮어씀 */
-  const set = (id,v) => { const el=document.getElementById(id); if(el&&v) el.value=v; };
+  /* 탭 전환/새로고침 후에도 비지 않도록 항상 기본값으로 채움 (token만 빈칸 허용) */
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.value = v||''; };
   set('gh-token',  s.token);
   set('gh-owner',  s.owner  || GIT_DEFAULTS.owner);
   set('gh-repo',   s.repo   || GIT_DEFAULTS.repo);
@@ -5283,7 +5260,7 @@ function renderCompareTab(){
 }
 
 /* ═══════════════════════════════════════════════════════
-   §31 ETF 추종 — V26.71
+   §31 ETF 추종 — V26.70
    localStorage keys (최소화):
      etf_remote_url_v1      (GitHub payload URL)
      etf_sync_meta_v1       (마지막 연동 메타)
@@ -5674,7 +5651,7 @@ function renderEtfAccountSummary(d){
   var ps=d.performanceSummary||snap.performanceSummary||null;
   var perf=d.perfHistory||[];
 
-  /* ── 상단 계좌 KPI 카드 (V26.71) ── */
+  /* ── 상단 계좌 KPI 카드 (V26.70) ── */
   var kpiEl=document.getElementById('etf-track-acct-kpi');
   var updEl=document.getElementById('etf-track-acct-updated');
   if(kpiEl){
@@ -5762,7 +5739,7 @@ function showEtfSnapDetail(runId){
   om('mo-etf-diff');
 }
 
-/* ─ 감지 내역 (V26.71 — diffLogs 우선, 없으면 snapshots 변환) ─ */
+/* ─ 감지 내역 (V26.70 — diffLogs 우선, 없으면 snapshots 변환) ─ */
 function _etfDiffFromSnapshots(snaps){
   /* snapshots → diffLogs 형태로 변환 */
   var now=new Date().toISOString();
@@ -6157,7 +6134,7 @@ async function etfTestRemoteUrl(){
 
 function generateSampleEtfTrackData(){ toast("샘플 기능이 제거됐습니다. GitHub 연동을 사용하세요.","warn"); }
 /* ═══════════════════════════════════════════════════════
-   §36b 추종도 지표 (V26.71)
+   §36b 추종도 지표 (V26.70)
    ═══════════════════════════════════════════════════════ */
 
 /** 추종도 점수 계산 (0~100) — abs(gapWeight) 기반 */
@@ -6299,7 +6276,7 @@ function renderEtfPosKpi(d){
 
 
 /* ═══════════════════════════════════════════════════════
-   §37 ETF 레버리지 관제 탭 (V26.71)
+   §37 ETF 레버리지 관제 탭 (V26.70)
    Python 연동 포인트:
      - JSON URL: ./output/lev_etf_status.json (또는 GitHub Raw URL)
      - localStorage 키: lev_etf_json_url
@@ -6328,7 +6305,7 @@ var LEV_DUMMY = {
     {time:'18:20',level:'INFO',message:'레버리지 오토 엔진 정상 실행'},
     {time:'18:19',level:'INFO',message:'텔레그램 발송 완료: TQQQ HOLD'}
   ],
-  /* ── V26.71 추가 필드 ── */
+  /* ── V26.70 추가 필드 ── */
   position:{ticker:'TQQQ',quantity:15,avg_price:55.20,current_price:58.20,market_value:873.00,unrealized_pnl:45.00,unrealized_pnl_pct:5.43,cash_usd:2120.50,buying_power_usd:2000.00},
   mode:{strategy_mode:'SHORT_TERM',trade_state:'WAITING_ENTRY',next_action:'HOLD',next_action_amount_usd:0,description:'현재는 매수 기준가 도달 전이라 진입 대기'},
   brake:{daily_loss_limit_usd:150,weekly_loss_limit_usd:400,max_position_usd:3000,max_position_pct:35,stop_loss_pct:-7,take_profit_pct:12,volatility_block:true,price_spike_block:true},
@@ -6338,7 +6315,7 @@ var LEV_DUMMY = {
   ],
   performance:{today_realized_pnl:0,week_realized_pnl:42.50,total_realized_pnl:318.20,win_rate_pct:62.5,avg_win_usd:38.40,avg_loss_usd:-21.70,max_drawdown_pct:-6.8},
   explain:{summary:'현재가는 매수 기준보다 높고 매도 기준보다 낮아 관망',buy_condition:'현재가가 매수 기준가 이하로 내려오면 BUY 후보',sell_condition:'현재가가 매도 기준가 이상으로 올라가면 SELL 후보',hold_condition:'현재가가 매수/매도 기준 사이면 HOLD',next_trigger:'TQQQ가 $56.50 이하로 내려오면 매수 조건 재검토'},
-  /* ── V26.71 신규 필드 ── */
+  /* ── V26.70 신규 필드 ── */
   market:{session:'PREMARKET',label:'프리마켓',tradable:true,session_allowed:true,is_dst:true,kst_time:'2026-05-02 18:30:00'},
   universe:{group_name:'레버리지 ETF 전체군',grade:'MIXED',count:3,enabled_tickers:['TQQQ','SOXL','TSLL']},
   universe_status:[
@@ -6386,7 +6363,7 @@ function renderLevTab(){
   _renderLevOrders(d);_renderLevHistory(d);_renderLevTelegram(d);_renderLevLogs(d);
   _renderLevPosition(d);_renderLevMode(d);_renderLevBrake(d);
   _renderLevBlockReasons(d);_renderLevPerformance(d);_renderLevExplain(d);
-  /* V26.71 신규 */
+  /* V26.70 신규 */
   renderLevLiveOrderBanner(d);
   renderLevMarket(d);
   renderLevUniverse(d);
@@ -6795,18 +6772,6 @@ function _renderLevLogs(d){
   try{el.innerHTML=logs.map(function(l){return'<div class="lev-log-row"><span class="lev-log-time">'+esc(l.time||'')+'</span><span class="lev-log-level '+(l.level||'INFO')+'">'+esc(l.level||'INFO')+'</span><span style="color:var(--txt2)">'+esc(l.message||'')+'</span></div>';}).join('');}catch(ex){}
 }
 
-
-/* ── 전역 함수 명시적 노출 (onclick에서 ReferenceError 방지) ── */
-window.fetchAllCurrentPrices = typeof fetchAllCurrentPrices !== 'undefined' ? fetchAllCurrentPrices : function(){};
-window.fetchPriceByAssetName = typeof fetchPriceByAssetName !== 'undefined' ? fetchPriceByAssetName : function(){};
-window.openTickerMapModal    = typeof openTickerMapModal    !== 'undefined' ? openTickerMapModal    : function(){};
-window.renderCustomTickerList= typeof renderCustomTickerList!== 'undefined' ? renderCustomTickerList: function(){};
-window.addCustomTicker       = typeof addCustomTicker       !== 'undefined' ? addCustomTicker       : function(){};
-window.removeCustomTicker    = typeof removeCustomTicker    !== 'undefined' ? removeCustomTicker    : function(){};
-window.exportAssetManagerBackup  = typeof exportAssetManagerBackup  !== 'undefined' ? exportAssetManagerBackup  : function(){};
-window.importAssetManagerBackup  = typeof importAssetManagerBackup  !== 'undefined' ? importAssetManagerBackup  : function(){};
-window.uploadBackupToGitHub      = typeof uploadBackupToGitHub      !== 'undefined' ? uploadBackupToGitHub      : function(){};
-window.downloadBackupFromGitHub  = typeof downloadBackupFromGitHub  !== 'undefined' ? downloadBackupFromGitHub  : function(){};
 
 (function init(){
   initSample();
