@@ -67,15 +67,23 @@ body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px;l
 .cbadge{font-size:11px;color:var(--txt3);background:var(--s2);padding:2px 9px;border-radius:20px}
 
 /* ─ KPI 카드 그리드 ─ */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:4px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:4px}
 .kpi-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r1);padding:14px 16px;box-shadow:var(--sh);min-width:0;overflow:hidden}
-.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:5px}
+.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:6px}
 .kpi-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2;word-break:break-all;overflow-wrap:break-word}
 .kpi-val.green{color:var(--g)}.kpi-val.red{color:var(--r)}.kpi-val.blue{color:var(--acc)}.kpi-val.warn{color:var(--am)}
-.kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px;word-break:keep-all}
+.kpi-sub{font-size:10px;color:var(--txt3);margin-top:4px;word-break:keep-all;line-height:1.4}
 .kpi-pct{font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
 .kpi-pct.green{color:var(--g)}.kpi-pct.red{color:var(--r)}
-.kpi-forecast-card{grid-column:span 2}
+.kpi-wide-card{grid-column:1/-1}
+.kpi-metric-rows{margin-top:6px;display:flex;flex-direction:column;gap:3px}
+.kpi-metric-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.kpi-metric-label{font-size:11px;color:var(--txt3);white-space:nowrap;flex-shrink:0}
+.kpi-metric-value{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;min-width:0;word-break:break-all}
+.kpi-metric-value.green{color:var(--g)}.kpi-metric-value.red{color:var(--r)}.kpi-metric-value.blue{color:var(--acc)}.kpi-metric-value.warn{color:var(--am)}
+.kpi-section-divider{border:none;border-top:1px solid var(--bd);margin:8px 0}
+.kpi-total-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0;padding-top:6px;border-top:1px solid var(--bd)}
+.kpi-principal-value{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--acc);word-break:break-all;line-height:1.3;margin-top:4px}
 
 /* ─ 버튼 ─ */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:var(--touch);padding:0 14px;border-radius:var(--r2);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;line-height:1.3;-webkit-tap-highlight-color:transparent}
@@ -253,7 +261,7 @@ tr:hover td{background:#f8fafc}
 
 /* ─ 반응형 ─ */
 @media(max-width:480px){
-  .kpi-grid{grid-template-columns:1fr 1fr}
+  .kpi-grid{grid-template-columns:1fr}
   .g2,.g3{grid-template-columns:1fr}
   .pgrid,.dgrid{grid-template-columns:1fr}
   .appbar-in{flex-wrap:wrap;height:auto;padding:9px 0;gap:5px}
@@ -274,7 +282,7 @@ tr:hover td{background:#f8fafc}
 }
 @media(max-width:900px){
   .sp2{grid-column:auto}
-  .kpi-forecast-card{grid-column:span 2}
+  .kpi-wide-card{grid-column:1/-1}
 }
 
 /* ─ 조기상환 시 탭 모바일 카드뷰 ─ */
@@ -573,7 +581,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.78</span>
+      <span class="ver-badge">V26.79</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -1858,6 +1866,7 @@ tr:hover td{background:#f8fafc}
    - V26.76: 현재 보유 KPI에 원금 가중평균 예상수익률 표시
    - V26.77: 3개년 예상 세후수익 KPI 카드 추가 (calcProductExpectedItem 재사용)
    - V26.78: 실제 세후수익금·해당연도 세후수익금 KPI에 현재 보유 원금 대비 수익률(%) 추가, 모바일 KPI CSS 개선
+   - V26.79: ELS Invest KPI 통합, 전체 투자원금과 3개년 예상 세후수익·합계수익률 통합 표시
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1868,7 +1877,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.78';
+const VER = 'V26.79';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -3129,78 +3138,115 @@ function renderKPI(accounts,products){
     else if(item.year===_y1)_yrNet[_y1]+=item.net;
     else if(item.year===_y2)_yrNet[_y2]+=item.net;
   });
-  const _pctStr=(net)=>{
-    if(!totalPr)return'-';
-    const pct=net/totalPr*100;
-    return (pct>=0?'+':'')+fp(pct);
-  };
-  const _yrRow=(yr,net)=>{
-    const cls=net>0?'color:var(--g)':net<0?'color:var(--r)':'color:var(--txt2)';
-    return `<div style="display:flex;justify-content:space-between;align-items:baseline;gap:4px;margin-bottom:3px">
-      <span style="font-size:11px;color:var(--txt3);white-space:nowrap">${yr}년</span>
-      <span style="font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;${cls};text-align:right;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${fm(net)} <span style="font-size:10px;font-weight:500">(${_pctStr(net)})</span></span>
-    </div>`;
-  };
-
-  /* 현재 보유 원금 대비 수익률 계산 헬퍼 */
-  const _actPct=(net)=>{
+  /* ── 공통 헬퍼 ── */
+  const _pctOf=(net)=>{
     if(!totalPr||!isFinite(net/totalPr))return null;
     return net/totalPr*100;
   };
   const _pctCls=(pct)=>pct===null?'':pct>=0?'green':'red';
-  const _pctDisp=(pct,prefix='')=>{
+  const _pctFmt=(pct)=>{
     if(pct===null)return'-';
-    return prefix+(pct>=0?'+':'')+fp(pct);
+    return (pct>=0?'+':'')+fp(pct);
+  };
+  const _metricRow=(label,net,cls)=>{
+    const pct=_pctOf(net);
+    const valCls=cls||(net>0?'green':net<0?'red':'');
+    return `<div class="kpi-metric-row">
+      <span class="kpi-metric-label">${label}</span>
+      <span class="kpi-metric-value ${valCls}">${fm(net)}&thinsp;<span style="font-size:11px;font-weight:500">(${_pctFmt(pct)})</span></span>
+    </div>`;
   };
 
-  /* 실제 세후 수익금 퍼센티지 */
-  const _totalNetPct=_actPct(totalNet);
-  /* 해당 연도 세후 수익금 퍼센티지 */
-  const _thisYrNetPct=_actPct(thisYrNet);
+  /* ── 3개년 합계 및 전체 수익률 ── */
+  const _3yrTotal=_yrNet[_y0]+_yrNet[_y1]+_yrNet[_y2];
+  const _3yrPct=_pctOf(_3yrTotal);
 
-  /* 퍼센티지 포함 카드 HTML 생성 헬퍼 */
-  const _mkPctCard=(lbl,val,valCls,pct,sub)=>`
+  /* ────────────────────────────────────────
+     카드 1: 상품 현황
+  ──────────────────────────────────────── */
+  const _avgYieldCls=_wavgYield===null?'':_wavgYield>=0?'green':'red';
+  const card1=`
     <div class="kpi-card">
-      <div class="kpi-lbl">${lbl}</div>
-      <div class="kpi-val ${valCls}">${val}</div>
-      <div class="kpi-pct ${_pctCls(pct)}">${_pctDisp(pct)}</div>
-      <div class="kpi-sub">${sub}</div>
-    </div>`;
-
-  const simpleItems=[
-    {lbl:'현재 보유',          val:active.length+'개', sub:'평균 예상수익률 '+_wavgStr, cls:'blue'},
-    {lbl:'완료 상품',          val:done.length+'개',   sub:'조기·만기·손실 완료', cls:''},
-    {lbl:'전체 투자원금',       val:fm(totalPr),         sub:'보유중 합계',         cls:''},
-    {lbl:'30일내 평가일',       val:near30eval+'건',      sub:'조기상환 평가 임박',  cls:near30eval>0?'warn':''},
-    {lbl:'30일내 만기',         val:near30mat+'건',       sub:'만기 임박',           cls:near30mat>0?'warn':''},
-  ];
-  const stdCards=simpleItems.map(i=>`
-    <div class="kpi-card">
-      <div class="kpi-lbl">${i.lbl}</div>
-      <div class="kpi-val ${i.cls}">${i.val}</div>
-      <div class="kpi-sub">${i.sub}</div>
-    </div>`).join('');
-
-  const totalNetCard=_mkPctCard(
-    '실제 세후 수익금', fm(totalNet), totalNet>=0?'green':'red',
-    _totalNetPct, '현재 보유 원금 대비 누적');
-  const thisYrNetCard=_mkPctCard(
-    thisYr+'년 세후 수익금', fm(thisYrNet), thisYrNet>=0?'green':'red',
-    _thisYrNetPct, '현재 보유 원금 대비 해당 연도');
-
-  /* 3개년 전망 카드 — sp2로 모바일 2열 전체 폭 사용 */
-  const forecastCard=`
-    <div class="kpi-card kpi-forecast-card">
-      <div class="kpi-lbl">3개년 예상 세후수익</div>
-      <div style="margin-top:6px">
-        ${_yrRow(_y0,_yrNet[_y0])}
-        ${_yrRow(_y1,_yrNet[_y1])}
-        ${_yrRow(_y2,_yrNet[_y2])}
+      <div class="kpi-lbl">상품 현황</div>
+      <div class="kpi-metric-rows">
+        <div class="kpi-metric-row">
+          <span class="kpi-metric-label">현재 보유</span>
+          <span class="kpi-metric-value blue">${active.length}개</span>
+        </div>
+        <div class="kpi-metric-row" style="margin-left:8px">
+          <span class="kpi-metric-label" style="font-size:10px">평균 예상수익률</span>
+          <span class="kpi-metric-value ${_avgYieldCls}" style="font-size:12px">${_wavgStr}</span>
+        </div>
+        <div class="kpi-metric-row" style="margin-top:2px">
+          <span class="kpi-metric-label">완료 상품</span>
+          <span class="kpi-metric-value">${done.length}개</span>
+        </div>
       </div>
-      <div class="kpi-sub" style="margin-top:4px">현재가 기준 첫 상환가능 차수·만기 추정</div>
+      <div class="kpi-sub" style="margin-top:6px">조기·만기·손실 완료 포함</div>
     </div>`;
 
-  document.getElementById('kpi-grid').innerHTML=forecastCard+totalNetCard+thisYrNetCard+stdCards;
+  /* ────────────────────────────────────────
+     카드 2: 투자원금 / 3개년 예상 세후수익 (전체 폭)
+  ──────────────────────────────────────── */
+  const _yrRowFull=(yr,net)=>{
+    const pct=_pctOf(net);
+    const valCls=net>0?'green':net<0?'red':'';
+    return `<div class="kpi-metric-row">
+      <span class="kpi-metric-label">${yr}년</span>
+      <span class="kpi-metric-value ${valCls}">${fm(net)}&thinsp;<span style="font-size:11px;font-weight:500">(${_pctFmt(pct)})</span></span>
+    </div>`;
+  };
+  const _3yrTotalCls=_3yrTotal>0?'green':_3yrTotal<0?'red':'';
+  const card2=`
+    <div class="kpi-card kpi-wide-card">
+      <div class="kpi-lbl">투자원금 / 3개년 예상 세후수익</div>
+      <div class="kpi-principal-value">${fm(totalPr)}</div>
+      <hr class="kpi-section-divider">
+      <div class="kpi-metric-rows">
+        ${_yrRowFull(_y0,_yrNet[_y0])}
+        ${_yrRowFull(_y1,_yrNet[_y1])}
+        ${_yrRowFull(_y2,_yrNet[_y2])}
+        <div class="kpi-total-row">
+          <span class="kpi-metric-label" style="font-weight:700">3개년 합계</span>
+          <span class="kpi-metric-value ${_3yrTotalCls}" style="font-size:15px;font-weight:800">${fm(_3yrTotal)}&thinsp;<span style="font-size:12px;font-weight:600">(${_pctFmt(_3yrPct)})</span></span>
+        </div>
+      </div>
+      <div class="kpi-sub" style="margin-top:6px">현재가 기준 첫 상환가능 차수·만기 추정 · 각 수익률은 현재 전체 투자원금 대비</div>
+    </div>`;
+
+  /* ────────────────────────────────────────
+     카드 3: 실제 세후수익 (전체 폭)
+  ──────────────────────────────────────── */
+  const card3=`
+    <div class="kpi-card kpi-wide-card">
+      <div class="kpi-lbl">실제 세후수익</div>
+      <div class="kpi-metric-rows" style="margin-top:4px">
+        ${_metricRow('누적',totalNet)}
+        ${_metricRow(thisYr+'년',thisYrNet)}
+      </div>
+      <div class="kpi-sub" style="margin-top:6px">현재 보유 원금 대비 · 전체 완료 기준</div>
+    </div>`;
+
+  /* ────────────────────────────────────────
+     카드 4: 30일 내 주요 일정
+  ──────────────────────────────────────── */
+  const card4=`
+    <div class="kpi-card">
+      <div class="kpi-lbl">30일 내 주요 일정</div>
+      <div class="kpi-metric-rows">
+        <div class="kpi-metric-row">
+          <span class="kpi-metric-label">평가일</span>
+          <span class="kpi-metric-value ${near30eval>0?'warn':''}">${near30eval}건</span>
+        </div>
+        <div class="kpi-metric-row">
+          <span class="kpi-metric-label">만기</span>
+          <span class="kpi-metric-value ${near30mat>0?'warn':''}">${near30mat}건</span>
+        </div>
+      </div>
+      <div class="kpi-sub" style="margin-top:6px">아래 가까운 일정에서 상세 확인</div>
+    </div>`;
+
+  document.getElementById('kpi-grid').innerHTML=card1+card2+card3+card4;
 }
 
 function renderSchedule(accounts, products){
