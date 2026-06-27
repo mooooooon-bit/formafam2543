@@ -73,6 +73,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px;l
 .kpi-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2;word-break:break-all;overflow-wrap:break-word}
 .kpi-val.green{color:var(--g)}.kpi-val.red{color:var(--r)}.kpi-val.blue{color:var(--acc)}.kpi-val.warn{color:var(--am)}
 .kpi-sub{font-size:10px;color:var(--txt3);margin-top:4px;word-break:keep-all;line-height:1.4}
+.kpi-round-chips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 2px}
+.kpi-round-chip{font-size:10px;font-weight:600;color:var(--acc);background:var(--acc-l);border-radius:10px;padding:1px 7px;white-space:nowrap;line-height:1.6}
+.kpi-round-chip.etc{color:var(--txt2);background:var(--s2)}
 .kpi-pct{font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
 .kpi-pct.green{color:var(--g)}.kpi-pct.red{color:var(--r)}
 .kpi-wide-card{grid-column:1/-1}
@@ -581,7 +584,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.79</span>
+      <span class="ver-badge">V26.84</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -631,6 +634,10 @@ tr:hover td{background:#f8fafc}
           value="" oninput="onFxRate(this.value)">
         <span style="font-size:11px;color:var(--txt3)" id="fx-hint"></span>
         <span class="sim-note">📊 현재가 기반 추정</span>
+        <label style="font-size:12px;font-weight:700;color:var(--txt2);white-space:nowrap;margin-left:4px">🎯 목표 반복 운용원금</label>
+        <input type="text" inputmode="numeric" id="reinvest-target" class="fi sm" placeholder="300,000,000"
+          style="width:160px;min-height:36px"
+          oninput="onReinvestTarget(this.value)">
       </div>
     </div>
     <div style="font-size:11px;color:var(--txt3);margin-bottom:8px">※ 공개 시세 기반 참고값입니다. 기본 매핑 / 직접 티커 / 사용자 정의 매핑으로 조회하며 일부 자산은 수동 입력이 필요합니다.</div>
@@ -1867,6 +1874,11 @@ tr:hover td{background:#f8fafc}
    - V26.77: 3개년 예상 세후수익 KPI 카드 추가 (calcProductExpectedItem 재사용)
    - V26.78: 실제 세후수익금·해당연도 세후수익금 KPI에 현재 보유 원금 대비 수익률(%) 추가, 모바일 KPI CSS 개선
    - V26.79: ELS Invest KPI 통합, 전체 투자원금과 3개년 예상 세후수익·합계수익률 통합 표시
+   - V26.80: 기초자산 현재가 영역에 목표 반복 운용원금 설정 추가 (elsReinvestTargetPrincipal)
+   - V26.81: 목표원금 재투자용 세후 원금가중 평균 연수익률 계산 함수 추가 (calcReinvestAnnualNetRate)
+   - V26.82: 목표 운용원금 기준 3년 반기 반복 재투자 예상 표시
+   - V26.83: 상품 현황 KPI에 현재 보유상품 차수별 개수 표시 추가
+   - V26.84: 차수 chip에 '개' 단위 추가
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1877,7 +1889,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.79';
+const VER = 'V26.84';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -2639,6 +2651,26 @@ function calcTaxDashboard(){
 }
 function loadFxRate(){return Number(lsGet('els_fx_usd',0))||0;}
 function saveFxRate(v){lsSet('els_fx_usd',Number(v)||0);}
+function loadReinvestTarget(){
+  const v=localStorage.getItem('elsReinvestTargetPrincipal');
+  const n=Number(String(v).replace(/,/g,''));
+  return (v===null)?300000000:(n>0?n:0);
+}
+function saveReinvestTarget(v){
+  const n=Number(String(v).replace(/,/g,''));
+  localStorage.setItem('elsReinvestTargetPrincipal',n>0?n:0);
+}
+function onReinvestTarget(val){
+  const raw=String(val).replace(/,/g,'');
+  const n=Number(raw);
+  saveReinvestTarget(n>0?n:0);
+  /* 목표원금 변경 즉시 KPI 갱신 */
+  try{const{accounts,products}=load();renderKPI(accounts,products);}catch(e){}
+}
+function _fmtReinvestInput(n){
+  if(!n||n<=0)return '';
+  return Number(n).toLocaleString('ko-KR');
+}
 /** USD 금액을 KRW로 변환 (rate 없으면 원래 값 그대로) */
 function toKRW(amount, currency, rate){
   if((currency||'KRW')==='USD'&&rate>0) return amount*rate;
@@ -2675,6 +2707,43 @@ function calcSim(p, acc){
   const yr = Number(p.expectedYield) || 0;
   const g  = pr * yr / 100;
   return { principal:pr, yieldPct:yr, ...calcTax(g, acc?.type, pr) };
+}
+/**
+ * calcReinvestAnnualNetRate()
+ * active 상품의 원금가중 세후 평균 연수익률(%) 반환
+ * expectedYield를 연간 세전수익률로 가정 → calcTax()로 세후 변환 → 원금가중 평균
+ * @returns {number} 세후 평균 연수익률(%) — 원금 합계가 0이면 0 반환
+ */
+function calcReinvestAnnualNetRate(){
+  const{accounts,products}=load();
+  const rate=loadFxRate();
+  const active=products.filter(p=>p.status==='active');
+
+  let totalPrKrw=0;
+  let totalNetKrw=0;
+
+  active.forEach(p=>{
+    const pr=toKRW(Number(p.principal||0),p.currency,rate);
+    if(pr<=0){totalPrKrw+=0;return;}     // 원금 0 이하는 분모에서도 제외
+    totalPrKrw+=pr;
+
+    const ey=Number(p.expectedYield);
+    if(!isFinite(ey)||isNaN(ey)){return;} // yield 없으면 순수익 0, 원금은 분모에 포함
+
+    // 연간 세전수익금(원화): 원금 × expectedYield%
+    const grossKrw=pr*ey/100;
+
+    // 계좌유형 조회 — calcTax(gross, accType, principal) 기존 호출방식과 동일
+    const acc=accounts.find(a=>a.id===p.accountId);
+    const taxResult=calcTax(grossKrw,acc?.type,pr);
+
+    totalNetKrw+=taxResult.net;
+  });
+
+  if(totalPrKrw<=0)return 0;
+  const result=totalNetKrw/totalPrKrw*100;
+  if(!isFinite(result)||isNaN(result))return 0;
+  return result;
 }
 function calcWorst(underlyings, prices){
   let worst = null;
@@ -2982,6 +3051,13 @@ function renderAssets(){
     if(saved>0){fxEl.value=saved;updateFxHint(saved);}
     fxEl.dataset.init='1';
   }
+  /* 목표 반복 운용원금 초기값 */
+  const rtEl=document.getElementById('reinvest-target');
+  if(rtEl&&!rtEl.dataset.init){
+    const savedRt=loadReinvestTarget();
+    rtEl.value=_fmtReinvestInput(savedRt);
+    rtEl.dataset.init='1';
+  }
   const{products}=load();
   const map={};
   products.filter(p=>p.status==='active').forEach(p=>{
@@ -3164,6 +3240,27 @@ function renderKPI(accounts,products){
   /* ────────────────────────────────────────
      카드 1: 상품 현황
   ──────────────────────────────────────── */
+  /* 차수별 개수 계산 — 기존 (p.currentRoundIndex||0)+1 로직 재사용 */
+  const _roundMap={};
+  let _roundEtc=0;
+  active.forEach(p=>{
+    const ri=p.currentRoundIndex;
+    if(ri===null||ri===undefined||!isFinite(Number(ri))){
+      _roundEtc++;
+    } else {
+      const rNum=(Number(ri)||0)+1;
+      _roundMap[rNum]=(_roundMap[rNum]||0)+1;
+    }
+  });
+  const _roundChipsHtml=(()=>{
+    const chips=Object.keys(_roundMap)
+      .map(Number).sort((a,b)=>a-b)
+      .map(r=>`<span class="kpi-round-chip">${r}차 ${_roundMap[r]}개</span>`)
+      .join('');
+    const etcChip=_roundEtc>0?`<span class="kpi-round-chip etc">기타 ${_roundEtc}개</span>`:'';
+    return chips+etcChip?`<div class="kpi-round-chips">${chips}${etcChip}</div>`:'';
+  })();
+
   const _avgYieldCls=_wavgYield===null?'':_wavgYield>=0?'green':'red';
   const card1=`
     <div class="kpi-card">
@@ -3173,6 +3270,7 @@ function renderKPI(accounts,products){
           <span class="kpi-metric-label">현재 보유</span>
           <span class="kpi-metric-value blue">${active.length}개</span>
         </div>
+        ${_roundChipsHtml}
         <div class="kpi-metric-row" style="margin-left:8px">
           <span class="kpi-metric-label" style="font-size:10px">평균 예상수익률</span>
           <span class="kpi-metric-value ${_avgYieldCls}" style="font-size:12px">${_wavgStr}</span>
@@ -3197,6 +3295,20 @@ function renderKPI(accounts,products){
     </div>`;
   };
   const _3yrTotalCls=_3yrTotal>0?'green':_3yrTotal<0?'red':'';
+  /* ── 3년 반복 재투자 계산 (card2 하단용) ── */
+  const _rtPr  = loadReinvestTarget();           // 목표원금
+  const _rtR   = calcReinvestAnnualNetRate();    // 세후 평균 연수익률(%)
+  /* 6개월 복리 × 6회 = 3년 */
+  const _rtAsset = _rtPr > 0
+    ? _rtPr * Math.pow(1 + _rtR / 100 / 2, 6)
+    : 0;
+  const _rtProfit = _rtAsset - _rtPr;
+  const _rtPct    = (_rtPr > 0 && isFinite(_rtProfit / _rtPr))
+    ? _rtProfit / _rtPr * 100
+    : null;
+  const _rtProfitCls = _rtProfit > 0 ? 'green' : _rtProfit < 0 ? 'red' : '';
+  const _rtAssetCls  = _rtAsset  > 0 ? 'blue'  : '';
+
   const card2=`
     <div class="kpi-card kpi-wide-card">
       <div class="kpi-lbl">투자원금 / 3개년 예상 세후수익</div>
@@ -3212,6 +3324,27 @@ function renderKPI(accounts,products){
         </div>
       </div>
       <div class="kpi-sub" style="margin-top:6px">현재가 기준 첫 상환가능 차수·만기 추정 · 각 수익률은 현재 전체 투자원금 대비</div>
+      <hr class="kpi-section-divider">
+      <div class="kpi-lbl" style="margin-top:2px">🔄 3년 반복 재투자 예상</div>
+      <div class="kpi-metric-rows" style="margin-top:4px">
+        <div class="kpi-metric-row">
+          <span class="kpi-metric-label">기준 원금</span>
+          <span class="kpi-metric-value blue">${fm(_rtPr)}</span>
+        </div>
+        <div class="kpi-metric-row">
+          <span class="kpi-metric-label">적용 세후 연수익률</span>
+          <span class="kpi-metric-value">${fp(_rtR)}</span>
+        </div>
+        <div class="kpi-metric-row">
+          <span class="kpi-metric-label">예상 수익금</span>
+          <span class="kpi-metric-value ${_rtProfitCls}">${fm(_rtProfit)}&thinsp;<span style="font-size:11px;font-weight:500">(${_pctFmt(_rtPct)})</span></span>
+        </div>
+        <div class="kpi-metric-row" style="margin-top:2px;padding-top:4px;border-top:1px solid var(--bd)">
+          <span class="kpi-metric-label" style="font-weight:700">3년 후 예상자산</span>
+          <span class="kpi-metric-value ${_rtAssetCls}" style="font-size:15px;font-weight:800">${fm(_rtAsset)}</span>
+        </div>
+      </div>
+      <div class="kpi-sub" style="margin-top:6px">상환 즉시 같은 세후 연수익률로 재투자한다고 가정한 단순 추정</div>
     </div>`;
 
   /* ────────────────────────────────────────
