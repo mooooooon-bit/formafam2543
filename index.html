@@ -584,7 +584,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.84</span>
+      <span class="ver-badge">V26.85</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -1879,6 +1879,7 @@ tr:hover td{background:#f8fafc}
    - V26.82: 목표 운용원금 기준 3년 반기 반복 재투자 예상 표시
    - V26.83: 상품 현황 KPI에 현재 보유상품 차수별 개수 표시 추가
    - V26.84: 차수 chip에 '개' 단위 추가
+   - V26.85: KPI 예상 상환수익 기준을 달력 3개년에서 오늘 기준 36개월 구간으로 수정
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1889,7 +1890,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.84';
+const VER = 'V26.85';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -2402,7 +2403,8 @@ function calcProductExpectedItem(p, accType){
     const gross = pr*hit.cr/100;
     const t = calcTax(gross, accType, pr);
     return {
-      year: hit.year, net: toKRW(t.net, p.currency, rate),
+      year: hit.year, date: hit.date||'',
+      net: toKRW(t.net, p.currency, rate),
       gross, type:'조기상환', detail:`${hit.round}차 평가일 ${hit.date} (수익률 ${hit.cr}%)`
     };
   }
@@ -2411,7 +2413,8 @@ function calcProductExpectedItem(p, accType){
   if(mat){
     const t = calcTax(mat.gross, accType, pr);
     return {
-      year: mat.year, net: toKRW(t.net, p.currency, rate),
+      year: mat.year, date: p.maturityDate||'',
+      net: toKRW(t.net, p.currency, rate),
       gross: mat.gross, type:'만기예상', detail: mat.basis
     };
   }
@@ -3203,17 +3206,33 @@ function renderKPI(accounts,products){
   const _wavgYield=(_wPrinSum>0)?(_wProfSum/_wPrinSum*100):null;
   const _wavgStr=(_wavgYield===null)?'-':fp(_wavgYield);
 
-  /* 3개년 예상 세후수익금 계산 — calcProductExpectedItem() 재사용 */
-  const _y0=thisYr, _y1=String(Number(thisYr)+1), _y2=String(Number(thisYr)+2);
-  const _yrNet={[_y0]:0,[_y1]:0,[_y2]:0};
+  /* 36개월 예상 상환수익 계산 — calcProductExpectedItem() 재사용 */
+  const _todayStr=today();           // 'YYYY-MM-DD'
+  const _d36=(()=>{
+    const d=new Date(_todayStr);
+    d.setMonth(d.getMonth()+36);
+    return d.toISOString().slice(0,10);
+  })();
+  /* 포함 여부 판정: date 기준 우선, date 없으면 year 기준 fallback */
+  const _in36=(item)=>{
+    if(item.date&&item.date.length===10){
+      return item.date>=_todayStr && item.date<=_d36;
+    }
+    // fallback: 연도 기준 (연도가 36개월 구간에 걸치면 포함)
+    const yr=item.year||'';
+    return yr>=_todayStr.slice(0,4) && yr<=_d36.slice(0,4);
+  };
+  const _yrNet={};   // 동적 연도별 합계
   active.forEach(p=>{
     const acc=accounts.find(a=>a.id===p.accountId);
     const item=calcProductExpectedItem(p,acc?.type);
-    if(!item)return;
-    if(item.year===_y0)_yrNet[_y0]+=item.net;
-    else if(item.year===_y1)_yrNet[_y1]+=item.net;
-    else if(item.year===_y2)_yrNet[_y2]+=item.net;
+    if(!item||!_in36(item))return;
+    const yr=item.year||'';
+    if(!yr)return;
+    _yrNet[yr]=(_yrNet[yr]||0)+item.net;
   });
+  /* 36개월 구간에 걸치는 연도 목록 (오름차순) */
+  const _36yrs=Object.keys(_yrNet).map(Number).sort((a,b)=>a-b).map(String);
   /* ── 공통 헬퍼 ── */
   const _pctOf=(net)=>{
     if(!totalPr||!isFinite(net/totalPr))return null;
@@ -3233,8 +3252,8 @@ function renderKPI(accounts,products){
     </div>`;
   };
 
-  /* ── 3개년 합계 및 전체 수익률 ── */
-  const _3yrTotal=_yrNet[_y0]+_yrNet[_y1]+_yrNet[_y2];
+  /* ── 36개월 합계 및 전체 수익률 ── */
+  const _3yrTotal=_36yrs.reduce((s,yr)=>s+(_yrNet[yr]||0),0);
   const _3yrPct=_pctOf(_3yrTotal);
 
   /* ────────────────────────────────────────
@@ -3309,21 +3328,27 @@ function renderKPI(accounts,products){
   const _rtProfitCls = _rtProfit > 0 ? 'green' : _rtProfit < 0 ? 'red' : '';
   const _rtAssetCls  = _rtAsset  > 0 ? 'blue'  : '';
 
+  /* 환율 경고 (USD 상품 있을 때 fxRate=0이면 경고) */
+  const _hasUsd=active.some(p=>(p.currency||'KRW')==='USD');
+  const _fxWarn=(_hasUsd&&rate<=0)
+    ?`<div class="kpi-sub" style="color:var(--am);margin-top:4px">⚠ USD 환율 미입력 시 USD 상품은 원화환산이 제한됩니다</div>`
+    :'';
+
   const card2=`
     <div class="kpi-card kpi-wide-card">
-      <div class="kpi-lbl">투자원금 / 3개년 예상 세후수익</div>
+      <div class="kpi-lbl">투자원금 / 36개월 예상 상환수익</div>
       <div class="kpi-principal-value">${fm(totalPr)}</div>
+      ${_fxWarn}
       <hr class="kpi-section-divider">
       <div class="kpi-metric-rows">
-        ${_yrRowFull(_y0,_yrNet[_y0])}
-        ${_yrRowFull(_y1,_yrNet[_y1])}
-        ${_yrRowFull(_y2,_yrNet[_y2])}
+        ${_36yrs.map(yr=>_yrRowFull(yr,_yrNet[yr]||0)).join('')}
+        ${_36yrs.length===0?`<div class="kpi-metric-row"><span class="kpi-metric-label" style="color:var(--txt3)">36개월 내 예상 상환 없음</span></div>`:''}
         <div class="kpi-total-row">
-          <span class="kpi-metric-label" style="font-weight:700">3개년 합계</span>
+          <span class="kpi-metric-label" style="font-weight:700">36개월 합계</span>
           <span class="kpi-metric-value ${_3yrTotalCls}" style="font-size:15px;font-weight:800">${fm(_3yrTotal)}&thinsp;<span style="font-size:12px;font-weight:600">(${_pctFmt(_3yrPct)})</span></span>
         </div>
       </div>
-      <div class="kpi-sub" style="margin-top:6px">현재가 기준 첫 상환가능 차수·만기 추정 · 각 수익률은 현재 전체 투자원금 대비</div>
+      <div class="kpi-sub" style="margin-top:6px">오늘부터 36개월 이내 현재 보유상품의 1회 예상 상환수익 · 상환 후 재투자 미반영 · 각 수익률은 현재 전체 투자원금 대비</div>
       <hr class="kpi-section-divider">
       <div class="kpi-lbl" style="margin-top:2px">🔄 3년 반복 재투자 예상</div>
       <div class="kpi-metric-rows" style="margin-top:4px">
