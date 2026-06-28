@@ -584,7 +584,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.85</span>
+      <span class="ver-badge">V26.86</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -634,10 +634,6 @@ tr:hover td{background:#f8fafc}
           value="" oninput="onFxRate(this.value)">
         <span style="font-size:11px;color:var(--txt3)" id="fx-hint"></span>
         <span class="sim-note">📊 현재가 기반 추정</span>
-        <label style="font-size:12px;font-weight:700;color:var(--txt2);white-space:nowrap;margin-left:4px">🎯 목표 반복 운용원금</label>
-        <input type="text" inputmode="numeric" id="reinvest-target" class="fi sm" placeholder="300,000,000"
-          style="width:160px;min-height:36px"
-          oninput="onReinvestTarget(this.value)">
       </div>
     </div>
     <div style="font-size:11px;color:var(--txt3);margin-bottom:8px">※ 공개 시세 기반 참고값입니다. 기본 매핑 / 직접 티커 / 사용자 정의 매핑으로 조회하며 일부 자산은 수동 입력이 필요합니다.</div>
@@ -829,6 +825,11 @@ tr:hover td{background:#f8fafc}
     <div class="sec-hd">
       <div class="sec-hl"><span class="sec-t">📈 복리 재투자 예상 (10년)</span></div>
       <span style="font-size:11px;color:var(--txt3)" id="sim-rl"></span>
+    </div>
+    <!-- 현재 보유 평균 예상수익률 연동 -->
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <span id="sim-els-avg-label" style="font-size:12px;color:var(--txt3)"></span>
+      <button class="btn bs sm" onclick="applyElsAvgYield()" style="font-size:11px">📌 현재 보유 평균 예상수익률 적용</button>
     </div>
     <div class="svgwrap"><svg id="sim-svg" viewBox="0 0 780 200" xmlns="http://www.w3.org/2000/svg"></svg></div>
     <div class="tw">
@@ -1880,6 +1881,7 @@ tr:hover td{background:#f8fafc}
    - V26.83: 상품 현황 KPI에 현재 보유상품 차수별 개수 표시 추가
    - V26.84: 차수 chip에 '개' 단위 추가
    - V26.85: KPI 예상 상환수익 기준을 달력 3개년에서 오늘 기준 36개월 구간으로 수정
+   - V26.86: ELS Invest KPI에서 반복 재투자 예상을 제거하고 자산 현황 복리 재투자 예상에 현재 보유 평균 예상수익률 연동 추가
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1890,7 +1892,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.85';
+const VER = 'V26.86';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -2717,6 +2719,28 @@ function calcSim(p, acc){
  * expectedYield를 연간 세전수익률로 가정 → calcTax()로 세후 변환 → 원금가중 평균
  * @returns {number} 세후 평균 연수익률(%) — 원금 합계가 0이면 0 반환
  */
+/**
+ * calcActiveWeightedExpectedYield()
+ * active 상품 세전 원금가중 평균 예상수익률(%) — renderKPI의 _wavgYield와 동일 로직
+ * @returns {number|null} 세전 가중평균 예상수익률(%), 원금 합계 0이면 null
+ */
+function calcActiveWeightedExpectedYield(){
+  const{accounts,products}=load();
+  const rate=loadFxRate();
+  const active=products.filter(p=>p.status==='active');
+  let wPrinSum=0, wProfSum=0;
+  active.forEach(p=>{
+    const pr=toKRW(Number(p.principal||0),p.currency,rate);
+    const ey=Number(p.expectedYield);
+    const profit=isFinite(ey)&&!isNaN(ey)?toKRW(Number(p.principal||0)*ey/100,p.currency,rate):0;
+    wPrinSum+=pr;
+    wProfSum+=profit;
+  });
+  if(wPrinSum<=0)return null;
+  const result=wProfSum/wPrinSum*100;
+  if(!isFinite(result)||isNaN(result))return null;
+  return result;
+}
 function calcReinvestAnnualNetRate(){
   const{accounts,products}=load();
   const rate=loadFxRate();
@@ -3314,20 +3338,6 @@ function renderKPI(accounts,products){
     </div>`;
   };
   const _3yrTotalCls=_3yrTotal>0?'green':_3yrTotal<0?'red':'';
-  /* ── 3년 반복 재투자 계산 (card2 하단용) ── */
-  const _rtPr  = loadReinvestTarget();           // 목표원금
-  const _rtR   = calcReinvestAnnualNetRate();    // 세후 평균 연수익률(%)
-  /* 6개월 복리 × 6회 = 3년 */
-  const _rtAsset = _rtPr > 0
-    ? _rtPr * Math.pow(1 + _rtR / 100 / 2, 6)
-    : 0;
-  const _rtProfit = _rtAsset - _rtPr;
-  const _rtPct    = (_rtPr > 0 && isFinite(_rtProfit / _rtPr))
-    ? _rtProfit / _rtPr * 100
-    : null;
-  const _rtProfitCls = _rtProfit > 0 ? 'green' : _rtProfit < 0 ? 'red' : '';
-  const _rtAssetCls  = _rtAsset  > 0 ? 'blue'  : '';
-
   /* 환율 경고 (USD 상품 있을 때 fxRate=0이면 경고) */
   const _hasUsd=active.some(p=>(p.currency||'KRW')==='USD');
   const _fxWarn=(_hasUsd&&rate<=0)
@@ -3348,28 +3358,7 @@ function renderKPI(accounts,products){
           <span class="kpi-metric-value ${_3yrTotalCls}" style="font-size:15px;font-weight:800">${fm(_3yrTotal)}&thinsp;<span style="font-size:12px;font-weight:600">(${_pctFmt(_3yrPct)})</span></span>
         </div>
       </div>
-      <div class="kpi-sub" style="margin-top:6px">오늘부터 36개월 이내 현재 보유상품의 1회 예상 상환수익 · 상환 후 재투자 미반영 · 각 수익률은 현재 전체 투자원금 대비</div>
-      <hr class="kpi-section-divider">
-      <div class="kpi-lbl" style="margin-top:2px">🔄 3년 반복 재투자 예상</div>
-      <div class="kpi-metric-rows" style="margin-top:4px">
-        <div class="kpi-metric-row">
-          <span class="kpi-metric-label">기준 원금</span>
-          <span class="kpi-metric-value blue">${fm(_rtPr)}</span>
-        </div>
-        <div class="kpi-metric-row">
-          <span class="kpi-metric-label">적용 세후 연수익률</span>
-          <span class="kpi-metric-value">${fp(_rtR)}</span>
-        </div>
-        <div class="kpi-metric-row">
-          <span class="kpi-metric-label">예상 수익금</span>
-          <span class="kpi-metric-value ${_rtProfitCls}">${fm(_rtProfit)}&thinsp;<span style="font-size:11px;font-weight:500">(${_pctFmt(_rtPct)})</span></span>
-        </div>
-        <div class="kpi-metric-row" style="margin-top:2px;padding-top:4px;border-top:1px solid var(--bd)">
-          <span class="kpi-metric-label" style="font-weight:700">3년 후 예상자산</span>
-          <span class="kpi-metric-value ${_rtAssetCls}" style="font-size:15px;font-weight:800">${fm(_rtAsset)}</span>
-        </div>
-      </div>
-      <div class="kpi-sub" style="margin-top:6px">상환 즉시 같은 세후 연수익률로 재투자한다고 가정한 단순 추정</div>
+      <div class="kpi-sub" style="margin-top:6px">오늘부터 36개월 이내 현재 보유상품의 1회 예상 상환수익 · 상환 후 재투자 미반영</div>
     </div>`;
 
   /* ────────────────────────────────────────
@@ -3727,6 +3716,15 @@ function renderSim(){
   });
   const avgR=tP>0?tN/tP*100:0;
   document.getElementById('sim-rl').textContent=`보유 평균 세후 예상 수익률 ${fp(avgR)} 기준 (원화 환산)`;
+  /* 현재 보유 ELS 세전 평균 예상수익률 라벨 업데이트 */
+  const _elsAvg=calcActiveWeightedExpectedYield();
+  const _elsAfterTax=avgR;
+  const _elsLabelEl=document.getElementById('sim-els-avg-label');
+  if(_elsLabelEl){
+    _elsLabelEl.textContent=_elsAvg!==null
+      ? `현재 보유 평균 예상수익률: 세전 ${fp(_elsAvg)} · 계좌 세율 반영 세후 약 ${fp(_elsAfterTax)}`
+      : '현재 보유 active 상품 없음';
+  }
   const svgEl=document.getElementById('sim-svg');
   if(!tP||avgR<=0){
     svgEl.innerHTML=`<text x="390" y="100" text-anchor="middle" font-size="13" fill="#8899b0">보유 상품 또는 예상 수익률 데이터가 없습니다.</text>`;
@@ -3763,6 +3761,33 @@ function renderSim(){
         <td class="nr ${c.net>=0?'tg':'tr'}">${fmcX(c.net,ccy,fxRate)}</td><td class="nr ${c.yld>=0?'tg':'tr'}">${fp(c.yld)}</td>
         <td>${p.maturityDate||'-'}</td></tr>`;
     }).join('');
+}
+/**
+ * applyElsAvgYield()
+ * 복리 재투자 예상 그래프를 현재 보유 ELS 세전 평균 예상수익률로 재계산
+ */
+function applyElsAvgYield(){
+  const avg=calcActiveWeightedExpectedYield();
+  if(avg===null||avg<=0){
+    alert('현재 active 상품의 예상수익률 데이터가 없습니다.');return;
+  }
+  /* renderSim은 내부적으로 calcSim(세후) 기반 avgR을 자동 계산하므로,
+     세전 평균을 직접 그래프에 적용하는 임시 렌더를 수행 */
+  const{accounts,products}=load();
+  const fxRate=loadFxRate();
+  const active=products.filter(p=>p.status==='active');
+  let tP=0; active.forEach(p=>{tP+=toKRW(Number(p.principal||0),p.currency,fxRate);});
+  if(!tP){alert('보유 상품 원금이 없습니다.');return;}
+  const svgEl=document.getElementById('sim-svg');
+  const tbEl=document.getElementById('sim-tb');
+  if(!svgEl||!tbEl)return;
+  drawSvg(svgEl,tP,avg/100);
+  let cur=tP,prev=tP;
+  tbEl.innerHTML=Array.from({length:10},(_,i)=>{
+    cur*=(1+avg/100);const gain=cur-tP,gp=gain/tP*100,delta=cur-prev;prev=cur;
+    return`<tr><td>${i+1}년</td><td class="nr">${fm(tP)}</td><td class="nr ta b7">${fm(cur)}</td><td class="nr tg">${fm(gain)}</td><td class="nr tg">${fp(gp,2)}</td><td class="nr tm">+${fm(delta)}</td></tr>`;
+  }).join('');
+  document.getElementById('sim-rl').textContent=`세전 평균 예상수익률 ${fp(avg)} 적용 (버튼으로 수동 적용됨)`;
 }
 function drawSvg(svg,pr,rate){
   const W=780,H=200,P={t:18,r:18,b:30,l:72};
