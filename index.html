@@ -73,6 +73,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px;l
 .kpi-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2;word-break:break-all;overflow-wrap:break-word}
 .kpi-val.green{color:var(--g)}.kpi-val.red{color:var(--r)}.kpi-val.blue{color:var(--acc)}.kpi-val.warn{color:var(--am)}
 .kpi-sub{font-size:10px;color:var(--txt3);margin-top:4px;word-break:keep-all;line-height:1.4}
+.pc-inline-mini{font-size:10px;color:var(--txt3);font-weight:600;line-height:1.35;margin-left:4px;white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
 .kpi-round-chips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 2px}
 .kpi-round-chip{font-size:10px;font-weight:600;color:var(--acc);background:var(--acc-l);border-radius:10px;padding:1px 7px;white-space:nowrap;line-height:1.6}
 .kpi-round-chip.etc{color:var(--txt2);background:var(--s2)}
@@ -584,7 +585,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.86</span>
+      <span class="ver-badge">V26.87</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -1882,6 +1883,7 @@ tr:hover td{background:#f8fafc}
    - V26.84: 차수 chip에 '개' 단위 추가
    - V26.85: KPI 예상 상환수익 기준을 달력 3개년에서 오늘 기준 36개월 구간으로 수정
    - V26.86: ELS Invest KPI에서 반복 재투자 예상을 제거하고 자산 현황 복리 재투자 예상에 현재 보유 평균 예상수익률 연동 추가
+   - V26.87: 현재 보유 상품 카드의 투자원금 옆 기준가와 만기일 KI 옆 낙인가격을 소수점 없는 보조글자로 표시
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1892,7 +1894,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.86';
+const VER = 'V26.87';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -3552,7 +3554,15 @@ function prodCard(p, accounts){
     <!-- 정보 행 -->
     <div class="pc-row">
       <span>투자원금</span>
-      <span class="v">${fmcX(p.principal,ccy,rate)}</span>
+      <span class="v">${fmcX(p.principal,ccy,rate)}${(()=>{
+        const parts=(p.underlyings||[]).map(u=>{
+          const bp=Number(u.basePrice);
+          const bpStr=isFinite(bp)&&bp>0?Math.round(bp).toLocaleString('ko-KR'):'-';
+          return `${esc(u.name||'?')} ${bpStr}`;
+        });
+        if(!parts.length)return '';
+        return `<span class="pc-inline-mini">기준가 ${parts.join(' / ')}</span>`;
+      })()}</span>
     </div>
     <div class="pc-row">
       <span>다음 평가일</span>
@@ -3560,13 +3570,17 @@ function prodCard(p, accounts){
     </div>
     <div class="pc-row">
       <span>만기일${ki?` <span class="badge bam" style="font-size:9px;padding:1px 5px;margin-left:4px">KI ${ki}%</span>${(()=>{
-        const ratios=(p.underlyings||[]).map(u=>{
+        const kiParts=(p.underlyings||[]).map(u=>{
           const c=Number(prices[u.name]),b=Number(u.basePrice);
-          return(c&&b)?{r:c/b*100,close:ki>0&&(c/b*100)<=ki+20}:null;
+          const kiPrice=(b>0)?Math.round(b*ki/100):null;
+          const kiPriceStr=kiPrice!==null?kiPrice.toLocaleString('ko-KR'):'-';
+          const ratio=(c&&b)?(Math.round(c/b*100)):null;
+          const ratioStr=ratio!==null?ratio+'%':'-';
+          const isClose=(c&&b)&&((c/b*100)<=ki+20);
+          return {kiPriceStr,ratioStr,isClose};
         });
-        const valid=ratios.filter(v=>v!==null);
-        if(!valid.length)return'';
-        const html=valid.map(v=>`<span style="font-size:10px;font-weight:600;${v.close?'color:var(--r)':'color:var(--txt3)'}">${v.r.toFixed(1)}%</span>`).join('<span style="color:var(--txt3);font-size:10px"> / </span>');
+        if(!kiParts.length)return'';
+        const html=kiParts.map(v=>`<span style="font-size:10px;font-weight:600;${v.isClose?'color:var(--r)':'color:var(--txt3)'}">${v.kiPriceStr}(${v.ratioStr})</span>`).join('<span style="color:var(--txt3);font-size:10px"> / </span>');
         return` <span style="margin-left:2px">${html}</span>`;
       })()}`:''}</span>
       <span class="v">${p.maturityDate||'-'} ${matD!==null?dbadge(matD):''}</span>
