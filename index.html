@@ -585,7 +585,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.89</span>
+      <span class="ver-badge">V26.91</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -649,7 +649,7 @@ tr:hover td{background:#f8fafc}
         <span class="cbadge" id="h-cnt">0개</span>
       </div>
       <div class="fl-row">
-        <input class="fi sm" id="h-q" placeholder="검색" style="width:140px;min-height:36px" oninput="renderHolding()">
+        <input class="fi sm" id="h-q" placeholder="검색" style="width:120px;min-height:36px" oninput="renderHolding()">
         <select class="fsl sm" style="width:120px;min-height:36px" id="h-sort" onchange="renderHolding()">
           <option value="eval">다음평가일순</option>
           <option value="maturity">만기일순</option>
@@ -657,6 +657,9 @@ tr:hover td{background:#f8fafc}
           <option value="yield">수익률순</option>
           <option value="redeemable">상환가능순</option>
           <option value="unredeemable">상환불가능순</option>
+        </select>
+        <select class="fsl sm" style="width:100px;min-height:36px" id="h-acct" onchange="renderHolding()">
+          <option value="">전체 계좌</option>
         </select>
       </div>
     </div>
@@ -1886,6 +1889,8 @@ tr:hover td{background:#f8fafc}
    - V26.87: 현재 보유 상품 카드의 투자원금 옆 기준가와 만기일 KI 옆 낙인가격을 소수점 없는 보조글자로 표시
    - V26.88: 기준가를 원금 값 오른쪽에서 투자원금 라벨 오른쪽으로 이동
    - V26.89: 기준가 표시 위치 확정 — 투자원금 라벨 옆, 금액 영역에는 금액만
+   - V26.90: 현재가 불러오기 안정화(mode:cors), 현재 보유 탭에 계좌별 필터 추가
+   - V26.91: 현재가 불러오기 소스 전면 교체 (Stooq/corsproxy/allorigins → Yahoo Finance crumb 직접 요청)
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1896,7 +1901,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.89';
+const VER = 'V26.91';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -2069,47 +2074,45 @@ function removeCustomTicker(nm){
   toast(`${nm} 매핑이 삭제됐습니다.`);
 }
 
-/** Yahoo Finance 공개 API로 단일 자산 현재가 조회 */
-/** 가격 조회 — V26.70
- *  다중 소스 폴백:
- *   1차: Stooq CSV — CORS 허용, cookie 불필요 (US 주식 + 지수 모두)
- *   2차: Yahoo Finance v8 (corsproxy.io 경유)
- *   3차: Yahoo Finance v8 (allorigins 경유)
- *
- *  [주요 수정]
- *  - AbortController를 각 fetch 호출 안에서만 사용 (직렬화 에러 방지)
- *  - ^GSPC / ^KS200 / ^N225 → Stooq 지수 심볼로 변환
- *  - S&P500 / KOSPI200 한글 자산명 매핑 보강
+/** 가격 조회 — V26.90 재작성
+ *  기존 Stooq/corsproxy/allorigins 모두 CORS 차단 또는 서비스 종료됨
+ *  새 방식: Yahoo Finance crumb 기반 직접 요청
+ *   1차: Yahoo Finance v8 직접 (브라우저 쿠키 자동 처리 → crumb 필요 없음)
+ *   2차: Yahoo Finance crumb 방식 (getcrumb → v8 요청)
+ *   3차: Yahoo Finance v7 직접 (구버전 엔드포인트)
  */
 
-/* Yahoo ticker → Stooq 심볼 변환 테이블 */
-const STOOQ_INDEX_MAP = {
-  '^GSPC':  '^spx',    /* S&P 500 */
-  '^NDX':   '^ndq',    /* NASDAQ 100 */
-  '^DJI':   '^dji',    /* Dow Jones */
-  '^KS200': '^kos200', /* KOSPI 200 */
-  '^IXIC':  '^ndq',    /* NASDAQ Composite */
-  '^N225':  '^nk225',  /* Nikkei 225 */
-  '^HSI':   '^hsi',    /* Hang Seng */
-  '^HSCE':  '^hksc',   /* HSCEI */
-  '^STI':   '^sti',    /* Straits Times */
-  '^STOXX50E': '^sx5e', /* Euro Stoxx 50 */
-};
-
-/** timeout을 AbortController로 거는 안전한 fetch 래퍼
- *  AbortController를 Promise.allSettled에 전달하지 않아 직렬화 에러 방지
- */
-async function _fetchWithTimeout(url, ms){
+/** AbortController 기반 안전한 fetch 래퍼 */
+async function _fetchWithTimeout(url, ms, opts={}){
   return new Promise((resolve, reject) => {
     const ctrl = new AbortController();
-    const tid = setTimeout(() => {
-      ctrl.abort();
-      reject(new Error('timeout'));
-    }, ms);
-    fetch(url, {signal: ctrl.signal, cache: 'no-store'})
+    const tid = setTimeout(() => { ctrl.abort(); reject(new Error('timeout')); }, ms);
+    fetch(url, {signal: ctrl.signal, cache: 'no-store', credentials: 'include', ...opts})
       .then(r => { clearTimeout(tid); resolve(r); })
       .catch(e => { clearTimeout(tid); reject(e); });
   });
+}
+
+/* crumb 캐시 (세션 내 재사용) */
+let _yfCrumb = null;
+let _yfCrumbTime = 0;
+
+async function _getYahooCrumb(){
+  /* 10분 캐시 */
+  if(_yfCrumb && Date.now()-_yfCrumbTime < 600000) return _yfCrumb;
+  try{
+    const r = await _fetchWithTimeout(
+      'https://query2.finance.yahoo.com/v1/test/getcrumb', 5000,
+      {headers:{'Accept':'text/plain'}}
+    );
+    if(!r.ok) throw new Error('crumb HTTP '+r.status);
+    const crumb = (await r.text()).trim();
+    if(!crumb || crumb.includes('<')) throw new Error('invalid crumb');
+    _yfCrumb = crumb; _yfCrumbTime = Date.now();
+    return crumb;
+  }catch(e){
+    return null;
+  }
 }
 
 async function fetchPriceByAssetName(assetName){
@@ -2117,67 +2120,55 @@ async function fetchPriceByAssetName(assetName){
   if(!ticker) return {status:'unsupported', price:null, source:'none', reason:'티커 매핑 없음'};
 
   const t0 = Date.now();
-  const isIndex = ticker.startsWith('^');
-  const isUSTicker = /^[A-Z\^]{1,6}$/.test(ticker);
 
-  /* ── 1차: Stooq ── */
-  if(isUSTicker || isIndex){
-    try{
-      /* 지수는 Stooq 심볼로 변환, US 주식은 .us 접미사 */
-      const stooqSym = isIndex
-        ? (STOOQ_INDEX_MAP[ticker] || ticker.toLowerCase())
-        : ticker.toLowerCase() + '.us';
-      const stooqUrl = `https://stooq.com/q/l/?s=${encodeURIComponent(stooqSym)}&f=sd2t2ohlcv&h&e=csv`;
-      const res = await _fetchWithTimeout(stooqUrl, 8000);
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const csv = await res.text();
-      const lines = csv.trim().split('\n');
-      if(lines.length >= 2){
-        const cols = lines[1].split(',');
-        const close = parseFloat(cols[6]);  /* Close 컬럼 */
-        if(!isNaN(close) && close > 0){
-          console.log(`[Price] ${ticker} | stooq(${stooqSym}) | ok | ${close} | ${Date.now()-t0}ms`);
-          return {status:'ok', price:Math.round(close*100)/100, source:'stooq'};
-        }
-        if(cols[6]==='N/D'){
-          console.log(`[Price] ${ticker} | stooq | N/D — Yahoo 폴백`);
-        }
-      }
-    }catch(eS){
-      console.log(`[Price] ${ticker} | stooq 실패: ${eS.message} — Yahoo 폴백`);
-    }
-  }
-
-  /* ── 2차: Yahoo (corsproxy.io) ── */
-  const yUrl = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-  let e1msg = '';
-  try{
-    const res = await _fetchWithTimeout(`https://corsproxy.io/?${encodeURIComponent(yUrl)}`, 9000);
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const data = await res.json();
+  const _parseYahooV8 = (data) => {
     if(data?.chart?.error) throw new Error('Yahoo: '+(data.chart.error.code||'error'));
     const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
     if(price==null||isNaN(price)) throw new Error('가격 필드 없음');
-    console.log(`[Price] ${ticker} | yahoo-proxy1 | ok | ${price} | ${Date.now()-t0}ms`);
-    return {status:'ok', price:Math.round(price*100)/100, source:'yahoo-proxy1'};
+    return Math.round(price*100)/100;
+  };
+
+  /* ── 1차: Yahoo Finance v8 직접 (credentials:include — 브라우저 쿠키 자동) ── */
+  try{
+    const url1 = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+    const r1 = await _fetchWithTimeout(url1, 8000);
+    if(!r1.ok) throw new Error('HTTP '+r1.status);
+    const d1 = await r1.json();
+    const p1 = _parseYahooV8(d1);
+    console.log(`[Price] ${ticker} | yahoo-direct | ok | ${p1} | ${Date.now()-t0}ms`);
+    return {status:'ok', price:p1, source:'yahoo-direct'};
   }catch(e1){
-    e1msg = e1?.message||'unknown';
-    /* ── 3차: Yahoo (allorigins) ── */
-    try{
-      const res2 = await _fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(yUrl)}`, 9000);
-      if(!res2.ok) throw new Error('HTTP '+res2.status);
-      const wrap = await res2.json();
-      const data2 = JSON.parse(wrap.contents||'{}');
-      if(data2?.chart?.error) throw new Error('Yahoo: '+(data2.chart.error.code||'error'));
-      const price2 = data2?.chart?.result?.[0]?.meta?.regularMarketPrice;
-      if(price2==null||isNaN(price2)) throw new Error('가격 필드 없음');
-      console.log(`[Price] ${ticker} | yahoo-proxy2 | ok | ${price2} | ${Date.now()-t0}ms`);
-      return {status:'ok', price:Math.round(price2*100)/100, source:'yahoo-proxy2'};
-    }catch(e2){
-      const reason = `Y1:${e1msg} / Y2:${e2?.message||'unknown'}`;
-      console.warn(`[Price] ${ticker} | 모든 소스 실패 | ${Date.now()-t0}ms | ${reason}`);
-      return {status:'error', price:null, source:'failed', reason};
-    }
+    console.log(`[Price] ${ticker} | yahoo-direct 실패: ${e1.message}`);
+  }
+
+  /* ── 2차: Yahoo Finance crumb 방식 ── */
+  try{
+    const crumb = await _getYahooCrumb();
+    if(!crumb) throw new Error('crumb 없음');
+    const url2 = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d&crumb=${encodeURIComponent(crumb)}`;
+    const r2 = await _fetchWithTimeout(url2, 8000);
+    if(!r2.ok) throw new Error('HTTP '+r2.status);
+    const d2 = await r2.json();
+    const p2 = _parseYahooV8(d2);
+    console.log(`[Price] ${ticker} | yahoo-crumb | ok | ${p2} | ${Date.now()-t0}ms`);
+    return {status:'ok', price:p2, source:'yahoo-crumb'};
+  }catch(e2){
+    console.log(`[Price] ${ticker} | yahoo-crumb 실패: ${e2.message}`);
+  }
+
+  /* ── 3차: Yahoo Finance query1 v8 ── */
+  try{
+    const url3 = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+    const r3 = await _fetchWithTimeout(url3, 8000);
+    if(!r3.ok) throw new Error('HTTP '+r3.status);
+    const d3 = await r3.json();
+    const p3 = _parseYahooV8(d3);
+    console.log(`[Price] ${ticker} | yahoo-q1 | ok | ${p3} | ${Date.now()-t0}ms`);
+    return {status:'ok', price:p3, source:'yahoo-q1'};
+  }catch(e3){
+    const reason = e3?.message||'unknown';
+    console.warn(`[Price] ${ticker} | 모든 소스 실패 | ${Date.now()-t0}ms | ${reason}`);
+    return {status:'error', price:null, source:'failed', reason};
   }
 }
 
@@ -3489,9 +3480,26 @@ function renderRecentCompleted(accounts, products){
 /* ─ §10 현재 보유 렌더 (compact 카드 — V26.03.9) ─ */
 function renderHolding(accounts, products){
   if(!accounts||!products)({accounts,products}=load());
-  const q   =(document.getElementById('h-q')?.value||'').toLowerCase();
-  const sort= document.getElementById('h-sort')?.value||'eval';
+  const q     =(document.getElementById('h-q')?.value||'').toLowerCase();
+  const sort  = document.getElementById('h-sort')?.value||'eval';
+  const acctEl= document.getElementById('h-acct');
+  const acctFilter = acctEl?.value||'';
+
+  /* 계좌 목록 동적 생성 (현재 active 상품에 있는 계좌만) */
+  const activeAccIds=[...new Set(products.filter(p=>p.status==='active').map(p=>p.accountId).filter(Boolean))];
+  const acctList=accounts.filter(a=>activeAccIds.includes(a.id));
+  if(acctEl){
+    const prev=acctEl.value;
+    acctEl.innerHTML='<option value="">전체 계좌</option>'
+      +acctList.map(a=>`<option value="${a.id}">${a.name||a.id}</option>`).join('');
+    /* 선택값 복원 */
+    if([...acctEl.options].some(o=>o.value===prev)) acctEl.value=prev;
+  }
+
   let list  = products.filter(p=>p.status==='active').filter(p=>{
+    /* 계좌 필터 */
+    if(acctFilter && p.accountId!==acctFilter) return false;
+    /* 검색 필터 */
     if(!q) return true;
     const acc=accounts.find(a=>a.id===p.accountId);
     return[p.name,p.issuer,acc?.name||'',...(p.underlyings||[]).map(u=>u.name)].join(' ').toLowerCase().includes(q);
