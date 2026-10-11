@@ -77,6 +77,27 @@ body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px;l
 .kpi-round-chips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 2px}
 .kpi-round-chip{font-size:10px;font-weight:600;color:var(--acc);background:var(--acc-l);border-radius:10px;padding:1px 7px;white-space:nowrap;line-height:1.6}
 .kpi-round-chip.etc{color:var(--txt2);background:var(--s2)}
+.ac-meta{margin-top:4px;font-size:10px;line-height:1.5;color:var(--txt3);word-break:break-all;overflow-wrap:anywhere}
+.ac-meta .warn,.ac-meta.warn{color:var(--am)}
+.kpi-led-tag{font-size:10px;font-weight:500;color:var(--txt3);margin-left:4px;white-space:nowrap}
+.kpi-led-warn{margin-top:8px;padding:7px 9px;border-radius:var(--r2);background:var(--am-bg);border:1px solid var(--am-bd);color:var(--am);font-size:11px;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere}
+.kpi-led-details{margin-top:8px;border-top:1px solid var(--bd);padding-top:6px}
+.kpi-led-details>summary{cursor:pointer;font-size:12px;font-weight:700;color:var(--acc);padding:4px 0;list-style:none}
+.kpi-led-details>summary::-webkit-details-marker{display:none}
+.kpi-led-details>summary::before{content:'▸ ';}
+.kpi-led-details[open]>summary::before{content:'▾ ';}
+.kpi-led-item{padding:7px 0;border-bottom:1px dashed var(--bd);min-width:0}
+.kpi-led-item:last-child{border-bottom:none}
+.kpi-led-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.kpi-led-nm{font-size:12px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.kpi-led-badge{font-size:10px;font-weight:700;border-radius:8px;padding:1px 7px;white-space:nowrap;flex-shrink:0;background:var(--s2);color:var(--txt2)}
+.kpi-led-badge.green{background:var(--g-bg,#e7f6ee);color:var(--g)}
+.kpi-led-badge.warn{background:var(--am-bg);color:var(--am)}
+.kpi-led-sub{font-size:11px;color:var(--txt2);margin-top:2px;line-height:1.5;overflow-wrap:anywhere}
+.kpi-led-basis{font-size:10px;color:var(--txt3);margin-top:1px;line-height:1.45;overflow-wrap:anywhere}
+.px-note{font-size:11px;color:var(--txt3);line-height:1.55;margin:6px 0 4px}
+.px-note b{color:var(--txt2)}
+.px-code{font-size:10.5px;line-height:1.45;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:8px;overflow-x:auto;white-space:pre;max-width:100%}
 .kpi-pct{font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
 .kpi-pct.green{color:var(--g)}.kpi-pct.red{color:var(--r)}
 .kpi-wide-card{grid-column:1/-1}
@@ -585,7 +606,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.91</span>
+      <span class="ver-badge">V26.94</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -637,7 +658,71 @@ tr:hover td{background:#f8fafc}
         <span class="sim-note">📊 현재가 기반 추정</span>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--txt3);margin-bottom:8px">※ 공개 시세 기반 참고값입니다. 기본 매핑 / 직접 티커 / 사용자 정의 매핑으로 조회하며 일부 자산은 수동 입력이 필요합니다.</div>
+    <div class="asset-head-fx" style="margin-top:6px">
+      <label style="font-size:12px;font-weight:700;color:var(--txt2);white-space:nowrap">🔧 내 시세 프록시(선택)</label>
+      <input type="text" id="price-proxy" class="fi sm" placeholder="https://내-worker.workers.dev/"
+        style="width:260px;min-height:36px;max-width:100%"
+        oninput="onPriceProxy(this.value)">
+    </div>
+    <div class="px-note">
+      <b>⚠ 이 칸에 URL만 넣는다고 동작하지 않습니다.</b> 아래 코드로 <b>본인 Cloudflare Worker를 먼저 배포</b>해야 하며, 그 주소를 입력합니다.
+      비워 두면 ① Yahoo 직접 호출(브라우저 CORS 정책으로 대부분 차단) → ② <b>타사 무료 공개 프록시</b>를 순서대로 시도합니다.
+      공개 프록시는 <b>성공이 보장되지 않고</b>, 조회하는 종목코드가 제3자에게 노출되며, 응답 내용을 신뢰할 수 없습니다(그래서 출처를 ‘비보장’으로 표시).
+      이 앱은 GitHub 토큰·인증키를 프록시 URL로 보내지 않고, 조회 대상 티커만 전달합니다.
+      <details style="margin-top:4px"><summary style="cursor:pointer;font-weight:700;color:var(--acc)">Worker 배포 방법 · 코드 보기</summary>
+        <div style="margin-top:4px">1) dash.cloudflare.com → Workers &amp; Pages → Create → Hello World 로 Worker 생성 → <b>Edit code</b><br>
+        2) 기본 코드를 지우고 아래 코드를 붙여넣은 뒤 <b>ALLOWED_ORIGINS</b>를 본인 Pages 주소로 확인 → <b>Deploy</b><br>
+        3) 배포 후 나온 주소(예: <code>https://이름.계정.workers.dev/</code>)를 위 칸에 입력 (앱이 <code>?symbol=티커</code>를 붙여 호출)<br>
+        4) 이 Worker는 Yahoo chart 한 경로만 호출하도록 고정되어 있으며 Origin 검사로 남용을 줄입니다. (Origin 헤더는 브라우저 밖에서는 위조 가능하므로 완전한 인증은 아니며, 필요하면 Cloudflare 대시보드에서 요청 제한을 추가하세요.)<br>
+        ※ 이전(V26.92)에 안내드린 <code>?url=</code> 형태 Worker는 <b>임의 URL을 중계하는 열린 프록시</b>이므로 위 코드로 교체를 권장합니다. 기존에 입력해 둔 <code>…?url=</code> 주소도 계속 인식은 합니다.</div>
+        <pre class="px-code" id="worker-code">// Cloudflare Worker — Asset Manager 시세 중계 (Yahoo Finance chart 전용)
+// 임의 URL을 중계하지 않음: 호스트·경로 고정, symbol 만 입력으로 받음
+const ALLOWED_ORIGINS = ['https://moooooon-bit.github.io']; // 본인 GitHub Pages 주소(스킴+호스트만)
+const SYMBOL_RE = /^[A-Za-z0-9.^=\-]{1,20}$/;
+
+function cors(origin) {
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
+  };
+}
+
+export default {
+  async fetch(request) {
+    const origin = request.headers.get('Origin') || '';
+    const okOrigin = ALLOWED_ORIGINS.includes(origin);
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: okOrigin ? 204 : 403, headers: okOrigin ? cors(origin) : {} });
+    }
+    if (request.method !== 'GET') return new Response('Method Not Allowed', { status: 405 });
+    if (!okOrigin) return new Response('Forbidden origin', { status: 403 });
+
+    const symbol = new URL(request.url).searchParams.get('symbol') || '';
+    if (!SYMBOL_RE.test(symbol)) return new Response('Bad symbol', { status: 400, headers: cors(origin) });
+
+    const target = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
+                   encodeURIComponent(symbol) + '?interval=1d&amp;range=1d';
+    try {
+      const r = await fetch(target, {
+        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
+        cf: { cacheTtl: 30, cacheEverything: true },
+      });
+      return new Response(await r.text(), {
+        status: r.status,
+        headers: { ...cors(origin), 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=30' },
+      });
+    } catch (e) {
+      return new Response(JSON.stringify({ error: 'upstream fetch failed' }),
+        { status: 502, headers: { ...cors(origin), 'Content-Type': 'application/json' } });
+    }
+  },
+};</pre>
+        <button class="btn bgh sm" style="font-size:11px" onclick="copyWorkerCode()">📋 코드 복사</button>
+      </details>
+    </div>
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:8px">※ 공개 시세 기반 참고값입니다. 지연·누락·오류 가능성이 있으며 일부 자산은 수동 입력이 필요합니다. 조회 실패 시 기존 저장가격은 지우지 않고 유지하며, 카드에 마지막 성공 시각과 경고를 표시합니다. (시세 기준시각 ≠ 조회 실행시각)</div>
     <div id="asset-grid" class="agrid"></div>
   </div>
 
@@ -1891,6 +1976,11 @@ tr:hover td{background:#f8fafc}
    - V26.89: 기준가 표시 위치 확정 — 투자원금 라벨 옆, 금액 영역에는 금액만
    - V26.90: 현재가 불러오기 안정화(mode:cors), 현재 보유 탭에 계좌별 필터 추가
    - V26.91: 현재가 불러오기 소스 전면 교체 (Stooq/corsproxy/allorigins → Yahoo Finance crumb 직접 요청)
+   - V26.92: 현재가 불러오기에 커스텀 프록시(자체 Cloudflare Worker 등) 설정 기능 추가, 공개 프록시 체인 확장(codetabs/allorigins/corsproxy/thingproxy 순차 시도)
+   - V26.93: 현재가 조회 재설계(전체 데드라인·요청 취소·동시성 제한·양수 가격만 저장·실패 시 기존가 유지·조회/시세시각 메타),
+             티커 해석 수정(사용자 매핑 우선·부분일치 제거), 원금가중 평균 연수익률 검증(환율/수익률 누락 제외 표시),
+             36개월 상환 현금흐름 원장 신설(지난 평가일 제외·현재가 누락/KI 불명 미산정·USD 환율 미입력 가드), 수동 가격 입력 KPI 즉시 동기화
+   - V26.94: 최근 완료 상품 표 — 상품명 아래 약정 연수익률(세전), 조기상환 유형에 실제 상환 차수 표시
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1901,7 +1991,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.91';
+const VER = 'V26.94';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -1983,7 +2073,7 @@ const ASSET_KO_ALIAS = {
   '코스피200':'kospi200', '코스피':'kospi200',
   'sp500':'sp500', 'snp500':'sp500', 's&p500':'sp500', 's&p 500':'sp500',
   'nikkei225':'nikkei225', 'nikkei':'nikkei225',
-  '나스닥100':'nasdaq100', '나스닥':'nasdaq100',
+  '나스닥100':'nasdaq100', '나스닥':'nasdaq100', 'nasdaq':'nasdaq100',
   '니케이225':'nikkei225', '니케이':'nikkei225',
   '유로스톡스50':'eurostoxx50', '유로스탁스50':'eurostoxx50', '유로스톡50':'eurostoxx50',
   '홍콩h지수':'hscei', '홍콩h':'hscei', 'hscei':'hscei',
@@ -2012,28 +2102,43 @@ function looksLikeTicker(name){
   return /^[A-Z0-9.\^]{1,10}$/.test((name||'').trim());
 }
 
-/** 자산명으로 Yahoo Finance 티커를 반환. 없으면 null
- * resolve 순서: 1) 기본 alias  2) 사용자 정의  3) 직접 티커 fallback
+/** 자산명으로 Yahoo Finance 티커를 반환. 없으면 null  (V26.93 재작성)
+ *  우선순위: 1) 사용자 정의 매핑(정확 일치)  2) 기본 alias/매핑(정확 일치)
+ *            3) 대문자 티커 직접 입력  4) 공백·괄호로 나눈 토큰(연속 구간) 정확 일치
+ *  ※ 부분 문자열(includes) 매칭은 제거 — 'mu'가 'Community'에 걸리는 식의 오매핑 방지.
+ *  ※ 토큰 매칭에서 서로 다른 티커가 동시에 잡히면 모호하므로 null 반환.
  */
-function resolveAssetTicker(assetName){
-  const norm = normalizeAssetName(assetName);
-  // 1) 한글 alias 먼저 확인
+function _lookupExactTicker(norm, custom){
+  if(!norm) return null;
+  const ck = Object.keys(custom||{}).find(k=>normalizeAssetName(k)===norm);
+  if(ck) return String(custom[ck]||'').trim().toUpperCase()||null;
   const koKey = ASSET_KO_ALIAS[norm];
   if(koKey && ASSET_TICKER_MAP[koKey]) return ASSET_TICKER_MAP[koKey];
-  // 2) 기본 매핑 직접 확인
   if(ASSET_TICKER_MAP[norm]) return ASSET_TICKER_MAP[norm];
-  // 3) 사용자 정의 매핑
-  const custom = loadCustomTickerMap();
-  const customKey = Object.keys(custom).find(k=>normalizeAssetName(k)===norm);
-  if(customKey) return custom[customKey];
-  // 4) 부분 매칭 (기본)
-  const keys = Object.keys(ASSET_KO_ALIAS);
-  for(const k of keys){ if(norm.includes(k)||k.includes(norm)) return ASSET_TICKER_MAP[ASSET_KO_ALIAS[k]]||null; }
-  const mkeys = Object.keys(ASSET_TICKER_MAP);
-  for(const k of mkeys){ if(norm.includes(k)||k.includes(norm)) return ASSET_TICKER_MAP[k]; }
-  // 5) 직접 티커 입력 fallback
-  if(looksLikeTicker(assetName)) return assetName.trim().toUpperCase();
   return null;
+}
+function resolveAssetTicker(assetName){
+  const raw = String(assetName==null?'':assetName).trim();
+  if(!raw) return null;
+  const custom = loadCustomTickerMap();
+  // 1~2) 전체 이름 정확 일치 (사용자 정의가 항상 먼저)
+  const whole = _lookupExactTicker(normalizeAssetName(raw), custom);
+  if(whole) return whole;
+  // 3) 직접 티커 입력 (예: NVDA, ^GSPC, BRK.B)
+  if(looksLikeTicker(raw)) return raw.toUpperCase();
+  // 4) 토큰 연속 구간 정확 일치 — 'Tesla Inc', '마이크론 테크놀로지', 'S&P 500 Index'
+  const tokens = raw.toLowerCase().split(/[\s\/\\()\[\],;:]+/).filter(Boolean);
+  const found = new Set();
+  for(let i=0;i<tokens.length;i++){
+    let joined='';
+    for(let j=i;j<tokens.length;j++){
+      joined += tokens[j];
+      const t = _lookupExactTicker(normalizeAssetName(joined), custom);
+      if(t) found.add(t);
+    }
+  }
+  if(found.size===1) return [...found][0];
+  return null;   // 0개(미지원) 또는 2개 이상(모호)
 }
 
 /* ─ 자산 매핑 관리 모달 ─ */
@@ -2074,219 +2179,295 @@ function removeCustomTicker(nm){
   toast(`${nm} 매핑이 삭제됐습니다.`);
 }
 
-/** 가격 조회 — V26.90 재작성
- *  기존 Stooq/corsproxy/allorigins 모두 CORS 차단 또는 서비스 종료됨
- *  새 방식: Yahoo Finance crumb 기반 직접 요청
- *   1차: Yahoo Finance v8 직접 (브라우저 쿠키 자동 처리 → crumb 필요 없음)
- *   2차: Yahoo Finance crumb 방식 (getcrumb → v8 요청)
- *   3차: Yahoo Finance v7 직접 (구버전 엔드포인트)
- */
+/* ═══════════════════════════════════════════════════════════════
+   § 가격 조회 — V26.93 재설계
+   - 조회 경로: ① 내 Cloudflare Worker(설정 시)  ② Yahoo 직접(대부분 CORS 차단)
+                ③ 공개 프록시(타사 무료 서비스 · 성공 보장 없음)
+   - 전체 데드라인 + AbortController 로 진행 중 요청까지 취소, 동시 조회 수 제한
+   - 유효한 양수 가격만 저장. 실패 시 기존 저장가격은 절대 지우거나 덮어쓰지 않음
+   - 가격별 메타(조회시각/시세기준시각/티커/출처/상태)를 별도 키에 저장 (백업 구조 불변)
+   ═══════════════════════════════════════════════════════════════ */
 
-/** AbortController 기반 안전한 fetch 래퍼 */
-async function _fetchWithTimeout(url, ms, opts={}){
-  return new Promise((resolve, reject) => {
-    const ctrl = new AbortController();
-    const tid = setTimeout(() => { ctrl.abort(); reject(new Error('timeout')); }, ms);
-    fetch(url, {signal: ctrl.signal, cache: 'no-store', credentials: 'include', ...opts})
-      .then(r => { clearTimeout(tid); resolve(r); })
-      .catch(e => { clearTimeout(tid); reject(e); });
-  });
+/* 커스텀 프록시 URL 저장/불러오기 (기기별 설정 — 백업 JSON에 포함하지 않음) */
+function loadPriceProxy(){ return String(lsGet('els_price_proxy','')||'').trim(); }
+function savePriceProxy(v){ lsSet('els_price_proxy', String(v||'').trim()); }
+function onPriceProxy(val){ savePriceProxy(val); }
+function copyWorkerCode(){
+  const t=document.getElementById('worker-code')?.textContent||'';
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(()=>toast('Worker 코드를 복사했습니다.','ok')).catch(()=>toast('복사 실패 — 코드를 직접 선택해 복사하세요.','err')); }
+    else toast('이 브라우저는 자동 복사를 지원하지 않습니다. 코드를 직접 선택해 복사하세요.','warn');
+  }catch(e){ toast('복사 실패 — 코드를 직접 선택해 복사하세요.','err'); }
 }
 
-/* crumb 캐시 (세션 내 재사용) */
-let _yfCrumb = null;
-let _yfCrumbTime = 0;
+let PRICE_FETCH_DEADLINE_MS = 20000;   /* 전체 조회 제한시간 */
+let PRICE_FETCH_CONCURRENCY = 4;       /* 동시 조회 티커 수 */
+let _priceFetchBusy = false;
 
-async function _getYahooCrumb(){
-  /* 10분 캐시 */
-  if(_yfCrumb && Date.now()-_yfCrumbTime < 600000) return _yfCrumb;
+/* ─ 가격 메타데이터 (els_price_meta_v1: {자산명:{ticker,price,fetchedAt,marketTime,source,...}}) ─ */
+const PRICE_META_KEY = 'els_price_meta_v1';
+function loadPriceMeta(){
+  const m = lsGet(PRICE_META_KEY, {});
+  return (m && typeof m==='object' && !Array.isArray(m)) ? m : {};
+}
+function savePriceMeta(m){ lsSet(PRICE_META_KEY, m); }
+function updatePriceMeta(nm, patch){
+  const m = loadPriceMeta();
+  m[nm] = {...(m[nm]||{}), ...patch};
+  savePriceMeta(m);
+}
+function removePriceMeta(nm){
+  const m = loadPriceMeta();
+  if(nm in m){ delete m[nm]; savePriceMeta(m); }
+}
+
+/** ISO → 'YYYY-MM-DD HH:mm' (KST). 잘못된 값이면 '' */
+function fmtKSTDateTime(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
   try{
-    const r = await _fetchWithTimeout(
-      'https://query2.finance.yahoo.com/v1/test/getcrumb', 5000,
-      {headers:{'Accept':'text/plain'}}
-    );
-    if(!r.ok) throw new Error('crumb HTTP '+r.status);
-    const crumb = (await r.text()).trim();
-    if(!crumb || crumb.includes('<')) throw new Error('invalid crumb');
-    _yfCrumb = crumb; _yfCrumbTime = Date.now();
-    return crumb;
+    const parts = new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d);
+    const g = t => parts.find(x=>x.type===t)?.value||'';
+    const hh = g('hour')==='24' ? '00' : g('hour');
+    return `${g('year')}-${g('month')}-${g('day')} ${hh}:${g('minute')}`;
+  }catch(e){ return d.toISOString().slice(0,16).replace('T',' '); }
+}
+
+/** 자산 가격의 출처/신선도 판정 (순수 함수 — nowMs 주입 가능)
+ *  메타의 price 가 현재 저장가격과 다르면(백업 복원·다른 경로 수정) 메타를 신뢰하지 않음 → 'unknown'
+ */
+function describePriceState(curPrice, meta, nowMs){
+  const now = nowMs==null ? Date.now() : nowMs;
+  const price = Number(curPrice);
+  if(!(isFinite(price) && price>0)) return {state:'none', level:'none', lines:['저장된 현재가 없음']};
+  const SRC = {'custom-proxy':'내 프록시','yahoo-direct':'Yahoo 직접','public-proxy':'공개 프록시(비보장)','manual':'수동 입력'};
+  const metaOk = meta && Number(meta.price)===price;
+  const lines = [];
+  let level = 'ok';
+  if(!metaOk){
+    lines.push('출처·조회시각 불명 (수동 입력 또는 백업 복원 값일 수 있음)');
+    level = 'warn';
+    if(meta && (meta.lastStatus==='failed'||meta.lastStatus==='timeout'))
+      lines.push('최근 조회 실패: '+(meta.lastError||'원인 불명'));
+    return {state:'unknown', level, lines};
+  }
+  const srcLabel = SRC[meta.source] || meta.source || '출처 불명';
+  lines.push(`출처: ${srcLabel}`);   /* 티커는 카드 머리줄(priceMetaHtml)에 이미 표시 */
+  if(meta.source==='manual'){
+    lines.push('수동 입력 '+fmtKSTDateTime(meta.fetchedAt));
+    const age = now - new Date(meta.fetchedAt).getTime();
+    if(isFinite(age) && age > 7*86400000){ level='warn'; lines.push('⚠ 7일 이상 지난 수동 입력값'); }
+    return {state:'manual', level, lines};
+  }
+  const mt = meta.marketTime ? fmtKSTDateTime(meta.marketTime) : '';
+  lines.push(mt ? `시세 기준 ${mt} KST` : '시세 기준시각 정보 없음');
+  lines.push(`조회 성공 ${fmtKSTDateTime(meta.fetchedAt)} KST`);
+  const fAge = now - new Date(meta.fetchedAt).getTime();
+  const mAge = meta.marketTime ? now - new Date(meta.marketTime).getTime() : null;
+  if(isFinite(fAge) && fAge > 48*3600000){ level='warn'; lines.push(`⚠ 마지막 성공 조회가 ${Math.floor(fAge/86400000)}일 전 — 오래된 값일 수 있음`); }
+  if(mAge!=null && isFinite(mAge) && mAge > 5*86400000){ level='warn'; lines.push(`⚠ 시세 기준시각이 ${Math.floor(mAge/86400000)}일 전`); }
+  if(meta.lastStatus==='failed'||meta.lastStatus==='timeout'){
+    level='warn';
+    lines.push(`⚠ 최근 조회 ${meta.lastStatus==='timeout'?'시간 초과':'실패'}(${fmtKSTDateTime(meta.lastAttemptAt)}) — 마지막 성공값 사용 중`);
+  }
+  return {state:'fetched', level, lines};
+}
+
+/** 안전한 JSON fetch — 요청+본문 읽기 전체에 AbortSignal.timeout 적용 (프로젝트 규칙: AbortController 미사용)
+ *  타임아웃 = min(요청별 제한, 전체 마감까지 남은 시간) → 전체 마감 시 진행 중 요청도 함께 취소됨
+ *  deadlineAt: 전체 마감 시각(ms epoch)
+ */
+async function _fetchJson(url, ms, deadlineAt, opts={}){
+  const left = (deadlineAt==null) ? Infinity : (deadlineAt - Date.now());
+  if(left <= 0) throw new Error('aborted');
+  const t = Math.min(ms, left);
+  const sig = AbortSignal.timeout(t);
+  try{
+    const r = await fetch(url, {cache:'no-store', ...opts, signal:sig});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return await r.json();
   }catch(e){
-    return null;
+    if(sig.aborted) throw new Error(left < ms ? 'aborted' : 'timeout');   /* aborted=전체 마감, timeout=요청별 제한 */
+    throw e;
   }
 }
 
-async function fetchPriceByAssetName(assetName){
-  const ticker = resolveAssetTicker(assetName);
-  if(!ticker) return {status:'unsupported', price:null, source:'none', reason:'티커 매핑 없음'};
+function _yahooUrl(ticker){
+  return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+}
+/** 내 프록시 URL 조립 — 신형(?symbol=) / 구형(?url= 로 끝나는 V26.92 설정) 모두 지원 */
+function _customProxyUrl(base, ticker){
+  if(/[?&]symbol=$/i.test(base)) return base + encodeURIComponent(ticker);
+  if(/[?&]url=$/i.test(base) || base.endsWith('=')) return base + encodeURIComponent(_yahooUrl(ticker));
+  return base + (base.includes('?')?'&':'?') + 'symbol=' + encodeURIComponent(ticker);
+}
+const PUBLIC_PRICE_PROXIES = [
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+  u => `https://thingproxy.freeboard.io/fetch/${u}`,
+];
 
-  const t0 = Date.now();
-
-  const _parseYahooV8 = (data) => {
-    if(data?.chart?.error) throw new Error('Yahoo: '+(data.chart.error.code||'error'));
-    const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
-    if(price==null||isNaN(price)) throw new Error('가격 필드 없음');
-    return Math.round(price*100)/100;
-  };
-
-  /* ── 1차: Yahoo Finance v8 직접 (credentials:include — 브라우저 쿠키 자동) ── */
-  try{
-    const url1 = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-    const r1 = await _fetchWithTimeout(url1, 8000);
-    if(!r1.ok) throw new Error('HTTP '+r1.status);
-    const d1 = await r1.json();
-    const p1 = _parseYahooV8(d1);
-    console.log(`[Price] ${ticker} | yahoo-direct | ok | ${p1} | ${Date.now()-t0}ms`);
-    return {status:'ok', price:p1, source:'yahoo-direct'};
-  }catch(e1){
-    console.log(`[Price] ${ticker} | yahoo-direct 실패: ${e1.message}`);
-  }
-
-  /* ── 2차: Yahoo Finance crumb 방식 ── */
-  try{
-    const crumb = await _getYahooCrumb();
-    if(!crumb) throw new Error('crumb 없음');
-    const url2 = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d&crumb=${encodeURIComponent(crumb)}`;
-    const r2 = await _fetchWithTimeout(url2, 8000);
-    if(!r2.ok) throw new Error('HTTP '+r2.status);
-    const d2 = await r2.json();
-    const p2 = _parseYahooV8(d2);
-    console.log(`[Price] ${ticker} | yahoo-crumb | ok | ${p2} | ${Date.now()-t0}ms`);
-    return {status:'ok', price:p2, source:'yahoo-crumb'};
-  }catch(e2){
-    console.log(`[Price] ${ticker} | yahoo-crumb 실패: ${e2.message}`);
-  }
-
-  /* ── 3차: Yahoo Finance query1 v8 ── */
-  try{
-    const url3 = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-    const r3 = await _fetchWithTimeout(url3, 8000);
-    if(!r3.ok) throw new Error('HTTP '+r3.status);
-    const d3 = await r3.json();
-    const p3 = _parseYahooV8(d3);
-    console.log(`[Price] ${ticker} | yahoo-q1 | ok | ${p3} | ${Date.now()-t0}ms`);
-    return {status:'ok', price:p3, source:'yahoo-q1'};
-  }catch(e3){
-    const reason = e3?.message||'unknown';
-    console.warn(`[Price] ${ticker} | 모든 소스 실패 | ${Date.now()-t0}ms | ${reason}`);
-    return {status:'error', price:null, source:'failed', reason};
-  }
+/** Yahoo chart 응답 검증 → {price,marketTime,symbol,currency}. 유효하지 않으면 throw */
+function parseYahooQuote(data, ticker){
+  if(data?.chart?.error) throw new Error('Yahoo: '+(data.chart.error.code||'error'));
+  const meta = data?.chart?.result?.[0]?.meta;
+  if(!meta) throw new Error('응답에 meta 없음');
+  const price = Number(meta.regularMarketPrice);
+  if(!(isFinite(price) && price>0)) throw new Error('유효하지 않은 가격('+meta.regularMarketPrice+')');
+  if(meta.symbol && String(meta.symbol).toUpperCase()!==String(ticker).toUpperCase())
+    throw new Error(`응답 심볼 불일치(${meta.symbol}≠${ticker})`);
+  let marketTime = null;
+  const rt = Number(meta.regularMarketTime);
+  if(isFinite(rt) && rt>0){ const d=new Date(rt*1000); if(!isNaN(d.getTime())) marketTime=d.toISOString(); }
+  return {price: Math.round(price*100)/100, marketTime, symbol: meta.symbol||ticker, currency: meta.currency||''};
 }
 
+/** 한 티커의 시세 조회 (소스 순차 시도). 반환: {ok:true,quote}|{ok:false,error} */
+async function fetchQuoteForTicker(ticker, deadlineAt){
+  const attempts = [];
+  const errs = [];
+  const proxy = loadPriceProxy();
+  if(proxy){
+    if(/^https:\/\//i.test(proxy)) attempts.push({label:'내 프록시', url:_customProxyUrl(proxy,ticker), src:'custom-proxy', ms:8000});
+    else errs.push('내 프록시:URL은 https:// 로 시작해야 함');
+  }
+  attempts.push({label:'Yahoo 직접', url:_yahooUrl(ticker), src:'yahoo-direct', ms:4000});
+  PUBLIC_PRICE_PROXIES.forEach((fn,i)=>attempts.push({label:'공개'+(i+1), url:fn(_yahooUrl(ticker)), src:'public-proxy', ms:6000}));
+  for(const a of attempts){
+    if(deadlineAt!=null && Date.now()>=deadlineAt){ errs.push('중단됨(전체 제한시간)'); break; }
+    try{
+      const data = await _fetchJson(a.url, a.ms, deadlineAt);
+      const q = parseYahooQuote(data, ticker);
+      q.source = a.src;
+      return {ok:true, quote:q};
+    }catch(e){
+      const msg = e?.message||String(e);
+      errs.push(a.label+':'+msg);
+      if(msg==='aborted') break;
+    }
+  }
+  return {ok:false, error: errs.join(' / ')};
+}
 
-/** 기초자산 현재가 일괄 불러오기 — V26.70
- *  BATCH=10 병렬 처리 (성공률 우선) + 무한 로딩 방지 유지
- */
+/** 성공한 시세를 저장 (AP + 해당 상품 PP + 메타). 호출 전 price 가 양수임이 보장됨 */
+function applyFetchedPrice(nm, ticker, quote, metaMap, products){
+  saveAP(nm, String(quote.price));
+  products.forEach(p=>{
+    if((p.underlyings||[]).some(u=>u.name===nm)){ const pp=loadPP(p.id); pp[nm]=String(quote.price); savePP(p.id,pp); }
+  });
+  const ts = new Date().toISOString();
+  metaMap[nm] = {ticker, price:quote.price, fetchedAt:ts, marketTime:quote.marketTime, source:quote.source,
+                 symbol:quote.symbol, currency:quote.currency, lastAttemptAt:ts, lastStatus:'ok', lastError:''};
+}
+
+/** 기초자산 현재가 일괄 불러오기 (V26.93) */
 async function fetchAllCurrentPrices(){
+  if(_priceFetchBusy){ toast('현재가 조회가 이미 진행 중입니다.','warn'); return; }
+  _priceFetchBusy = true;
   const btn = document.getElementById('btn-fetch-prices');
   const setBtn = (loading, txt) => {
     if(!btn) return;
     try{ btn.disabled = !!loading; btn.textContent = txt||'🔄 현재가 불러오기'; }catch(ex){}
   };
-
   setBtn(true, '준비 중…');
-  const {products} = load();
-  const names = [...new Set(
-    products.filter(p=>p.status==='active')
-      .flatMap(p=>(p.underlyings||[]).map(u=>u.name).filter(Boolean))
-  )];
 
-  if(!names.length){
-    toast('활성 상품의 기초자산이 없습니다.','warn');
-    setBtn(false);
-    return;
-  }
-
-  let ok=0, unsupported=0, fail=0, cached=0;
+  const deadlineAt = Date.now() + PRICE_FETCH_DEADLINE_MS;      /* 전체 조회 마감 시각 */
+  const deadlineHit = () => Date.now() >= deadlineAt;
+  const stat = {ok:0, unsupported:0, fail:0, timeout:0, skipped:0, kept:0};
   const failedNames = [];
-  const total = names.length;
-  const BATCH = 10;  /* 예전 병렬 방식에 가깝게, 과부하 방지용 상한만 유지 */
-
-  /* 전체 hard timeout 25초 */
-  let hardTimeoutFired = false;
-  const hardTimer = setTimeout(()=>{
-    hardTimeoutFired = true;
-    console.warn('[Price] 25초 초과 — 남은 배치 중단');
-  }, 25000);
+  let metaMap = {};
+  let didWork = false;
 
   try{
-    for(let i=0; i<names.length; i+=BATCH){
-      if(hardTimeoutFired) break;
-      const batch = names.slice(i, i+BATCH);
+    const {products} = load();
+    const names = [...new Set(
+      products.filter(p=>p.status==='active')
+        .flatMap(p=>(p.underlyings||[]).map(u=>u.name).filter(Boolean))
+    )];
+    if(!names.length){ toast('활성 상품의 기초자산이 없습니다.','warn'); return; }
+    didWork = true;
+    metaMap = loadPriceMeta();
+    const nowISO = ()=>new Date().toISOString();
 
-      /* Promise.allSettled — 개별 실패가 전체를 막지 않음 */
-      const results = await Promise.allSettled(
-        batch.map(nm => fetchPriceByAssetName(nm))
-      );
+    /* 티커별 그룹 — 같은 티커로 연결된 자산명은 한 번만 조회 */
+    const byTicker = new Map();
+    names.forEach(nm=>{
+      const t = resolveAssetTicker(nm);
+      if(!t){
+        stat.unsupported++;
+        metaMap[nm] = {...(metaMap[nm]||{}), lastAttemptAt:nowISO(), lastStatus:'unsupported', lastError:'티커 매핑 없음'};
+        return;
+      }
+      if(!byTicker.has(t)) byTicker.set(t, []);
+      byTicker.get(t).push(nm);
+    });
+    const tickers = [...byTicker.keys()];
+    let next = 0, done = 0;
 
-      results.forEach((res, bi)=>{
-        const nm = batch[bi];
-        let status='error', price=null, source='', reason='';
-        if(res.status==='fulfilled'){
-          status=res.value.status; price=res.value.price;
-          source=res.value.source||''; reason=res.value.reason||'';
+    const worker = async () => {
+      while(true){
+        if(deadlineHit()) return;
+        const i = next++;
+        if(i >= tickers.length) return;
+        const tk = tickers[i];
+        let res;
+        try{ res = await fetchQuoteForTicker(tk, deadlineAt); }
+        catch(e){ res = {ok:false, error:e?.message||'unknown'}; }
+        done++;
+        setBtn(true, `${done} / ${tickers.length} 처리 중…`);
+        const nms = byTicker.get(tk);
+        if(res.ok){
+          nms.forEach(nm=>{ applyFetchedPrice(nm, tk, res.quote, metaMap, products); stat.ok++; });
         } else {
-          reason = res.reason?.message||'Promise rejected';
+          const timedOut = deadlineHit();
+          nms.forEach(nm=>{
+            if(timedOut) stat.timeout++; else stat.fail++;
+            failedNames.push(nm);
+            if(loadAP(nm)) stat.kept++;
+            metaMap[nm] = {...(metaMap[nm]||{}), lastAttemptAt:nowISO(), lastStatus: timedOut?'timeout':'failed', lastError:res.error||''};
+            console.warn(`[Price] ${nm}(${tk}) 실패 | ${res.error} | 기존가 ${loadAP(nm)||'없음'} 유지`);
+          });
         }
+      }
+    };
+    await Promise.allSettled(Array.from({length:Math.min(PRICE_FETCH_CONCURRENCY, tickers.length)}, worker));   /* 프로젝트 규칙: Promise.all 금지 */
 
-        if(status==='unsupported'){
-          unsupported++;
-          console.log(`[Price] ${nm} | unsupported`);
-
-        } else if(status==='ok' && price!=null){
-          ok++;
-          /* 즉시 input/span 갱신 */
-          try{
-            const key = nm.replace(/[^a-zA-Z0-9]/g,'_');
-            const inputEl = document.getElementById('ap-input-'+key);
-            if(inputEl) inputEl.value = price;
-            const spanEl = document.getElementById('apcv-'+key);
-            if(spanEl) spanEl.textContent = Number(price).toLocaleString();
-          }catch(ex){}
-          /* saveAP + savePP */
-          try{
-            saveAP(nm, String(price));
-            products.forEach(p=>{
-              if((p.underlyings||[]).some(u=>u.name===nm)){
-                const pp=loadPP(p.id); pp[nm]=String(price); savePP(p.id,pp);
-              }
-            });
-          }catch(ex){ console.warn('[Price] 저장 오류:', ex); }
-
-        } else {
-          /* 실패 — 기존 캐시 유지 (지우지 않음) */
-          fail++;
-          failedNames.push(nm);
-          const cachedVal = loadAP(nm);
-          if(cachedVal) cached++;
-          console.warn(`[Price] ${nm} | error | source:${source} | ${reason} | 캐시:${cachedVal||'없음'}`);
-        }
+    /* 데드라인으로 시작조차 못 한 티커 */
+    tickers.slice(next).forEach(tk=>{
+      byTicker.get(tk).forEach(nm=>{
+        stat.skipped++; failedNames.push(nm);
+        if(loadAP(nm)) stat.kept++;
+        metaMap[nm] = {...(metaMap[nm]||{}), lastAttemptAt:nowISO(), lastStatus:'timeout', lastError:'전체 제한시간 초과로 조회하지 못함'};
       });
-
-      setBtn(true, `${Math.min(i+BATCH, total)} / ${total} 처리 중…`);
-    }
+    });
   }catch(outerErr){
     console.error('[Price] 외부 오류:', outerErr);
   }finally{
-    clearTimeout(hardTimer);
-    setBtn(false, '🔄 현재가 불러오기');  /* 반드시 복구 */
+    if(didWork){ try{ savePriceMeta(metaMap); }catch(ex){} }
+    _priceFetchBusy = false;
+    setBtn(false, '🔄 현재가 불러오기');   /* 반드시 복구 */
   }
+  if(!didWork) return;
 
-  /* 렌더링 — 각 try/catch로 감싸 버튼 복구가 막히지 않게 */
   try{ renderAssets(); }catch(ex){}
   try{ if(curTab==='dash'){ renderHolding(); renderSchedule(); } }catch(ex){}
   try{ if(curTab==='earlysim') renderEarlySim(); }catch(ex){}
   try{ if(curTab==='sim') renderSim(); }catch(ex){}
   try{ renderKPI(...Object.values(load())); }catch(ex){}
 
-  /* 완료 토스트 */
-  const parts=[];
-  if(ok>0)          parts.push(`성공 ${ok}`);
-  if(unsupported>0) parts.push(`미지원 ${unsupported}`);
-  if(fail>0)        parts.push(`실패 ${fail}${cached?` (캐시 유지 ${cached})`:''}`);
-  const msg = parts.length ? '현재가 불러오기 완료: '+parts.join(' / ') : '가져올 자산이 없습니다.';
-  const level = ok===0&&fail>0?'err':fail>0?'warn':'ok';
+  const parts = [];
+  if(stat.ok>0)          parts.push(`성공 ${stat.ok}`);
+  if(stat.unsupported>0) parts.push(`미지원 ${stat.unsupported}`);
+  if(stat.fail>0)        parts.push(`실패 ${stat.fail}`);
+  if(stat.timeout+stat.skipped>0) parts.push(`시간초과·미조회 ${stat.timeout+stat.skipped}`);
+  const bad = stat.fail+stat.timeout+stat.skipped;
+  if(bad>0 && stat.kept>0) parts.push(`기존 저장가 유지 ${stat.kept}`);
+  const msg = parts.length ? '현재가 불러오기: '+parts.join(' / ') : '가져올 자산이 없습니다.';
+  const level = (stat.ok===0 && (bad>0||stat.unsupported>0)) ? 'err' : (bad>0||stat.unsupported>0) ? 'warn' : 'ok';
   toast(msg, level);
-  if(failedNames.length) console.warn('[Price] 실패 자산:', failedNames.join(', '));
+  if(failedNames.length) console.warn('[Price] 조회 실패 자산(기존가 유지):', failedNames.join(', '));
 }
 
 
@@ -2720,21 +2901,8 @@ function calcSim(p, acc){
  * @returns {number|null} 세전 가중평균 예상수익률(%), 원금 합계 0이면 null
  */
 function calcActiveWeightedExpectedYield(){
-  const{accounts,products}=load();
-  const rate=loadFxRate();
-  const active=products.filter(p=>p.status==='active');
-  let wPrinSum=0, wProfSum=0;
-  active.forEach(p=>{
-    const pr=toKRW(Number(p.principal||0),p.currency,rate);
-    const ey=Number(p.expectedYield);
-    const profit=isFinite(ey)&&!isNaN(ey)?toKRW(Number(p.principal||0)*ey/100,p.currency,rate):0;
-    wPrinSum+=pr;
-    wProfSum+=profit;
-  });
-  if(wPrinSum<=0)return null;
-  const result=wProfSum/wPrinSum*100;
-  if(!isFinite(result)||isNaN(result))return null;
-  return result;
+  const{products}=load();
+  return calcWeightedYieldDetail(products, loadFxRate()).value;   /* null = 산정 불가 */
 }
 function calcReinvestAnnualNetRate(){
   const{accounts,products}=load();
@@ -2830,6 +2998,242 @@ function calcMaturityAutoGross(p, prices){
     note=`payoffType=${pt} → 수동 입력 필요`;isCustom=true;
   }
   return{gross,note,isCustom};
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   § V26.93 — 날짜 유틸 / 원금가중 평균 연수익률 / 36개월 상환 현금흐름 원장
+   (기존 calcProductExpectedItem·calcFirstRedeemableRound·calcMaturityExpected 는
+    연간 실적 탭 등에서 계속 사용하므로 그대로 두고, KPI 전용 모델을 별도로 둠)
+   ═══════════════════════════════════════════════════════════════ */
+
+/** 한국시간(Asia/Seoul) 기준 오늘 'YYYY-MM-DD' */
+function todayKST(){
+  try{
+    const parts = new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+    const g = t => parts.find(x=>x.type===t).value;
+    return `${g('year')}-${g('month')}-${g('day')}`;
+  }catch(e){
+    return new Date(Date.now()+9*3600000).toISOString().slice(0,10);
+  }
+}
+function isValidISODate(s){
+  if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y,m,d] = s.split('-').map(Number);
+  const dt = new Date(Date.UTC(y,m-1,d));
+  return dt.getUTCFullYear()===y && dt.getUTCMonth()===m-1 && dt.getUTCDate()===d;
+}
+/** 'YYYY-MM-DD' 에 n개월 더하기 (말일 보정: 2028-02-29 +36개월 → 2031-02-28) */
+function addMonthsISO(iso, n){
+  const [y,m,d] = iso.split('-').map(Number);
+  const tot = y*12 + (m-1) + n;
+  const ny = Math.floor(tot/12), nm = tot%12;
+  const dim = new Date(Date.UTC(ny,nm+1,0)).getUTCDate();
+  return `${String(ny).padStart(4,'0')}-${String(nm+1).padStart(2,'0')}-${String(Math.min(d,dim)).padStart(2,'0')}`;
+}
+
+/** expectedYield(연 약정 쿠폰율) 가 누적쿠폰(couponRateCumulative/maturityCouponCumulative)의
+ *  연환산값과 일치하는지 점검. 앱의 자동계산식: 누적 = 연율 × 경과일/365
+ *  @returns {mismatch:boolean, maxDiff:number}|null  (점검 불가 시 null)
+ */
+function checkYieldConsistency(p){
+  const ey = Number(p.expectedYield);
+  if(!(ey>0) || !isValidISODate(p.startDate)) return null;
+  const sd = Date.parse(p.startDate);
+  const pairs = [];
+  const mc = Number(p.maturityCouponCumulative);
+  if(mc>0 && isValidISODate(p.maturityDate)) pairs.push([p.maturityDate, mc]);
+  (p.evalDates||[]).forEach(s=>{
+    const cr = Number(s?.couponRateCumulative);
+    if(cr>0 && isValidISODate(s?.date)) pairs.push([s.date, cr]);
+  });
+  let maxDiff = 0, n = 0;
+  pairs.forEach(([dt,cum])=>{
+    const days = (Date.parse(dt)-sd)/86400000;
+    if(!(days>0)) return;
+    n++;
+    maxDiff = Math.max(maxDiff, Math.abs(cum*365/days - ey));
+  });
+  if(!n) return null;
+  return {mismatch: maxDiff > 0.3, maxDiff};
+}
+
+/** 원금가중 평균 예상 연수익률(세전)
+ *  = Σ(원화환산 원금 × expectedYield) / Σ(원화환산 원금)   — 산정 가능한 active 상품만
+ *  · USD 인데 환율 없음 → 합산하지 않고 제외(건수·USD 원금 별도 집계)
+ *  · expectedYield 누락(0/NaN) → 0% 로 가정하지 않고 제외(건수·원금 별도 집계)
+ *  expectedYield 는 '연' 약정 쿠폰율이며 36개월 누적수익률이 아님.
+ */
+function calcWeightedYieldDetail(products, rate){
+  const active = (products||[]).filter(p=>p.status==='active');
+  const out = {totalActive:active.length, includedCount:0, includedPrincipalKRW:0, wSum:0,
+    missingYieldCount:0, missingYieldPrincipalKRW:0, fxMissingCount:0, fxMissingPrincipalUSD:0,
+    invalidPrincipalCount:0, mismatchCount:0, mismatchNames:[], value:null, status:'none'};
+  active.forEach(p=>{
+    const pr = Number(p.principal);
+    if(!(pr>0)){ out.invalidPrincipalCount++; return; }
+    const cur = p.currency||'KRW';
+    if(cur==='USD' && !(rate>0)){ out.fxMissingCount++; out.fxMissingPrincipalUSD += pr; return; }
+    const prK = toKRW(pr, cur, rate);
+    const ey = Number(p.expectedYield);
+    if(!(isFinite(ey) && ey>0)){ out.missingYieldCount++; out.missingYieldPrincipalKRW += prK; return; }
+    out.includedCount++; out.includedPrincipalKRW += prK; out.wSum += prK*ey;
+    const yc = checkYieldConsistency(p);
+    if(yc && yc.mismatch){ out.mismatchCount++; out.mismatchNames.push(p.name||'(이름 없음)'); }
+  });
+  if(out.includedPrincipalKRW>0){
+    const v = out.wSum/out.includedPrincipalKRW;
+    if(isFinite(v)) out.value = v;
+  }
+  const excluded = out.missingYieldCount + out.fxMissingCount + out.invalidPrincipalCount;
+  out.status = out.value===null ? 'none' : (excluded>0 ? 'partial' : 'full');
+  return out;
+}
+
+/** 상품 1개의 36개월 시나리오 (정태 시나리오: 현재 기초자산 가격이 평가일까지 유지된다고 가정)
+ *  ctx: {todayISO, endISO, rate, getPrices(pid)}
+ *  kind: 'in'(36개월 내 상환) | 'after'(36개월 이후 상환 예상) | 'unscored'(미산정)
+ */
+function eval36mProduct(p, accType, ctx){
+  const T = ctx.todayISO, E = ctx.endISO, rate = ctx.rate;
+  const cur = p.currency||'KRW';
+  const base = {pid:p.id, name:p.name||'(이름 없음)', currency:cur, accType:accType||'normal'};
+  const un = (code, reason, prK)=>({...base, kind:'unscored', code, reason, principalKRW: prK==null?null:prK});
+  const pr = Number(p.principal);
+  if(!(pr>0)) return un('data','투자원금 누락', 0);
+  if(cur==='USD' && !(rate>0)) return un('fx','USD 환율 미입력 — 원화환산 불가', null);
+  const prK = toKRW(pr, cur, rate);
+
+  const pt = p.payoffType||'standard-stepdown';
+  if(pt!=='standard-stepdown' && pt!=='no-ki-stepdown')
+    return un('payoff', (pt==='monthly-coupon'?'월지급식':'기타/수동')+' 구조 — 약관·기지급 쿠폰 확인 필요(자동 산정 안 함)', prK);
+
+  const uls = p.underlyings||[];
+  if(!uls.length) return un('price','기초자산 정보 없음', prK);
+  const prices = ctx.getPrices(p.id)||{};
+  const ratios = [], missing = [];
+  uls.forEach(u=>{
+    const c = Number(prices[u.name]), b = Number(u.basePrice);
+    if(isFinite(c)&&c>0&&isFinite(b)&&b>0) ratios.push({name:u.name, ratio:c/b*100});
+    else missing.push(u.name||'?');
+  });
+  if(missing.length) return un('price','현재가/기준가 누락: '+missing.join(', '), prK);
+  const worst = ratios.reduce((a,b)=>b.ratio<a.ratio?b:a);
+
+  /* 평가일 상태 검증 — 지난 평가일은 미래 상환일로 선택하지 않음 */
+  const results = p.evalResults||[];
+  const curIdx = Number(p.currentRoundIndex)||0;
+  const stages = (p.evalDates||[]).map((s,i)=>({i, round:i+1, date:s?.date, barrier:Number(s?.barrier), cr:Number(s?.couponRateCumulative)}));
+  for(const s of stages){
+    if(!isValidISODate(s.date)) return un('data',`${s.round}차 평가일 누락/형식 오류`, prK);
+    const rec = results.find(r=>r.round===s.round);
+    if(rec?.result==='pass') return un('data',`${s.round}차 조기상환 성공 기록이 있으나 상태가 '보유중' — 상태 확인 필요`, prK);
+    if(s.date < T){
+      const resolved = rec?.result==='fail' || s.i < curIdx;
+      if(!resolved) return un('data',`지난 ${s.round}차 평가일(${s.date}) 결과 미기록 — 상환/미달 여부 확인 필요`, prK);
+    }
+  }
+
+  const mk = (kind,type,dateKind,date,round,gross,basis,extra)=>{
+    const t = calcTax(gross, accType, pr);
+    return {...base, kind, type, dateKind, date, round, year:date.slice(0,4),
+      principalKRW:prK, grossKRW:toKRW(gross,cur,rate), taxKRW:toKRW(t.tax,cur,rate), netKRW:toKRW(t.net,cur,rate),
+      basis, ...(extra||{})};
+  };
+
+  /* 앞으로 남은 평가일(오늘 포함)을 날짜순으로 검토 — 최초 충족 차수에서 1회만 상환 */
+  const fut = stages
+    .filter(s=>s.date>=T && results.find(r=>r.round===s.round)?.result!=='fail')
+    .sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+  for(const s of fut){
+    if(!(s.barrier>0) || !(s.cr>0)) return un('data',`${s.round}차 배리어/누적쿠폰 누락 — 판정 불가`, prK);
+    if(worst.ratio >= s.barrier){
+      const gross = pr*s.cr/100;
+      return mk(s.date<=E?'in':'after','early','평가일',s.date,s.round,gross,
+        `${s.round}차 평가일 — 현재가 유지 가정: Worst ${worst.ratio.toFixed(1)}% ≥ 배리어 ${s.barrier}% → 누적쿠폰 ${s.cr}%`);
+    }
+  }
+
+  /* 남은 평가일 모두 미충족 → 만기 조건 */
+  const md = p.maturityDate;
+  if(!isValidISODate(md)) return un('data','만기일 누락/형식 오류', prK);
+  if(md < T) return un('data',`만기일(${md}) 경과 — 상환/종료 처리 확인 필요`, prK);
+  const fb = Number(p.finalBarrier), mc = Number(p.maturityCouponCumulative);
+  if(!(fb>0)) return un('data','만기 배리어 누락', prK);
+  const wp = worst.ratio;
+  let gross, basis, kiAssumed = false;
+  if(wp >= fb){
+    if(!(mc>0)) return un('data','만기 누적쿠폰 누락', prK);
+    gross = pr*mc/100;
+    basis = `만기일 — 현재가 유지 가정: Worst ${wp.toFixed(1)}% ≥ 만기배리어 ${fb}% → 만기 누적쿠폰 ${mc}%`;
+  } else if(p.kiHit===true){
+    gross = pr*(wp/100-1);
+    basis = `만기일 — KI 발생 확정 기록 + Worst ${wp.toFixed(1)}% < 만기배리어 ${fb}% → 손실 ${(wp-100).toFixed(1)}%`;
+  } else {
+    if(pt==='standard-stepdown'){
+      const ki = Number(p.knockin);
+      if(!(ki>0)) return un('ki','KI 배리어 미입력 — KI 판정 불가', prK);
+      if(wp < ki) return un('ki',`현재 Worst ${wp.toFixed(1)}% < KI ${ki}% 이나 KI 발생 기록 없음 — KI 확인 필요`, prK);
+    }
+    const nkm = p.noKiMode||'coupon';
+    if(nkm==='coupon'){
+      if(!(mc>0)) return un('data','만기 누적쿠폰 누락', prK);
+      gross = pr*mc/100;
+      kiAssumed = pt==='standard-stepdown';
+      basis = `만기일 — Worst ${wp.toFixed(1)}% < 만기배리어 ${fb}% 이나 KI 미발생 기록 → 쿠폰 ${mc}% 지급 가정`+(kiAssumed?' (기간 중 KI 이력은 데이터에 없음)':'');
+    } else if(nkm==='principal'){
+      gross = 0;
+      basis = `만기일 — KI 미발생·배리어 미달 → 원금 상환(손익 0, noKiMode:principal)`;
+    } else return un('payoff','noKiMode=custom — 수동 산정 필요', prK);
+  }
+  return mk(md<=E?'in':'after','maturity','만기일',md,null,gross,basis,{kiAssumed});
+}
+
+/** 36개월 상환 현금흐름 원장.  기준일 = 한국시간 오늘, 종료일 = 정확히 36개월 후(경계 포함) */
+function build36mLedger(accounts, products, opts){
+  const o = opts||{};
+  const T = o.todayISO || todayKST();
+  const E = addMonthsISO(T, 36);
+  const rate = o.rate!=null ? o.rate : loadFxRate();
+  const getPrices = o.getPrices || (pid=>loadPP(pid));
+  const ctx = {todayISO:T, endISO:E, rate, getPrices};
+  const active = (products||[]).filter(p=>p.status==='active');
+  const entries = active.map(p=>{
+    const acc = (accounts||[]).find(a=>a.id===p.accountId);
+    const e = eval36mProduct(p, acc?.type, ctx);
+    e.accName = acc?.name||'';
+    return e;
+  });
+  const inWin = entries.filter(e=>e.kind==='in');
+  const after = entries.filter(e=>e.kind==='after');
+  const unsc  = entries.filter(e=>e.kind==='unscored');
+
+  const years = [];
+  for(let y=Number(T.slice(0,4)); y<=Number(E.slice(0,4)); y++) years.push(String(y));
+  const byYear = {};
+  years.forEach(y=>{ byYear[y]={net:0,gross:0,tax:0,principal:0,count:0}; });
+  inWin.forEach(e=>{
+    const b = byYear[e.year];
+    b.net+=e.netKRW; b.gross+=e.grossKRW; b.tax+=e.taxKRW; b.principal+=e.principalKRW; b.count++;
+  });
+  const sumY = k => years.reduce((s,y)=>s+byYear[y][k],0);
+
+  let totalPrincipalKRW = 0;
+  const fxMissing = {count:0, usd:0};
+  active.forEach(p=>{
+    const pr = Number(p.principal)||0;
+    if((p.currency||'KRW')==='USD' && !(rate>0)){ fxMissing.count++; fxMissing.usd+=pr; }
+    else totalPrincipalKRW += toKRW(pr, p.currency, rate);
+  });
+  const byCode = {};
+  unsc.forEach(e=>{ byCode[e.code]=(byCode[e.code]||0)+1; });
+  return {
+    todayISO:T, endISO:E, rate, entries, years, byYear,
+    totals:{net:sumY('net'), gross:sumY('gross'), tax:sumY('tax'), principalRedeemed:sumY('principal'), count:inWin.length},
+    after:{count:after.length, principalKRW:after.reduce((s,e)=>s+e.principalKRW,0)},
+    unscored:{count:unsc.length, principalKRW:unsc.reduce((s,e)=>s+(e.principalKRW||0),0), byCode},
+    totalPrincipalKRW, fxMissing, activeCount:active.length,
+    pct: totalPrincipalKRW>0 ? sumY('net')/totalPrincipalKRW*100 : null,
+  };
 }
 
 /* ─ §5 날짜·포맷·공통 헬퍼 ─ */
@@ -3073,12 +3477,11 @@ function renderAssets(){
     if(saved>0){fxEl.value=saved;updateFxHint(saved);}
     fxEl.dataset.init='1';
   }
-  /* 목표 반복 운용원금 초기값 */
-  const rtEl=document.getElementById('reinvest-target');
-  if(rtEl&&!rtEl.dataset.init){
-    const savedRt=loadReinvestTarget();
-    rtEl.value=_fmtReinvestInput(savedRt);
-    rtEl.dataset.init='1';
+  /* 커스텀 가격 프록시 초기값 */
+  const ppEl=document.getElementById('price-proxy');
+  if(ppEl&&!ppEl.dataset.init){
+    ppEl.value=loadPriceProxy();
+    ppEl.dataset.init='1';
   }
   const{products}=load();
   const map={};
@@ -3093,15 +3496,18 @@ function renderAssets(){
   document.getElementById('acnt').textContent=nms.length+'개';
   const el=document.getElementById('asset-grid');
   if(!nms.length){el.innerHTML=`<div style="color:var(--txt3);font-size:13px">보유 중인 상품의 기초자산이 없습니다.</div>`;return;}
+  const meta=loadPriceMeta();
   el.innerHTML=nms.map(nm=>{
     const cur=loadAP(nm);
+    const _k = esc(nm.replace(/[^a-zA-Z0-9]/g,'_'));
     return`<div class="acard">
       <div class="ac-nm">${esc(nm)}</div>
       <div style="display:flex;align-items:center;gap:6px">
-        <input type="number" id="ap-input-${esc(nm.replace(/[^a-zA-Z0-9]/g,'_'))}" class="fi" placeholder="현재가 입력" value="${esc(cur)}"
+        <input type="number" id="ap-input-${_k}" class="fi" placeholder="현재가 입력" value="${esc(cur)}" min="0" step="any"
           style="flex:1" oninput='onAPLive(${JSON.stringify(nm)},this)' onchange='onAP(${JSON.stringify(nm)},this.value)'>
       </div>
-      <div style="margin-top:4px;font-size:12px;color:var(--acc);font-weight:700" id="apcv-${esc(nm.replace(/[^a-zA-Z0-9]/g,'_'))}">${cur?Number(cur).toLocaleString():'-'}</div>
+      <div style="margin-top:4px;font-size:12px;color:var(--acc);font-weight:700" id="apcv-${_k}">${cur?Number(cur).toLocaleString():'-'}</div>
+      <div class="ac-meta" id="apmeta-${_k}">${priceMetaHtml(nm,cur,meta[nm])}</div>
     </div>`;
   }).join('');
 }
@@ -3128,31 +3534,74 @@ function doApplyAP(nm){
   onAP(nm,val);
   toast(`${nm} 현재가 적용됐습니다.`,'ok');
 }
+/** 자산 카드의 티커/출처/시각/경고 문구 HTML */
+function priceMetaHtml(nm, cur, meta){
+  const tk = resolveAssetTicker(nm);
+  const st = describePriceState(cur, meta);
+  const head = tk ? `티커 <b>${esc(tk)}</b>` : `<span style="color:var(--am)">티커 매핑 없음 — 수동 입력 필요(또는 자산 매핑 추가)</span>`;
+  const body = st.lines.map((l,i)=>`<div${(l.startsWith('⚠')||(i===0&&st.level==='warn'&&st.state==='unknown'))?' class="warn"':''}>${esc(l)}</div>`).join('');
+  return `<div>${head}</div>${body}`;
+}
+/** KPI 가볍게 갱신 (입력 중 포커스 유지: #kpi-grid 만 다시 그림) */
+let _kpiTimer = null;
+function refreshKpiSoon(){
+  clearTimeout(_kpiTimer);
+  _kpiTimer = setTimeout(()=>{
+    try{ const {accounts,products}=load(); renderKPI(accounts,products); }catch(e){}
+  }, 120);
+}
 function onAPLive(nm,input){
   const v=input.value;
-  /* 표시 span 업데이트 */
-  const id='apcv-'+nm.replace(/[^a-zA-Z0-9]/g,'_');
-  const el=document.getElementById(id);
-  if(el)el.textContent=v?Number(v).toLocaleString():'-';
-  /* 즉시 저장 (renderAssets 제외 — 포커스 유지) */
+  const key=nm.replace(/[^a-zA-Z0-9]/g,'_');
+  const el=document.getElementById('apcv-'+key);
   if(v!==''&&v!==null){
+    const n=Number(v);
+    if(!(isFinite(n)&&n>0)){
+      /* 0·음수·비정상 값은 저장하지 않음 (기존 저장가 유지) */
+      if(el)el.textContent='⚠ 0보다 큰 숫자만 저장됩니다';
+      return;
+    }
+    if(el)el.textContent=Number(v).toLocaleString();
     saveAP(nm,v);
     const{products}=load();
     products.forEach(p=>{if((p.underlyings||[]).some(u=>u.name===nm)){const pp=loadPP(p.id);pp[nm]=v;savePP(p.id,pp);}});
-  }
-  /* 카드/계산 갱신 */
-  if(curTab==='dash'){renderHolding();renderSchedule();}
-  if(curTab==='sim') renderSim();
-  if(curTab==='earlysim') renderEarlySim();
+    const ts=new Date().toISOString();
+    updatePriceMeta(nm,{ticker:resolveAssetTicker(nm)||'',price:n,fetchedAt:ts,marketTime:null,source:'manual',lastAttemptAt:ts,lastStatus:'manual',lastError:''});
+    const mEl=document.getElementById('apmeta-'+key);
+    if(mEl)mEl.innerHTML=priceMetaHtml(nm,v,loadPriceMeta()[nm]);
+  } else if(el){ el.textContent='-'; }
+  /* KPI·36개월 계산 즉시 동기화 (#kpi-grid 만 다시 그리므로 입력 포커스 유지). 다른 렌더가 실패해도 먼저 예약 */
+  refreshKpiSoon();
+  try{
+    if(curTab==='dash'){renderHolding();renderSchedule();}
+    if(curTab==='sim') renderSim();
+    if(curTab==='earlysim') renderEarlySim();
+  }catch(ex){ console.warn('[Price] 연동 렌더 오류', ex); }
 }
 function onAP(nm,val){
+  if(val!==''&&val!==null){
+    const n=Number(val);
+    if(!(isFinite(n)&&n>0)){
+      toast('현재가는 0보다 큰 숫자만 저장됩니다. 기존 값을 유지합니다.','err');
+      renderAssets();
+      return;
+    }
+  }
   saveAP(nm,val);
   const{products}=load();
   products.forEach(p=>{if((p.underlyings||[]).some(u=>u.name===nm)){const pp=loadPP(p.id);pp[nm]=val;savePP(p.id,pp);}});
-  renderAssets();
-  if(curTab==='dash'){renderHolding();renderSchedule();}
-  if(curTab==='sim') renderSim();
-  if(curTab==='earlysim') renderEarlySim();
+  if(val===''||val===null) removePriceMeta(nm);
+  else{
+    const ts=new Date().toISOString();
+    updatePriceMeta(nm,{ticker:resolveAssetTicker(nm)||'',price:Number(val),fetchedAt:ts,marketTime:null,source:'manual',lastAttemptAt:ts,lastStatus:'manual',lastError:''});
+  }
+  refreshKpiSoon();
+  try{
+    renderAssets();
+    if(curTab==='dash'){renderHolding();renderSchedule();}
+    if(curTab==='sim') renderSim();
+    if(curTab==='earlysim') renderEarlySim();
+  }catch(ex){ console.warn('[Price] 연동 렌더 오류', ex); }
 }
 function onFxRate(val){
   const rate=Number(val)||0;
@@ -3183,16 +3632,93 @@ function renderDash(){
   renderRecentCompleted(accounts,products);
 }
 
+/* ─ 36개월 예상 상환수익 카드 (원장 기반) ─ */
+let _kpiLedgerOpen = false;
+function build36mCardHtml(L){
+  const den = L.totalPrincipalKRW;
+  const pctOf = v => (den>0 && isFinite(v/den)) ? v/den*100 : null;
+  const pctS  = v => { const p=pctOf(v); return p===null ? '-' : (p>=0?'+':'')+fp(p); };
+  const cls   = v => v>0 ? 'green' : v<0 ? 'red' : '';
+  const un = L.unscored;
+  const reasonLbl = {price:'현재가 누락', ki:'KI 확인 필요', data:'데이터 확인', fx:'환율 미입력', payoff:'월지급·수동 구조'};
+
+  const yrRows = L.years.map((y,i)=>{
+    const b = L.byYear[y];
+    const tag = i===0 ? `<span class="kpi-led-tag">${L.todayISO.slice(5)}~</span>`
+              : i===L.years.length-1 ? `<span class="kpi-led-tag">~${L.endISO.slice(5)}</span>` : '';
+    const val = b.count===0
+      ? `<span style="color:var(--txt3);font-weight:500">-</span>`
+      : `${fm(b.net)}&thinsp;<span style="font-size:11px;font-weight:500">(${pctS(b.net)})</span> <span class="kpi-led-tag">${b.count}건</span>`;
+    return `<div class="kpi-metric-row"><span class="kpi-metric-label">${y}년${tag}</span><span class="kpi-metric-value ${b.count?cls(b.net):''}">${val}</span></div>`;
+  }).join('');
+
+  const unTxt = Object.keys(un.byCode).map(c=>`${reasonLbl[c]||c} ${un.byCode[c]}`).join(' · ');
+  const fxTxt = L.fxMissing.count>0 ? ` · USD ${L.fxMissing.count}건(원금 $${Math.round(L.fxMissing.usd).toLocaleString('en-US')})은 환율 미입력으로 원화 합계에서 제외` : '';
+  const unHtml = (un.count>0)
+    ? `<div class="kpi-led-warn">⚠ 미산정 ${un.count}건${un.principalKRW>0?` · 원금 ${fm(un.principalKRW)}`:''} (${esc(unTxt)})${esc(fxTxt)}<br>아래 합계는 산정 가능한 ${L.totals.count+L.after.count}건에 대한 시나리오이며 미산정 상품은 포함되지 않습니다.</div>`
+    : '';
+  const afterHtml = L.after.count>0
+    ? `<div class="kpi-metric-row"><span class="kpi-metric-label" style="color:var(--txt3)">36개월 이후 상환 예상</span><span class="kpi-metric-value" style="color:var(--txt3);font-weight:500">${L.after.count}건 · 원금 ${fm(L.after.principalKRW)}</span></div>` : '';
+
+  /* 상품별 산정 근거 */
+  const order = e => e.kind==='in'?0:e.kind==='after'?1:2;
+  const sorted = [...L.entries].sort((a,b)=>order(a)-order(b) || String(a.date||'9999').localeCompare(String(b.date||'9999')));
+  const badge = e => e.kind==='in'?['36개월 내','green']:e.kind==='after'?['36개월 이후','']:['미산정','warn'];
+  const items = sorted.map(e=>{
+    const [bt,bc] = badge(e);
+    const acc = e.accName ? `<span class="kpi-led-tag">${esc(e.accName)}</span>` : '';
+    let line2, basis;
+    if(e.kind==='unscored'){
+      line2 = e.principalKRW!=null ? `원금 ${fm(e.principalKRW)}` : `원금 환산 불가`;
+      basis = e.reason;
+    } else {
+      line2 = `${e.dateKind} ${e.date}${e.round?` (${e.round}차)`:''} · 원금 ${fm(e.principalKRW)} · 세전 ${fm(e.grossKRW)} → 세후 <b class="${cls(e.netKRW)}" style="color:var(--${e.netKRW>0?'g':e.netKRW<0?'r':'txt2'})">${fm(e.netKRW)}</b>`;
+      basis = e.basis + (e.kiAssumed?' ⚠':'');
+    }
+    return `<div class="kpi-led-item">
+      <div class="kpi-led-h"><span class="kpi-led-nm">${esc(e.name)} ${acc}</span><span class="kpi-led-badge ${bc}">${bt}</span></div>
+      <div class="kpi-led-sub">${line2}</div>
+      <div class="kpi-led-basis">${esc(basis)}</div>
+    </div>`;
+  }).join('');
+  const detail = L.entries.length
+    ? `<details class="kpi-led-details" ${_kpiLedgerOpen?'open':''} ontoggle="_kpiLedgerOpen=this.open"><summary>상품별 산정 근거 (${L.entries.length}건)</summary>${items}</details>` : '';
+
+  const totalCls = cls(L.totals.net);
+  return `
+    <div class="kpi-card kpi-wide-card">
+      <div class="kpi-lbl">투자원금 / 36개월 예상 상환수익</div>
+      ${L.activeCount===0 ? `<div class="kpi-sub">보유 중인 상품이 없습니다.</div>` : `
+      <div class="kpi-metric-label">현재 보유 총 투자원금${L.fxMissing.count>0?' (환율 미입력 USD 제외)':''}</div>
+      <div class="kpi-principal-value">${fm(den)}</div>
+      <div class="kpi-metric-row" style="margin-top:6px"><span class="kpi-metric-label">36개월 내 상환 예상 원금</span><span class="kpi-metric-value">${fm(L.totals.principalRedeemed)}&thinsp;<span class="kpi-led-tag">${L.totals.count}건</span></span></div>
+      ${afterHtml}
+      <hr class="kpi-section-divider">
+      <div class="kpi-metric-label" style="margin-bottom:3px">연도별 예상 세후 상환손익 <span class="kpi-led-tag">재투자 미반영</span></div>
+      <div class="kpi-metric-rows">${yrRows}
+        <div class="kpi-total-row">
+          <span class="kpi-metric-label" style="font-weight:700">36개월 합계${un.count>0?' <span class="kpi-led-tag">일부 상품 기준</span>':''}</span>
+          <span class="kpi-metric-value ${totalCls}" style="font-size:15px;font-weight:800">${fm(L.totals.net)}&thinsp;<span style="font-size:12px;font-weight:600">(${pctS(L.totals.net)})</span></span>
+        </div>
+      </div>
+      ${unHtml}
+      ${detail}
+      <div class="kpi-sub" style="margin-top:6px">기준일 ${L.todayISO}(KST) ~ ${L.endISO} · <b>현재 기초자산 가격이 평가일까지 유지된다고 가정</b>한 정태 시나리오이며 실제 평가일 조건 충족이 필요합니다 · 날짜는 약관상 <b>평가일/만기일</b>(실제 지급예정일 아님) · 상환 원금 재투자 미반영 · 퍼센트는 현재 보유 총 투자원금 대비 · 세후는 계좌 유형별 단순 세율 추정(ISA 한도·종합과세·과세시점 미반영)</div>`}
+    </div>`;
+}
+
 function renderKPI(accounts,products){
   const rate    = loadFxRate();
   const active  = products.filter(p=>p.status==='active');
   const done    = products.filter(p=>p.status!=='active');
-  /* USD 상품은 원화 환산해서 합산 */
-  const totalPr = active.reduce((s,p)=>s+toKRW(Number(p.principal||0),p.currency,rate),0);
-  const totalNet= done.reduce((s,p)=>s+toKRW(Number(p.actualNetProfit||0),p.currency,rate),0);
+  /* USD 상품은 원화 환산해서 합산 — 환율 미입력 USD 는 달러 숫자를 원화에 섞지 않도록 합산에서 제외 */
+  const _usdNoFx = p => (p.currency||'KRW')==='USD' && !(rate>0);
+  const totalPr = active.filter(p=>!_usdNoFx(p)).reduce((s,p)=>s+toKRW(Number(p.principal||0),p.currency,rate),0);
+  const totalNet= done.filter(p=>!_usdNoFx(p)).reduce((s,p)=>s+toKRW(Number(p.actualNetProfit||0),p.currency,rate),0);
   const thisYr  = today().slice(0,4);
-  const thisYrNet=done.filter(p=>dy(p.settlementDate)===thisYr)
+  const thisYrNet=done.filter(p=>!_usdNoFx(p)&&dy(p.settlementDate)===thisYr)
     .reduce((s,p)=>s+toKRW(Number(p.actualNetProfit||0),p.currency,rate),0);
+  const _doneUsdNoFx = done.filter(_usdNoFx).length;
   const near30eval=active.filter(p=>{const d=dl(nextEvalDate(p));return d!==null&&d>=0&&d<=30;}).length;
   const near30mat =active.filter(p=>{const d=dl(p.maturityDate);return d!==null&&d>=0&&d<=30;}).length;
 
@@ -3213,45 +3739,15 @@ function renderKPI(accounts,products){
     estNet += toKRW(t.net, p.currency, rate);
   });
 
-  /* 원금 가중평균 예상수익률 계산 */
-  let _wPrinSum=0, _wProfSum=0;
-  active.forEach(p=>{
-    const pr=toKRW(Number(p.principal||0),p.currency,rate);
-    const ey=Number(p.expectedYield);
-    const profit=(isFinite(ey)&&!isNaN(ey))?toKRW(Number(p.principal||0)*ey/100,p.currency,rate):0;
-    _wPrinSum+=pr;
-    _wProfSum+=profit;
-  });
-  const _wavgYield=(_wPrinSum>0)?(_wProfSum/_wPrinSum*100):null;
-  const _wavgStr=(_wavgYield===null)?'-':fp(_wavgYield);
+  /* 원금가중 평균 예상 연수익률(세전) — 공용 계산 (calcActiveWeightedExpectedYield 와 동일 결과) */
+  const _wy = calcWeightedYieldDetail(products, rate);
+  const _wavgYield = _wy.value;
+  const _wavgStr = (_wavgYield===null)?'-':fp(_wavgYield);
 
-  /* 36개월 예상 상환수익 계산 — calcProductExpectedItem() 재사용 */
-  const _todayStr=today();           // 'YYYY-MM-DD'
-  const _d36=(()=>{
-    const d=new Date(_todayStr);
-    d.setMonth(d.getMonth()+36);
-    return d.toISOString().slice(0,10);
-  })();
-  /* 포함 여부 판정: date 기준 우선, date 없으면 year 기준 fallback */
-  const _in36=(item)=>{
-    if(item.date&&item.date.length===10){
-      return item.date>=_todayStr && item.date<=_d36;
-    }
-    // fallback: 연도 기준 (연도가 36개월 구간에 걸치면 포함)
-    const yr=item.year||'';
-    return yr>=_todayStr.slice(0,4) && yr<=_d36.slice(0,4);
-  };
-  const _yrNet={};   // 동적 연도별 합계
-  active.forEach(p=>{
-    const acc=accounts.find(a=>a.id===p.accountId);
-    const item=calcProductExpectedItem(p,acc?.type);
-    if(!item||!_in36(item))return;
-    const yr=item.year||'';
-    if(!yr)return;
-    _yrNet[yr]=(_yrNet[yr]||0)+item.net;
-  });
-  /* 36개월 구간에 걸치는 연도 목록 (오름차순) */
-  const _36yrs=Object.keys(_yrNet).map(Number).sort((a,b)=>a-b).map(String);
+  /* 36개월 상환 현금흐름 원장 (기준일 KST 오늘 ~ 정확히 36개월 후) */
+  const _L = build36mLedger(accounts, products, {rate});
+  window._last36mLedger = _L;
+
   /* ── 공통 헬퍼 ── */
   const _pctOf=(net)=>{
     if(!totalPr||!isFinite(net/totalPr))return null;
@@ -3271,9 +3767,6 @@ function renderKPI(accounts,products){
     </div>`;
   };
 
-  /* ── 36개월 합계 및 전체 수익률 ── */
-  const _3yrTotal=_36yrs.reduce((s,yr)=>s+(_yrNet[yr]||0),0);
-  const _3yrPct=_pctOf(_3yrTotal);
 
   /* ────────────────────────────────────────
      카드 1: 상품 현황
@@ -3300,6 +3793,12 @@ function renderKPI(accounts,products){
   })();
 
   const _avgYieldCls=_wavgYield===null?'':_wavgYield>=0?'green':'red';
+  const _yExcl=[];
+  if(_wy.missingYieldCount>0) _yExcl.push(`수익률 누락 ${_wy.missingYieldCount}건(원금 ${fm(_wy.missingYieldPrincipalKRW)})`);
+  if(_wy.fxMissingCount>0) _yExcl.push(`USD 환율 미입력 ${_wy.fxMissingCount}건`);
+  if(_wy.invalidPrincipalCount>0) _yExcl.push(`원금 누락 ${_wy.invalidPrincipalCount}건`);
+  const _yieldNote =
+    `<div class="kpi-sub" style="margin:0 0 2px 8px">연 쿠폰율 기준 · 36개월 누적수익률이 아님${_wy.status==='partial'?` · <span style="color:var(--am)">일부 산정: ${_wy.includedCount}/${_wy.totalActive}건 (제외: ${esc(_yExcl.join(', '))})</span>`:''}${_wy.status==='none'&&_wy.totalActive>0?` · <span style="color:var(--am)">산정 가능한 상품 없음</span>`:''}${_wy.mismatchCount>0?`<br><span style="color:var(--am)">⚠ ${_wy.mismatchCount}건은 연수익률과 누적쿠폰의 연환산값이 불일치 — 약정 연수익률 확인 필요 (${esc(_wy.mismatchNames.slice(0,3).join(', '))}${_wy.mismatchNames.length>3?' 외':''})</span>`:''}</div>`;
   const card1=`
     <div class="kpi-card">
       <div class="kpi-lbl">상품 현황</div>
@@ -3309,10 +3808,11 @@ function renderKPI(accounts,products){
           <span class="kpi-metric-value blue">${active.length}개</span>
         </div>
         ${_roundChipsHtml}
-        <div class="kpi-metric-row" style="margin-left:8px">
-          <span class="kpi-metric-label" style="font-size:10px">평균 예상수익률</span>
-          <span class="kpi-metric-value ${_avgYieldCls}" style="font-size:12px">${_wavgStr}</span>
+        <div class="kpi-metric-row" style="margin-left:8px;align-items:flex-start">
+          <span class="kpi-metric-label" style="font-size:10px;white-space:normal;flex-shrink:1">원금가중 평균 예상 연수익률(세전)</span>
+          <span class="kpi-metric-value ${_avgYieldCls}" style="font-size:12px;flex-shrink:0">${_wavgStr}</span>
         </div>
+        ${_yieldNote}
         <div class="kpi-metric-row" style="margin-top:2px">
           <span class="kpi-metric-label">완료 상품</span>
           <span class="kpi-metric-value">${done.length}개</span>
@@ -3321,40 +3821,8 @@ function renderKPI(accounts,products){
       <div class="kpi-sub" style="margin-top:6px">조기·만기·손실 완료 포함</div>
     </div>`;
 
-  /* ────────────────────────────────────────
-     카드 2: 투자원금 / 3개년 예상 세후수익 (전체 폭)
-  ──────────────────────────────────────── */
-  const _yrRowFull=(yr,net)=>{
-    const pct=_pctOf(net);
-    const valCls=net>0?'green':net<0?'red':'';
-    return `<div class="kpi-metric-row">
-      <span class="kpi-metric-label">${yr}년</span>
-      <span class="kpi-metric-value ${valCls}">${fm(net)}&thinsp;<span style="font-size:11px;font-weight:500">(${_pctFmt(pct)})</span></span>
-    </div>`;
-  };
-  const _3yrTotalCls=_3yrTotal>0?'green':_3yrTotal<0?'red':'';
-  /* 환율 경고 (USD 상품 있을 때 fxRate=0이면 경고) */
-  const _hasUsd=active.some(p=>(p.currency||'KRW')==='USD');
-  const _fxWarn=(_hasUsd&&rate<=0)
-    ?`<div class="kpi-sub" style="color:var(--am);margin-top:4px">⚠ USD 환율 미입력 시 USD 상품은 원화환산이 제한됩니다</div>`
-    :'';
-
-  const card2=`
-    <div class="kpi-card kpi-wide-card">
-      <div class="kpi-lbl">투자원금 / 36개월 예상 상환수익</div>
-      <div class="kpi-principal-value">${fm(totalPr)}</div>
-      ${_fxWarn}
-      <hr class="kpi-section-divider">
-      <div class="kpi-metric-rows">
-        ${_36yrs.map(yr=>_yrRowFull(yr,_yrNet[yr]||0)).join('')}
-        ${_36yrs.length===0?`<div class="kpi-metric-row"><span class="kpi-metric-label" style="color:var(--txt3)">36개월 내 예상 상환 없음</span></div>`:''}
-        <div class="kpi-total-row">
-          <span class="kpi-metric-label" style="font-weight:700">36개월 합계</span>
-          <span class="kpi-metric-value ${_3yrTotalCls}" style="font-size:15px;font-weight:800">${fm(_3yrTotal)}&thinsp;<span style="font-size:12px;font-weight:600">(${_pctFmt(_3yrPct)})</span></span>
-        </div>
-      </div>
-      <div class="kpi-sub" style="margin-top:6px">오늘부터 36개월 이내 현재 보유상품의 1회 예상 상환수익 · 상환 후 재투자 미반영</div>
-    </div>`;
+  /* 카드 2: 투자원금 / 36개월 예상 상환수익 (원장 기반, 전체 폭) */
+  const card2 = build36mCardHtml(_L);
 
   /* ────────────────────────────────────────
      카드 3: 실제 세후수익 (전체 폭)
@@ -3366,7 +3834,7 @@ function renderKPI(accounts,products){
         ${_metricRow('누적',totalNet)}
         ${_metricRow(thisYr+'년',thisYrNet)}
       </div>
-      <div class="kpi-sub" style="margin-top:6px">현재 보유 원금 대비 · 전체 완료 기준</div>
+      <div class="kpi-sub" style="margin-top:6px">현재 보유 원금 대비 · 전체 완료 기준${_doneUsdNoFx>0?`<br><span style="color:var(--am)">⚠ USD 완료 ${_doneUsdNoFx}건은 환율 미입력으로 합계에서 제외</span>`:''}</div>
     </div>`;
 
   /* ────────────────────────────────────────
@@ -3465,10 +3933,17 @@ function renderRecentCompleted(accounts, products){
     <thead><tr><th>상품명</th><th>계좌</th><th>유형</th><th>상환일</th><th class="nr">세후수익금</th><th class="nr">세후수익률</th></tr></thead>
     <tbody>${done.map(p=>{
       const acc=accounts.find(a=>a.id===p.accountId);
+      /* 약정 연수익률(p.expectedYield, 세전) — 유효한 양수일 때만 상품명 아래 작은 글씨로 표시 */
+      const _ey=Number(p.expectedYield);
+      const _eyLine=(isFinite(_ey)&&_ey>0)
+        ?`<div style="font-size:10px;line-height:1.25;color:var(--txt3);font-weight:500;white-space:nowrap">연 ${parseFloat(_ey.toFixed(2))}% (세전)</div>`:'';
+      /* 조기상환이면 실제 상환 차수(p.redeemedRound)를 함께 표시 — 값이 없으면 추정하지 않고 기존 표시 유지 */
+      const _rr=Number(p.redeemedRound);
+      const _rrTxt=(p.settlementType==='early-redemption'&&Number.isInteger(_rr)&&_rr>=1)?` ${_rr}차`:'';
       return`<tr>
-        <td><b>${esc(p.name)}</b></td>
+        <td><b>${esc(p.name)}</b>${_eyLine}</td>
         <td><span class="badge bgr">${esc(acc?.name||'-')}</span></td>
-        <td><span class="badge ${STB[p.status]}">${stlLabel(p.settlementType)}</span></td>
+        <td><span class="badge ${STB[p.status]}">${stlLabel(p.settlementType)}${_rrTxt}</span></td>
         <td>${p.settlementDate||'-'}</td>
         <td class="nr ${(p.actualNetProfit||0)>=0?'tg':'tr'}">${fm(p.actualNetProfit)}</td>
         <td class="nr ${(p.actualYieldNet||0)>=0?'tg':'tr'}">${fp(p.actualYieldNet)}</td>
