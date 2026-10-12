@@ -606,7 +606,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.94</span>
+      <span class="ver-badge">V26.95</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -663,7 +663,9 @@ tr:hover td{background:#f8fafc}
       <input type="text" id="price-proxy" class="fi sm" placeholder="https://내-worker.workers.dev/"
         style="width:260px;min-height:36px;max-width:100%"
         oninput="onPriceProxy(this.value)">
+      <button class="btn bgh sm" style="font-size:11px" onclick="diagnosePriceProxy()">🔍 프록시 연결 진단</button>
     </div>
+    <div id="px-diag" class="px-note" style="word-break:keep-all;overflow-wrap:anywhere"></div>
     <div class="px-note">
       <b>⚠ 이 칸에 URL만 넣는다고 동작하지 않습니다.</b> 아래 코드로 <b>본인 Cloudflare Worker를 먼저 배포</b>해야 하며, 그 주소를 입력합니다.
       비워 두면 ① Yahoo 직접 호출(브라우저 CORS 정책으로 대부분 차단) → ② <b>타사 무료 공개 프록시</b>를 순서대로 시도합니다.
@@ -674,18 +676,23 @@ tr:hover td{background:#f8fafc}
         2) 기본 코드를 지우고 아래 코드를 붙여넣은 뒤 <b>ALLOWED_ORIGINS</b>를 본인 Pages 주소로 확인 → <b>Deploy</b><br>
         3) 배포 후 나온 주소(예: <code>https://이름.계정.workers.dev/</code>)를 위 칸에 입력 (앱이 <code>?symbol=티커</code>를 붙여 호출)<br>
         4) 이 Worker는 Yahoo chart 한 경로만 호출하도록 고정되어 있으며 Origin 검사로 남용을 줄입니다. (Origin 헤더는 브라우저 밖에서는 위조 가능하므로 완전한 인증은 아니며, 필요하면 Cloudflare 대시보드에서 요청 제한을 추가하세요.)<br>
-        ※ 이전(V26.92)에 안내드린 <code>?url=</code> 형태 Worker는 <b>임의 URL을 중계하는 열린 프록시</b>이므로 위 코드로 교체를 권장합니다. 기존에 입력해 둔 <code>…?url=</code> 주소도 계속 인식은 합니다.</div>
-        <pre class="px-code" id="worker-code">// Cloudflare Worker — Asset Manager 시세 중계 (Yahoo Finance chart 전용)
-// 임의 URL을 중계하지 않음: 호스트·경로 고정, symbol 만 입력으로 받음
+        ※ <b>이미 Worker를 배포하셨다면 위 새 코드(v2)로 교체 후 Deploy</b> 하세요. v2는 Yahoo가 한 주소(query1)를 막을 때 다른 주소(query2)로 재시도하고, iPhone Safari의 사전요청(OPTIONS)을 허용하며, 실패 시 원인을 상세히 돌려줍니다. 이전(V26.92)의 <code>?url=</code> 형태 Worker는 <b>임의 URL을 중계하는 열린 프록시</b>이므로 반드시 교체하세요. 기존에 입력해 둔 <code>…?url=</code> 주소도 앱은 계속 인식합니다.</div>
+        <pre class="px-code" id="worker-code">// Cloudflare Worker — Asset Manager 시세 중계 v2 (Yahoo Finance chart 전용)
+// 임의 URL을 중계하지 않음: 호스트(query1/query2)·경로 고정, symbol 만 입력으로 받음
 const ALLOWED_ORIGINS = ['https://moooooon-bit.github.io']; // 본인 GitHub Pages 주소(스킴+호스트만)
 const SYMBOL_RE = /^[A-Za-z0-9.^=\-]{1,20}$/;
+const HOSTS = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com']; // 승인된 업스트림 (순서대로 시도)
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
-function cors(origin) {
+function cors(origin, reqHeaders) {
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Vary': 'Origin',
+    // 브라우저가 사전요청에서 요구한 헤더를 그대로 허용 (iOS Safari 호환)
+    'Access-Control-Allow-Headers': reqHeaders || 'Content-Type',
+    'Access-Control-Max-Age': '86400',
+    'Access-Control-Expose-Headers': 'X-Upstream',
+    'Vary': 'Origin, Access-Control-Request-Headers',
   };
 }
 
@@ -694,7 +701,8 @@ export default {
     const origin = request.headers.get('Origin') || '';
     const okOrigin = ALLOWED_ORIGINS.includes(origin);
     if (request.method === 'OPTIONS') {
-      return new Response(null, { status: okOrigin ? 204 : 403, headers: okOrigin ? cors(origin) : {} });
+      const rh = request.headers.get('Access-Control-Request-Headers') || '';
+      return new Response(null, { status: okOrigin ? 204 : 403, headers: okOrigin ? cors(origin, rh) : {} });
     }
     if (request.method !== 'GET') return new Response('Method Not Allowed', { status: 405 });
     if (!okOrigin) return new Response('Forbidden origin', { status: 403 });
@@ -702,21 +710,32 @@ export default {
     const symbol = new URL(request.url).searchParams.get('symbol') || '';
     if (!SYMBOL_RE.test(symbol)) return new Response('Bad symbol', { status: 400, headers: cors(origin) });
 
-    const target = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
-                   encodeURIComponent(symbol) + '?interval=1d&amp;range=1d';
-    try {
-      const r = await fetch(target, {
-        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
-        cf: { cacheTtl: 30, cacheEverything: true },
-      });
-      return new Response(await r.text(), {
-        status: r.status,
-        headers: { ...cors(origin), 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=30' },
-      });
-    } catch (e) {
-      return new Response(JSON.stringify({ error: 'upstream fetch failed' }),
-        { status: 502, headers: { ...cors(origin), 'Content-Type': 'application/json' } });
+    const attempts = [];
+    for (const host of HOSTS) {
+      const target = 'https://' + host + '/v8/finance/chart/' + encodeURIComponent(symbol) + '?interval=1d&amp;range=1d';
+      try {
+        const r = await fetch(target, {
+          headers: { 'User-Agent': UA, 'Accept': 'application/json,text/plain,*/*', 'Accept-Language': 'en-US,en;q=0.9' },
+          // 성공 응답만 30초 캐시 (오류 응답은 캐시하지 않아 일시 제한이 고착되지 않음)
+          cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': 30, '300-599': -1 } },
+        });
+        if (r.ok) {
+          return new Response(await r.text(), {
+            status: 200,
+            headers: { ...cors(origin), 'Content-Type': 'application/json; charset=utf-8',
+                       'Cache-Control': 'public, max-age=30', 'X-Upstream': host },
+          });
+        }
+        attempts.push({ host, status: r.status });
+      } catch (e) {
+        attempts.push({ host, error: String((e &amp;&amp; e.message) || e).slice(0, 80) });
+      }
     }
+    // 두 호스트 모두 실패: 앱의 '연결 진단'이 원인을 보여줄 수 있도록 상세 반환
+    return new Response(JSON.stringify({ error: 'upstream_failed', attempts }), {
+      status: 502,
+      headers: { ...cors(origin), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    });
   },
 };</pre>
         <button class="btn bgh sm" style="font-size:11px" onclick="copyWorkerCode()">📋 코드 복사</button>
@@ -1981,6 +2000,7 @@ export default {
              티커 해석 수정(사용자 매핑 우선·부분일치 제거), 원금가중 평균 연수익률 검증(환율/수익률 누락 제외 표시),
              36개월 상환 현금흐름 원장 신설(지난 평가일 제외·현재가 누락/KI 불명 미산정·USD 환율 미입력 가드), 수동 가격 입력 KPI 즉시 동기화
    - V26.94: 최근 완료 상품 표 — 상품명 아래 약정 연수익률(세전), 조기상환 유형에 실제 상환 차수 표시
+   - V26.95: 현재가 조회 간헐 실패 대응 — 카드에 실패 사유 표시, 프록시 연결 진단 버튼, 내 프록시 요청에서 cache 옵션 제거(iOS Safari 사전요청 방지), 일시 오류 1회 재시도, 동시 조회 2개로 제한, Worker v2(query2 대체·OPTIONS 헤더 허용·오류 비캐시)
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -1991,7 +2011,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.94';
+const VER = 'V26.95';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -2192,6 +2212,45 @@ function removeCustomTicker(nm){
 function loadPriceProxy(){ return String(lsGet('els_price_proxy','')||'').trim(); }
 function savePriceProxy(v){ lsSet('els_price_proxy', String(v||'').trim()); }
 function onPriceProxy(val){ savePriceProxy(val); }
+/** 내 프록시 연결 진단 — 실제 조회와 같은 방식(cache 옵션 없음)으로 TSLA 를 한 번 호출해 원인을 구분 */
+async function diagnosePriceProxy(){
+  const out = document.getElementById('px-diag');
+  const show = (lvl, h) => { if(out) out.innerHTML = `<div style="color:${lvl==='ok'?'var(--g)':lvl==='warn'?'var(--am)':'var(--r)'}">${h}</div>`; };
+  const base = loadPriceProxy();
+  if(!base){ show('warn','프록시 주소가 비어 있습니다. 위 칸에 Worker 주소를 입력한 뒤 다시 눌러 주세요.'); return; }
+  if(!/^https:\/\//i.test(base)){ show('err','주소는 https:// 로 시작해야 합니다.'); return; }
+  const url = _customProxyUrl(base, 'TSLA');
+  const origin = (typeof location!=='undefined' && location.origin) ? location.origin : '(알 수 없음)';
+  show('warn','진단 중… (최대 8초)');
+  const t0 = Date.now();
+  try{
+    const r = await fetch(url, {signal: AbortSignal.timeout(8000)});
+    const txt = await r.text();
+    const ms = Date.now()-t0;
+    let body = null; try{ body = JSON.parse(txt); }catch(e){}
+    if(r.ok){
+      try{
+        const q = parseYahooQuote(body, 'TSLA');
+        const up = r.headers.get('X-Upstream');
+        show('ok',`✅ 정상 — 내 Worker가 TSLA ${q.price}를 반환했습니다 (${ms}ms${up?' · 업스트림 '+esc(up):''}). 그런데도 카드 출처가 \'공개 프록시\'라면 그때만 일시적으로 Yahoo가 제한했을 수 있습니다.`);
+      }catch(pe){ show('err',`HTTP 200 이지만 시세 형식이 올바르지 않습니다: ${esc(pe.message)}<br><span style="color:var(--txt3)">응답: ${esc(txt.slice(0,120))}</span>`); }
+      return;
+    }
+    let hint;
+    if(r.status===403) hint = `Worker가 이 사이트를 허용하지 않았습니다. Worker 코드의 ALLOWED_ORIGINS 가 정확히 <b>${esc(origin)}</b> 인지 확인하세요.`;
+    else if(r.status===400) hint = 'Worker가 요청의 심볼 형식을 거부했습니다.';
+    else if(r.status===429) hint = 'Yahoo가 Worker의 IP를 일시 제한했습니다(429). 잠시 후 다시 시도하거나, 위 새 Worker 코드(v2: query2 대체 호출)로 교체하세요.';
+    else if(r.status===502) hint = 'Worker는 정상 동작하지만 Yahoo 호출이 모두 실패했습니다.'+(body&&body.attempts?' 상세: '+esc(JSON.stringify(body.attempts)):'');
+    else hint = '예상하지 못한 응답입니다.';
+    show('err',`❌ HTTP ${r.status} — ${hint}<br><span style="color:var(--txt3)">응답: ${esc(txt.slice(0,120))}</span>`);
+  }catch(e){
+    /* 브라우저가 응답을 막았거나(CORS) 연결 자체가 실패 → no-cors 로 '도달 가능 여부'를 구분 */
+    let reachable = false;
+    try{ await fetch(url, {mode:'no-cors', signal: AbortSignal.timeout(8000)}); reachable = true; }catch(e2){}
+    if(reachable) show('err',`❌ Worker에는 도달했지만 브라우저가 응답을 차단했습니다(CORS). 원인 후보: ① Worker의 ALLOWED_ORIGINS 가 <b>${esc(origin)}</b> 와 다름 ② 구버전 Worker가 사전요청(OPTIONS) 헤더를 허용하지 않음(iPhone Safari에서 흔함) → 위 새 Worker 코드(v2)로 교체 후 Deploy.<br><span style="color:var(--txt3)">오류: ${esc(e?.message||String(e))}</span>`);
+    else show('err',`❌ Worker에 연결할 수 없습니다. 주소 오타, Worker 미배포/삭제, 또는 네트워크 문제입니다. 입력한 주소 뒤에 <code>?symbol=TSLA</code> 를 붙여 브라우저 주소창에서 직접 열어 확인해 보세요.<br><span style="color:var(--txt3)">오류: ${esc(e?.message||String(e))}</span>`);
+  }
+}
 function copyWorkerCode(){
   const t=document.getElementById('worker-code')?.textContent||'';
   try{
@@ -2201,7 +2260,7 @@ function copyWorkerCode(){
 }
 
 let PRICE_FETCH_DEADLINE_MS = 20000;   /* 전체 조회 제한시간 */
-let PRICE_FETCH_CONCURRENCY = 4;       /* 동시 조회 티커 수 */
+let PRICE_FETCH_CONCURRENCY = 2;       /* 동시 조회 티커 수 (Yahoo 가 같은 IP 의 동시 요청을 제한하는 경우 완화) */
 let _priceFetchBusy = false;
 
 /* ─ 가격 메타데이터 (els_price_meta_v1: {자산명:{ticker,price,fetchedAt,marketTime,source,...}}) ─ */
@@ -2270,6 +2329,7 @@ function describePriceState(curPrice, meta, nowMs){
   if(meta.lastStatus==='failed'||meta.lastStatus==='timeout'){
     level='warn';
     lines.push(`⚠ 최근 조회 ${meta.lastStatus==='timeout'?'시간 초과':'실패'}(${fmtKSTDateTime(meta.lastAttemptAt)}) — 마지막 성공값 사용 중`);
+    if(meta.lastError){ const er=String(meta.lastError); lines.push('사유: '+(er.length>220?er.slice(0,217)+'…':er)); }
   }
   return {state:'fetched', level, lines};
 }
@@ -2325,27 +2385,39 @@ function parseYahooQuote(data, ticker){
 }
 
 /** 한 티커의 시세 조회 (소스 순차 시도). 반환: {ok:true,quote}|{ok:false,error} */
+const _sleep = ms => new Promise(r=>setTimeout(r, ms));
+/** 한 티커의 시세 조회 (소스 순차 시도). 반환: {ok:true,quote}|{ok:false,error}
+ *  · 내 프록시: cache 옵션을 보내지 않음 — 일부 브라우저(iOS Safari)가 cache:'no-store' 를 추가 헤더로 취급해
+ *    CORS 사전요청(OPTIONS)을 보내고, 그 응답이 막히면 Worker 경로만 항상 실패할 수 있음
+ *  · 일시적 오류(HTTP 429/5xx/시간초과)만 1회 재시도 (403·400·CORS 는 재시도해도 같으므로 즉시 다음 소스)
+ */
 async function fetchQuoteForTicker(ticker, deadlineAt){
   const attempts = [];
   const errs = [];
   const proxy = loadPriceProxy();
   if(proxy){
-    if(/^https:\/\//i.test(proxy)) attempts.push({label:'내 프록시', url:_customProxyUrl(proxy,ticker), src:'custom-proxy', ms:8000});
+    if(/^https:\/\//i.test(proxy)) attempts.push({label:'내 프록시', url:_customProxyUrl(proxy,ticker), src:'custom-proxy', ms:8000, retry:true, opts:{cache:undefined}});
     else errs.push('내 프록시:URL은 https:// 로 시작해야 함');
   }
   attempts.push({label:'Yahoo 직접', url:_yahooUrl(ticker), src:'yahoo-direct', ms:4000});
   PUBLIC_PRICE_PROXIES.forEach((fn,i)=>attempts.push({label:'공개'+(i+1), url:fn(_yahooUrl(ticker)), src:'public-proxy', ms:6000}));
   for(const a of attempts){
-    if(deadlineAt!=null && Date.now()>=deadlineAt){ errs.push('중단됨(전체 제한시간)'); break; }
-    try{
-      const data = await _fetchJson(a.url, a.ms, deadlineAt);
-      const q = parseYahooQuote(data, ticker);
-      q.source = a.src;
-      return {ok:true, quote:q};
-    }catch(e){
-      const msg = e?.message||String(e);
-      errs.push(a.label+':'+msg);
-      if(msg==='aborted') break;
+    const tries = a.retry ? 2 : 1;
+    for(let t=0; t<tries; t++){
+      if(deadlineAt!=null && Date.now()>=deadlineAt){ errs.push('중단됨(전체 제한시간)'); return {ok:false, error: errs.join(' / ')}; }
+      try{
+        const data = await _fetchJson(a.url, a.ms, deadlineAt, a.opts||{});
+        const q = parseYahooQuote(data, ticker);
+        q.source = a.src;
+        return {ok:true, quote:q};
+      }catch(e){
+        const msg = e?.message||String(e);
+        errs.push(a.label+':'+msg+(t>0?'(재시도)':''));
+        if(msg==='aborted') return {ok:false, error: errs.join(' / ')};
+        const transient = /HTTP (429|5\d\d)|timeout/.test(msg);
+        if(t+1<tries && transient && (deadlineAt==null || deadlineAt-Date.now()>2500)){ await _sleep(700); continue; }
+        break;
+      }
     }
   }
   return {ok:false, error: errs.join(' / ')};
