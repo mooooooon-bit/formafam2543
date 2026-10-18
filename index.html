@@ -606,7 +606,7 @@ tr:hover td{background:#f8fafc}
   <div class="appbar-in">
     <div class="logo-wrap">
       <div class="logo">Asset Manager</div>
-      <span class="ver-badge">V26.95</span>
+      <span class="ver-badge">V26.96</span>
     </div>
     <nav class="tab-nav" id="tab-nav">
       <button class="tbtn on" data-tab="dash" onclick="sw('dash')">📈 ELS Invest</button>
@@ -676,10 +676,10 @@ tr:hover td{background:#f8fafc}
         2) 기본 코드를 지우고 아래 코드를 붙여넣은 뒤 <b>ALLOWED_ORIGINS</b>를 본인 Pages 주소로 확인 → <b>Deploy</b><br>
         3) 배포 후 나온 주소(예: <code>https://이름.계정.workers.dev/</code>)를 위 칸에 입력 (앱이 <code>?symbol=티커</code>를 붙여 호출)<br>
         4) 이 Worker는 Yahoo chart 한 경로만 호출하도록 고정되어 있으며 Origin 검사로 남용을 줄입니다. (Origin 헤더는 브라우저 밖에서는 위조 가능하므로 완전한 인증은 아니며, 필요하면 Cloudflare 대시보드에서 요청 제한을 추가하세요.)<br>
-        ※ <b>이미 Worker를 배포하셨다면 위 새 코드(v2)로 교체 후 Deploy</b> 하세요. v2는 Yahoo가 한 주소(query1)를 막을 때 다른 주소(query2)로 재시도하고, iPhone Safari의 사전요청(OPTIONS)을 허용하며, 실패 시 원인을 상세히 돌려줍니다. 이전(V26.92)의 <code>?url=</code> 형태 Worker는 <b>임의 URL을 중계하는 열린 프록시</b>이므로 반드시 교체하세요. 기존에 입력해 둔 <code>…?url=</code> 주소도 앱은 계속 인식합니다.</div>
-        <pre class="px-code" id="worker-code">// Cloudflare Worker — Asset Manager 시세 중계 v2 (Yahoo Finance chart 전용)
+        ※ <b>코드의 ALLOWED_ORIGINS 주소는 이 화면이 현재 접속 주소로 자동 입력합니다 — 직접 고치지 말고 그대로 복사</b>하세요(한 글자라도 다르면 모든 조회가 거부됩니다). <b>이미 Worker를 배포하셨다면 아래 새 코드(v3)로 교체 후 Deploy</b> 하세요. v3는 Yahoo가 한 주소(query1)를 막을 때 다른 주소(query2)로 재시도하고, iPhone Safari의 사전요청(OPTIONS)을 허용하며, 실패 시 원인을 상세히 돌려줍니다. 이전(V26.92)의 <code>?url=</code> 형태 Worker는 <b>임의 URL을 중계하는 열린 프록시</b>이므로 반드시 교체하세요. 기존에 입력해 둔 <code>…?url=</code> 주소도 앱은 계속 인식합니다.</div>
+        <pre class="px-code" id="worker-code">// Cloudflare Worker — Asset Manager 시세 중계 v3 (Yahoo Finance chart 전용)
 // 임의 URL을 중계하지 않음: 호스트(query1/query2)·경로 고정, symbol 만 입력으로 받음
-const ALLOWED_ORIGINS = ['https://moooooon-bit.github.io']; // 본인 GitHub Pages 주소(스킴+호스트만)
+const ALLOWED_ORIGINS = ['__ORIGIN__']; // 앱이 현재 접속 주소를 자동으로 넣어 줍니다(스킴+호스트만, 한 글자라도 다르면 거부됨)
 const SYMBOL_RE = /^[A-Za-z0-9.^=\-]{1,20}$/;
 const HOSTS = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com']; // 승인된 업스트림 (순서대로 시도)
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
@@ -705,7 +705,13 @@ export default {
       return new Response(null, { status: okOrigin ? 204 : 403, headers: okOrigin ? cors(origin, rh) : {} });
     }
     if (request.method !== 'GET') return new Response('Method Not Allowed', { status: 405 });
-    if (!okOrigin) return new Response('Forbidden origin', { status: 403 });
+    if (!okOrigin) {
+      // 진단용: 어떤 주소를 허용 중인지 브라우저에서 읽을 수 있게 알려줌 (시세 데이터는 반환하지 않음)
+      return new Response(JSON.stringify({ error: 'forbidden_origin', yourOrigin: origin, allowed: ALLOWED_ORIGINS }), {
+        status: 403,
+        headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+      });
+    }
 
     const symbol = new URL(request.url).searchParams.get('symbol') || '';
     if (!SYMBOL_RE.test(symbol)) return new Response('Bad symbol', { status: 400, headers: cors(origin) });
@@ -2001,6 +2007,7 @@ export default {
              36개월 상환 현금흐름 원장 신설(지난 평가일 제외·현재가 누락/KI 불명 미산정·USD 환율 미입력 가드), 수동 가격 입력 KPI 즉시 동기화
    - V26.94: 최근 완료 상품 표 — 상품명 아래 약정 연수익률(세전), 조기상환 유형에 실제 상환 차수 표시
    - V26.95: 현재가 조회 간헐 실패 대응 — 카드에 실패 사유 표시, 프록시 연결 진단 버튼, 내 프록시 요청에서 cache 옵션 제거(iOS Safari 사전요청 방지), 일시 오류 1회 재시도, 동시 조회 2개로 제한, Worker v2(query2 대체·OPTIONS 헤더 허용·오류 비캐시)
+   - V26.96: Worker 코드의 허용 주소 오타(o 6개→7개) 수정 + 앱이 현재 접속 주소를 코드에 자동 주입, 허용되지 않은 주소일 때 연결 진단이 허용/접속 주소 표시, 내 프록시 설정 시 죽은 공개 프록시로 폴백하지 않음
    ============================================================= */
 
 /* ─ §1 상수 ─ */
@@ -2011,7 +2018,7 @@ const STL  = { active:'보유중', redeemed:'조기상환', matured:'만기상�
 const STB  = { active:'bbl', redeemed:'bg', matured:'bpu', closed:'br' };
 const BARS = ['#1d4ed8','#047857','#92400e','#5b21b6','#0369a1','#be185d'];
 const DEF_SRC = '앱 확인';
-const VER = 'V26.95';
+const VER = 'V26.96';
 
 let curTab = 'dash';
 let editAccId = null, editProdId = null, pendPid = null;
@@ -2236,6 +2243,11 @@ async function diagnosePriceProxy(){
       }catch(pe){ show('err',`HTTP 200 이지만 시세 형식이 올바르지 않습니다: ${esc(pe.message)}<br><span style="color:var(--txt3)">응답: ${esc(txt.slice(0,120))}</span>`); }
       return;
     }
+    if(r.status===403 && body && body.error==='forbidden_origin'){
+      const allowed=(body.allowed||[]).map(x=>`<code>${esc(x)}</code>`).join(', ')||'(없음)';
+      show('err',`❌ Worker가 이 사이트를 허용하지 않습니다.<br>Worker 허용 주소: ${allowed}<br>현재 접속 주소: <code>${esc(origin)}</code><br><b>두 값이 한 글자라도 다르면(특히 'o' 개수) 거부됩니다.</b> 아래 「Worker 배포 방법 · 코드 보기」의 코드를 그대로 복사해 Worker에 붙여넣고 Deploy 하세요 — 현재 접속 주소가 자동으로 들어가 있습니다.`);
+      return;
+    }
     let hint;
     if(r.status===403) hint = `Worker가 이 사이트를 허용하지 않았습니다. Worker 코드의 ALLOWED_ORIGINS 가 정확히 <b>${esc(origin)}</b> 인지 확인하세요.`;
     else if(r.status===400) hint = 'Worker가 요청의 심볼 형식을 거부했습니다.';
@@ -2247,12 +2259,20 @@ async function diagnosePriceProxy(){
     /* 브라우저가 응답을 막았거나(CORS) 연결 자체가 실패 → no-cors 로 '도달 가능 여부'를 구분 */
     let reachable = false;
     try{ await fetch(url, {mode:'no-cors', signal: AbortSignal.timeout(8000)}); reachable = true; }catch(e2){}
-    if(reachable) show('err',`❌ Worker에는 도달했지만 브라우저가 응답을 차단했습니다(CORS). 원인 후보: ① Worker의 ALLOWED_ORIGINS 가 <b>${esc(origin)}</b> 와 다름 ② 구버전 Worker가 사전요청(OPTIONS) 헤더를 허용하지 않음(iPhone Safari에서 흔함) → 위 새 Worker 코드(v2)로 교체 후 Deploy.<br><span style="color:var(--txt3)">오류: ${esc(e?.message||String(e))}</span>`);
-    else show('err',`❌ Worker에 연결할 수 없습니다. 주소 오타, Worker 미배포/삭제, 또는 네트워크 문제입니다. 입력한 주소 뒤에 <code>?symbol=TSLA</code> 를 붙여 브라우저 주소창에서 직접 열어 확인해 보세요.<br><span style="color:var(--txt3)">오류: ${esc(e?.message||String(e))}</span>`);
+    if(reachable) show('err',`❌ Worker에는 도달했지만 브라우저가 응답을 차단했습니다(CORS). 가장 흔한 원인은 Worker 코드의 <code>ALLOWED_ORIGINS</code> 가 현재 접속 주소 <code>${esc(origin)}</code> 와 <b>한 글자라도 다른 경우</b>(특히 'o' 개수)입니다. 아래 「Worker 배포 방법 · 코드 보기」의 코드는 현재 주소가 자동으로 들어가 있으니 그대로 복사해 Worker에 붙여넣고 Deploy 하세요. (구버전 Worker는 허용 주소를 알려주지 못해 이렇게만 보입니다.)<br><span style="color:var(--txt3)">오류: ${esc(e?.message||String(e))}</span>`);
+    else show('err',`❌ Worker에 연결할 수 없습니다. 원인 후보: ① 주소 오타·Worker 미배포/삭제·네트워크 문제 ② Worker 코드의 <code>ALLOWED_ORIGINS</code> 가 현재 접속 주소 <code>${esc(origin)}</code> 와 한 글자라도 다른 경우(브라우저에 따라 이 경우도 연결 실패로만 보입니다). 입력한 주소 뒤에 <code>?symbol=TSLA</code> 를 붙여 브라우저 주소창에서 직접 열어 보고, 아래 「코드 보기」의 코드(현재 주소 자동 입력)로 Worker를 다시 배포해 보세요.<br><span style="color:var(--txt3)">오류: ${esc(e?.message||String(e))}</span>`);
   }
 }
+/** Worker 코드 — ALLOWED_ORIGINS 에 '지금 접속 중인 주소'를 자동으로 넣음 (주소를 손으로 적다 생기는 오타 방지) */
+function workerCodeText(){
+  const el=document.getElementById('worker-code'); if(!el) return '';
+  if(!el.dataset.tpl) el.dataset.tpl=el.textContent;            /* 최초 1회 템플릿 보관 */
+  const o=(typeof location!=='undefined'&&/^https:\/\/[^/]+$/.test(location.origin||''))?location.origin:'https://YOUR-NAME.github.io';
+  return el.dataset.tpl.split('__ORIGIN__').join(o);
+}
+function fillWorkerCode(){ const el=document.getElementById('worker-code'); if(el) el.textContent=workerCodeText(); }
 function copyWorkerCode(){
-  const t=document.getElementById('worker-code')?.textContent||'';
+  const t=workerCodeText();
   try{
     if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(()=>toast('Worker 코드를 복사했습니다.','ok')).catch(()=>toast('복사 실패 — 코드를 직접 선택해 복사하세요.','err')); }
     else toast('이 브라우저는 자동 복사를 지원하지 않습니다. 코드를 직접 선택해 복사하세요.','warn');
@@ -2260,6 +2280,7 @@ function copyWorkerCode(){
 }
 
 let PRICE_FETCH_DEADLINE_MS = 20000;   /* 전체 조회 제한시간 */
+let PRICE_SKIP_PUBLIC_WHEN_CUSTOM = true;  /* true: 내 프록시 설정 시 직접/공개 프록시로 폴백하지 않음 */
 let PRICE_FETCH_CONCURRENCY = 2;       /* 동시 조회 티커 수 (Yahoo 가 같은 IP 의 동시 요청을 제한하는 경우 완화) */
 let _priceFetchBusy = false;
 
@@ -2399,8 +2420,12 @@ async function fetchQuoteForTicker(ticker, deadlineAt){
     if(/^https:\/\//i.test(proxy)) attempts.push({label:'내 프록시', url:_customProxyUrl(proxy,ticker), src:'custom-proxy', ms:8000, retry:true, opts:{cache:undefined}});
     else errs.push('내 프록시:URL은 https:// 로 시작해야 함');
   }
-  attempts.push({label:'Yahoo 직접', url:_yahooUrl(ticker), src:'yahoo-direct', ms:4000});
-  PUBLIC_PRICE_PROXIES.forEach((fn,i)=>attempts.push({label:'공개'+(i+1), url:fn(_yahooUrl(ticker)), src:'public-proxy', ms:6000}));
+  /* 내 프록시가 설정돼 있으면 그 경로만 사용 — 공개 프록시(401·timeout·종료 다수)로 폴백하면
+     실패 원인이 가려지고 응답을 신뢰할 수 없으며 조회 종목이 제3자에 노출됨. 미설정일 때만 직접/공개 프록시 시도 */
+  if(!(proxy && PRICE_SKIP_PUBLIC_WHEN_CUSTOM)){
+    attempts.push({label:'Yahoo 직접', url:_yahooUrl(ticker), src:'yahoo-direct', ms:4000});
+    PUBLIC_PRICE_PROXIES.forEach((fn,i)=>attempts.push({label:'공개'+(i+1), url:fn(_yahooUrl(ticker)), src:'public-proxy', ms:6000}));
+  }
   for(const a of attempts){
     const tries = a.retry ? 2 : 1;
     for(let t=0; t<tries; t++){
@@ -3550,6 +3575,7 @@ function renderAssets(){
     fxEl.dataset.init='1';
   }
   /* 커스텀 가격 프록시 초기값 */
+  fillWorkerCode();
   const ppEl=document.getElementById('price-proxy');
   if(ppEl&&!ppEl.dataset.init){
     ppEl.value=loadPriceProxy();
